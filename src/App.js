@@ -4,6 +4,7 @@ import Axios from "axios"
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Swal from 'sweetalert2'
+import { AppRouter } from './router/AppRouter';
 
 function App() {
 
@@ -120,6 +121,7 @@ function App() {
 
   return (
     <div className="container">
+      <div><AppRouter/></div>
       <div className="App">
         <div className='lista'>
           {/* <button onClick={getEmpleados}>Listar</button> */}
