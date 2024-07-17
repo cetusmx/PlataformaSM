@@ -4,7 +4,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Swal from 'sweetalert2'
 import {Navbar} from '../Navbar';
-import {LoginPage} from '../pages/LoginPage'
 
 export const FormularioCrud = () => {
 
