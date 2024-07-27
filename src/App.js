@@ -1,4 +1,4 @@
-import { BrowserRouter,Routes,Route,Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { FormularioCrud } from './pages/FormularioCrud';
@@ -7,25 +7,26 @@ import { LoginPage } from './pages/LoginPage';
 import { Cotizador } from './pages/Cotizador';
 import { useState } from 'react';
 
+
 function App() {
 
-  const [user, setUser]=useState(null);
 
   return (
-    <div className="container">
+    <div className='container' id='appContainer'>
       <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LoginPage />}>
-        </Route>
-        <Route path="/login" element={<LoginPage />}>
-        </Route>
-        <Route path="/crud" element={<FormularioCrud/>}>
-        </Route>
-        <Route path="/cotizador" element={<Cotizador/>}>
-        </Route>
-      </Routes>
+        <Routes>
+          <Route path="/" element={<LoginPage />}>
+          </Route>
+          <Route path="/login" element={<LoginPage />}>
+          </Route>
+          <Route path="/crud" element={<FormularioCrud />}>
+          </Route>
+          <Route path="/cotizador" element={<Cotizador />}>
+          </Route>
+          <Route path="/home" element={<HomePage />}>
+          </Route>
+        </Routes>
       </BrowserRouter>
-      
     </div>
   );
 }

@@ -1,12 +1,11 @@
-import { useState } from "react"
-import Axios from "axios"
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { useState } from "react";
+import Axios from "axios";
+import "bootstrap/dist/css/bootstrap.min.css";
 
-import Swal from 'sweetalert2'
-import {Navbar} from '../Navbar';
+import Swal from "sweetalert2";
+import { Nav } from "../components/Nav";
 
 export const FormularioCrud = () => {
-
   const [nombre, setNombre] = useState("");
   const [edad, setEdad] = useState();
   const [pais, setPais] = useState("");
@@ -131,182 +130,188 @@ export const FormularioCrud = () => {
 
   return (
     <div className="container">
-      <div>
-        <Navbar />
+      <div className="row">
+        <div className="col">
+          <Nav />
+        </div>
       </div>
-      <div className="App">
-        <div className="lista">
+      <div className="row">
+        <div className="col"><br/></div>
+      </div>
+      <div className="row">
+        <div className="col">
           {/* <button onClick={getEmpleados}>Listar</button> */}
-        </div>
-      </div>
-      <div className="card text-center">
-        <div className="card-header">Gestión de empleados</div>
-        <div className="card-body">
-          <div className="input-group mb-3">
-            <div className="input-group-prepend">
-              <span className="input-group-text" id="basic-addon1">
-                Nombre:
-              </span>
+
+          <div className="card text-center">
+            <div className="card-header">Gestión de empleados</div>
+            <div className="card-body">
+              <div className="input-group mb-3">
+                <div className="input-group-prepend">
+                  <span className="input-group-text" id="basic-addon1">
+                    Nombre:
+                  </span>
+                </div>
+                <input
+                  onChange={(event) => {
+                    setNombre(event.target.value);
+                  }}
+                  type="text"
+                  className="form-control"
+                  value={nombre}
+                  placeholder="Ingrese nombre"
+                  aria-label="Username"
+                  aria-describedby="basic-addon1"
+                />
+              </div>
+
+              <div className="input-group mb-3">
+                <div className="input-group-prepend">
+                  <span className="input-group-text" id="basic-addon1">
+                    Edad:
+                  </span>
+                </div>
+                <input
+                  value={edad}
+                  onChange={(event) => {
+                    setEdad(event.target.value);
+                  }}
+                  type="number"
+                  className="form-control"
+                  placeholder="Ingrese edad"
+                  aria-label="Username"
+                  aria-describedby="basic-addon1"
+                />
+              </div>
+
+              <div className="input-group mb-3">
+                <div className="input-group-prepend">
+                  <span className="input-group-text" id="basic-addon1">
+                    País:
+                  </span>
+                </div>
+                <input
+                  value={pais}
+                  onChange={(event) => {
+                    setPais(event.target.value);
+                  }}
+                  type="text"
+                  className="form-control"
+                  placeholder="Ingrese país"
+                  aria-label="Username"
+                  aria-describedby="basic-addon1"
+                />
+              </div>
+
+              <div className="input-group mb-3">
+                <div className="input-group-prepend">
+                  <span className="input-group-text" id="basic-addon1">
+                    Cargo:
+                  </span>
+                </div>
+                <input
+                  value={cargo}
+                  onChange={(event) => {
+                    setCargo(event.target.value);
+                  }}
+                  type="text"
+                  className="form-control"
+                  placeholder="Ingrese cargo"
+                  aria-label="Username"
+                  aria-describedby="basic-addon1"
+                />
+              </div>
+
+              <div className="input-group mb-3">
+                <div className="input-group-prepend">
+                  <span className="input-group-text" id="basic-addon1">
+                    Años:
+                  </span>
+                </div>
+                <input
+                  value={anios}
+                  onChange={(event) => {
+                    setAnios(event.target.value);
+                  }}
+                  type="number"
+                  className="form-control"
+                  placeholder="Ingrese antigüedad"
+                  aria-label="Username"
+                  aria-describedby="basic-addon1"
+                />
+              </div>
             </div>
-            <input
-              onChange={(event) => {
-                setNombre(event.target.value);
-              }}
-              type="text"
-              className="form-control"
-              value={nombre}
-              placeholder="Ingrese nombre"
-              aria-label="Username"
-              aria-describedby="basic-addon1"
-            />
+            <div className="card-footer text-muted">
+              {editar ? (
+                <div>
+                  <button className="btn btn-warning m-2" onClick={update}>
+                    Actualizar
+                  </button>
+                  <button className="btn btn-info m-2" onClick={limpiarCampos}>
+                    Cancelar
+                  </button>
+                </div>
+              ) : (
+                <button className="btn btn-success" onClick={add}>
+                  Registrar
+                </button>
+              )}
+            </div>
           </div>
 
-          <div className="input-group mb-3">
-            <div className="input-group-prepend">
-              <span className="input-group-text" id="basic-addon1">
-                Edad:
-              </span>
-            </div>
-            <input
-              value={edad}
-              onChange={(event) => {
-                setEdad(event.target.value);
-              }}
-              type="number"
-              className="form-control"
-              placeholder="Ingrese edad"
-              aria-label="Username"
-              aria-describedby="basic-addon1"
-            />
-          </div>
-
-          <div className="input-group mb-3">
-            <div className="input-group-prepend">
-              <span className="input-group-text" id="basic-addon1">
-                País:
-              </span>
-            </div>
-            <input
-              value={pais}
-              onChange={(event) => {
-                setPais(event.target.value);
-              }}
-              type="text"
-              className="form-control"
-              placeholder="Ingrese país"
-              aria-label="Username"
-              aria-describedby="basic-addon1"
-            />
-          </div>
-
-          <div className="input-group mb-3">
-            <div className="input-group-prepend">
-              <span className="input-group-text" id="basic-addon1">
-                Cargo:
-              </span>
-            </div>
-            <input
-              value={cargo}
-              onChange={(event) => {
-                setCargo(event.target.value);
-              }}
-              type="text"
-              className="form-control"
-              placeholder="Ingrese cargo"
-              aria-label="Username"
-              aria-describedby="basic-addon1"
-            />
-          </div>
-
-          <div className="input-group mb-3">
-            <div className="input-group-prepend">
-              <span className="input-group-text" id="basic-addon1">
-                Años:
-              </span>
-            </div>
-            <input
-              value={anios}
-              onChange={(event) => {
-                setAnios(event.target.value);
-              }}
-              type="number"
-              className="form-control"
-              placeholder="Ingrese antigüedad"
-              aria-label="Username"
-              aria-describedby="basic-addon1"
-            />
-          </div>
-        </div>
-        <div className="card-footer text-muted">
-          {editar ? (
-            <div>
-              <button className="btn btn-warning m-2" onClick={update}>
-                Actualizar
-              </button>
-              <button className="btn btn-info m-2" onClick={limpiarCampos}>
-                Cancelar
-              </button>
-            </div>
-          ) : (
-            <button className="btn btn-success" onClick={add}>
-              Registrar
-            </button>
-          )}
-        </div>
-      </div>
-
-      <table className="table table-striped">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Nombre</th>
-            <th scope="col">Edad</th>
-            <th scope="col">País</th>
-            <th scope="col">Cargo</th>
-            <th scope="col">Años</th>
-          </tr>
-        </thead>
-        <tbody>
-          {empleadosList.map((val, key) => {
-            return (
-              <tr key={val.id}>
-                <th scope="row">{val.id}</th>
-                <td>{val.nombre}</td>
-                <td>{val.edad}</td>
-                <td>{val.pais}</td>
-                <td>{val.cargo}</td>
-                <td>{val.anios}</td>
-                <td>
-                  <div
-                    className="btn-group"
-                    role="group"
-                    aria-label="Basic example"
-                  >
-                    <button
-                      type="button"
-                      onClick={() => {
-                        editarEmpleado(val);
-                      }}
-                      className="btn btn-info"
-                    >
-                      Editar
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        deleteEmpleado(val);
-                      }}
-                      className="btn btn-danger"
-                    >
-                      Eliminar
-                    </button>
-                  </div>
-                </td>
+          <table className="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Edad</th>
+                <th scope="col">País</th>
+                <th scope="col">Cargo</th>
+                <th scope="col">Años</th>
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
+            </thead>
+            <tbody>
+              {empleadosList.map((val, key) => {
+                return (
+                  <tr key={val.id}>
+                    <th scope="row">{val.id}</th>
+                    <td>{val.nombre}</td>
+                    <td>{val.edad}</td>
+                    <td>{val.pais}</td>
+                    <td>{val.cargo}</td>
+                    <td>{val.anios}</td>
+                    <td>
+                      <div
+                        className="btn-group"
+                        role="group"
+                        aria-label="Basic example"
+                      >
+                        <button
+                          type="button"
+                          onClick={() => {
+                            editarEmpleado(val);
+                          }}
+                          className="btn btn-info"
+                        >
+                          Editar
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            deleteEmpleado(val);
+                          }}
+                          className="btn btn-danger"
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 };
