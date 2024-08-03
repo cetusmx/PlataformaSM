@@ -17,10 +17,12 @@ export const Cotizador = () => {
   const [familiasSelect, setFamiliasselect] = useState();
   const [sucursal, setSucursal] = useState();
 
-  const [margen, setMargen] = useState();
+  const [margen, setMargen] = useState(0.0);
 
   const calculaPrecio = () => {
-    getMargen();
+    const m = getMargen();
+    /* console.log(m);
+    console.log("MArgen desde el set: " + margen);
     const margenFormateado = parseFloat(1.0 - margen);
     console.log("Margen formateado " + margenFormateado);
     const costoFormateado = parseFloat(costo);
@@ -29,21 +31,28 @@ export const Cotizador = () => {
 
     let convertedPrecioToString = String(precioFormateado);
     console.log(convertedPrecioToString);
-    setPrecio(precioFormateado);
+    setPrecio(precioFormateado); */
 
     let labelElement = document.getElementById("sucu");
     labelElement.innerText = "Durango";
   };
 
-  const getMargen = () => {
+  let getMargen = () => {
     Axios.get(`https://servcotiza.onrender.com/getmargen`, {
       params: {
         familia: familia,
         sucursal: sucursal,
       },
     }).then((response) => {
+      //const m = response.data[0].margen;
       setMargen(response.data[0].margen);
       console.log("Margen dentro Axios: " + response.data[0].margen);
+      const margenFormateado = parseFloat(1.0 - response.data[0].margen);
+      const costoFormateado = parseFloat(costo);
+      const precioFormateado = Math.ceil(costoFormateado / margenFormateado);
+      let convertedPrecioToString = String(precioFormateado);
+    console.log("Precio: " + convertedPrecioToString);
+    setPrecio(precioFormateado);
     });
   };
 
