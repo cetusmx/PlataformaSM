@@ -21,18 +21,7 @@ export const Cotizador = () => {
 
   const calculaPrecio = () => {
     const m = getMargen();
-    /* console.log(m);
-    console.log("MArgen desde el set: " + margen);
-    const margenFormateado = parseFloat(1.0 - margen);
-    console.log("Margen formateado " + margenFormateado);
-    const costoFormateado = parseFloat(costo);
-    console.log("Costo formateado " + costoFormateado);
-    const precioFormateado = Math.ceil(costoFormateado / margenFormateado);
-
-    let convertedPrecioToString = String(precioFormateado);
-    console.log(convertedPrecioToString);
-    setPrecio(precioFormateado); */
-
+    
     let labelElement = document.getElementById("sucu");
     labelElement.innerText = "Durango";
   };
@@ -44,7 +33,6 @@ export const Cotizador = () => {
         sucursal: sucursal,
       },
     }).then((response) => {
-      //const m = response.data[0].margen;
       setMargen(response.data[0].margen);
       console.log("Margen dentro Axios: " + response.data[0].margen);
       const margenFormateado = parseFloat(1.0 - response.data[0].margen);
@@ -61,11 +49,11 @@ export const Cotizador = () => {
       setFamiliasselect(response.data);
       response.data.map((opcion) => {
         var option = document.createElement("option");
-        option.text = opcion.familia;
-        option.value = opcion.familia;
+          option.text = opcion.familia;
+          option.value = opcion.familia;
         var select = document.getElementById("familiasSelect");
-        select.append(option);
-        return console.log(opcion.familia);
+          select.append(option);
+        //return console.log(opcion.familia);
       });
     });
   };
