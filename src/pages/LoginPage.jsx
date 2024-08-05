@@ -14,20 +14,41 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useState } from "react";
 import logo from "../assets/log3.jpg";
+import { useFirebaseApp } from "reactfire";
+import {getAuth, signInWithEmailAndPassword } from 'firebase/auth'
+import { useNavigate } from "react-router-dom";
 
 export const LoginPage = () => {
+
   const [correo, setCorreo] = useState();
   const [pass, setPass] = useState();
 
+  const navigate = useNavigate();
+
   const validarUsuario = () => {
+
+    const auth = getAuth();
+
+    signInWithEmailAndPassword(auth, correo,pass)
+    .then((userCredential)=>{
+      console.log(userCredential.user);
+      navigate("/cotizador");
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(errorCode);
+      console.log(errorMessage);
+    })
     console.log(correo);
     console.log(pass);
+    console.log("El botón fue oprimido");
   };
 
   return (
-    <div class="row">
-      <div class="col-2"></div>
-      <div class="col-8">
+    <div className="row">
+      <div className="col-2"></div>
+      <div className="col-8">
         <MDBContainer className="my-5">
           <MDBCard>
             <MDBRow className="g-0">
@@ -51,7 +72,7 @@ export const LoginPage = () => {
                     />
                     <span className="h1 fw-bold mb-0">
                       <MDBCardImage
-                        src="https://scontent.fdgo1-1.fna.fbcdn.net/v/t39.30808-6/301869389_548403897073267_7724377148803879278_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeE_xGdNQincKQ75ENvV9ALc5ew82G6WlN3l7DzYbpaU3eBj9G09qyS3CEAogb8wDP1bemQ2oJejHgyIZwH3SbIW&_nc_ohc=P_J1c_0mrHsQ7kNvgFl7rD9&_nc_ht=scontent.fdgo1-1.fna&oh=00_AYDckewRDSuWONGlddN8_GqLRYRyswP_VyYoQBTVwmvJ7g&oe=669D3365"
+                        //src="https://scontent.fdgo1-1.fna.fbcdn.net/v/t39.30808-6/301869389_548403897073267_7724377148803879278_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeE_xGdNQincKQ75ENvV9ALc5ew82G6WlN3l7DzYbpaU3eBj9G09qyS3CEAogb8wDP1bemQ2oJejHgyIZwH3SbIW&_nc_ohc=P_J1c_0mrHsQ7kNvgFl7rD9&_nc_ht=scontent.fdgo1-1.fna&oh=00_AYDckewRDSuWONGlddN8_GqLRYRyswP_VyYoQBTVwmvJ7g&oe=669D3365"
                         alt="login form"
                         className="rounded-start w-50"
                       />
@@ -71,7 +92,7 @@ export const LoginPage = () => {
                   }}
                     wrapperClass="mb-4"
                     label="Correo electrónico"
-                    id="formControlLg"
+                    id="formControlEMail"
                     type="email"
                     size="lg"
                   />
@@ -81,7 +102,7 @@ export const LoginPage = () => {
                   }}
                     wrapperClass="mb-4"
                     label="Contraseña"
-                    id="formControlLg"
+                    id="formControlPW"
                     type="password"
                     size="lg"
                   />
@@ -111,7 +132,7 @@ export const LoginPage = () => {
           </MDBCard>
         </MDBContainer>
       </div>
-      <div class="col-2"></div>
+      <div className="col-2"></div>
     </div>
   );
 };

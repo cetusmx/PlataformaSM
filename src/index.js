@@ -2,15 +2,21 @@
 //export * from './pages/HomePage';
 //export * from './pages/LoginPage';
 //export * from './pages/RegisterPage';
-import React from 'react';
+import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import firebaseConfig from './firebase-config';
+import { FirebaseAppProvider } from 'reactfire'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <FirebaseAppProvider firebaseConfig={firebaseConfig}>
+      <Suspense fallback={'Conectando app...'}>
+        <App />
+      </Suspense>
+    </FirebaseAppProvider>
   </React.StrictMode>
 );
 

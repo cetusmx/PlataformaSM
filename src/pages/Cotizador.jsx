@@ -21,7 +21,7 @@ export const Cotizador = () => {
 
   const calculaPrecio = () => {
     const m = getMargen();
-    
+
     let labelElement = document.getElementById("sucu");
     labelElement.innerText = "Durango";
   };
@@ -39,23 +39,25 @@ export const Cotizador = () => {
       const costoFormateado = parseFloat(costo);
       const precioFormateado = Math.ceil(costoFormateado / margenFormateado);
       let convertedPrecioToString = String(precioFormateado);
-    console.log("Precio: " + convertedPrecioToString);
-    setPrecio(precioFormateado);
+      console.log("Precio: " + convertedPrecioToString);
+      setPrecio(precioFormateado);
     });
   };
 
   const populateFamiliaSelect = () => {
-    Axios.get("https://servcotiza.onrender.com/getfamilias").then((response) => {
-      setFamiliasselect(response.data);
-      response.data.map((opcion) => {
-        var option = document.createElement("option");
+    Axios.get("https://servcotiza.onrender.com/getfamilias").then(
+      (response) => {
+        setFamiliasselect(response.data);
+        response.data.map((opcion) => {
+          var option = document.createElement("option");
           option.text = opcion.familia;
           option.value = opcion.familia;
-        var select = document.getElementById("familiasSelect");
+          var select = document.getElementById("familiasSelect");
           select.append(option);
-        //return console.log(opcion.familia);
-      });
-    });
+          //return console.log(opcion.familia);
+        });
+      }
+    );
   };
 
   return (
@@ -91,6 +93,7 @@ export const Cotizador = () => {
               />
               <label className="mt-3 mb-2">Familia</label>
               <select
+                defaultValue={"DEFAULT"}
                 id="familiasSelect"
                 value={familia}
                 onChange={(event) => {
@@ -98,8 +101,9 @@ export const Cotizador = () => {
                 }}
                 className="form-select"
               >
-                <option selected>-- Seleccionar familia --</option>
-                
+                <option value="DEFAULT" disabled>
+                  -- Seleccionar familia --
+                </option>
               </select>
             </Card.Body>
             <Card.Footer

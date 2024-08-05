@@ -1,18 +1,34 @@
 import "./Nav.css";
 import "../index.css";
-
+import { getAuth, signOut } from "firebase/auth";
 
 export const Nav = () => {
+  const logout = () => {
+    const auth = getAuth();
+    signOut(auth)
+      .then(() => {
+        // Sign-out successful.
+      })
+      .catch((error) => {
+        // An error happened.
+      });
+  };
   return (
-    <header className="header">
-      <a href="/" className="logo">Seal Market</a>
+    <div className="container mt-3">
+      <header className="header">
+        <a href="/" className="logo">
+          Seal Market
+        </a>
 
-      <nav className="navbar">
-        <a href="/">Home</a>
-        <a href="/crud">Formulario</a>
-        <a href="/cotizador">Cotizador</a>
-        <a href="/login">Login</a>
-      </nav>
-    </header>
+        <nav className="navbar">
+          <a href="/">Home</a>
+          <a href="/crud">Formulario</a>
+          <a href="/cotizador">Cotizador</a>
+          <a onClick={logout} href="##">
+            Login
+          </a>
+        </nav>
+      </header>
+    </div>
   );
 };
