@@ -25,7 +25,7 @@ export const Nav = () => {
           <a href="/crud">Formulario</a>
           <a href="/cotizador">Cotizador</a>
           <a onClick={logout} href="##">
-            Login
+            Salir
           </a>
         </nav>
       </header>
