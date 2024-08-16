@@ -11,7 +11,6 @@ import {
   MDBInput,
 } from "mdb-react-ui-kit";
 
-import "bootstrap/dist/css/bootstrap.min.css";
 import { useState } from "react";
 import logo from "../assets/log3.jpg";
 import { useFirebaseApp } from "reactfire";

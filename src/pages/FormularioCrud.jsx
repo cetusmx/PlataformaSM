@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Axios from "axios";
-import "bootstrap/dist/css/bootstrap.min.css";
+//import "bootstrap/dist/css/bootstrap.min.css";
 
 import Swal from "sweetalert2";
 import { Nav } from "../components/Nav";
