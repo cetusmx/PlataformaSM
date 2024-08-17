@@ -3,9 +3,11 @@ import Axios from "axios";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { show_alerta } from "../functions";
+import { Nav } from "../components/Nav";
 
 export const Editamars = () => {
-  const url = "https://servcotiza.onrender.com/actualiza";
+  //const url = "https://servcotiza.onrender.com/actualiza";
+  const url = "http://localhost:3001/actualiza";
   const [family, setFamily] = useState("");
   const [margenes, setMargenes] = useState([]);
   const [margenesPivote, setMargenesPivote] = useState([]);
@@ -29,15 +31,32 @@ export const Editamars = () => {
   }, []);
 
   const getMargenes = () => {
-    Axios.get("https://servcotiza.onrender.com/margenes").then((response) => {
+    Axios.get("http://localhost:3001/margenes").then((response) => {
       setMargenes(response.data);
-      //console.log(response.data);
-      const hashMap = hashMapp();
+      let hashMap = new Map();
+      response.data.map((val) => {
+        if (!hashMap.has(val.familia)) {
+          let arr = [val.sucursal + "-" + val.margen];
+          hashMap.set(val.familia, arr);
+        } else {
+          let arre = hashMap.get(val.familia);
+          arre.push(val.sucursal + "-" + val.margen);
+          hashMap.set(val.familia, arre);
+        }
+        /* fin conversion hashmap */
+        return hashMap;
+      });
+
+      /* console.log("Contenido hashMap ");
+      hashMap.forEach((value,key)=>{
+        console.log(key+"->"+value);
+      }); */
 
       let arreglo = new Array([]);
 
       hashMap.forEach((value, key) => {
         let family = { familia: key };
+
         value.forEach((numero) => {
           //sucursales con margen
           if (typeof numero === "string") {
@@ -71,26 +90,10 @@ export const Editamars = () => {
           arreglo.push(family);
         }
       });
-      let shifted = arreglo.shift();
-      console.log(arreglo);
+      arreglo.shift();
+      //console.log(arreglo);
       setMargenesPivote(arreglo);
     });
-  };
-
-  const hashMapp = () => {
-    let hashMap = new Map();
-    margenes.map((val) => {
-      if (!hashMap.has(val.familia)) {
-        let arr = [val.sucursal + "-" + val.margen];
-        hashMap.set(val.familia, arr);
-      } else {
-        let arre = hashMap.get(val.familia);
-        arre.push(val.sucursal + "-" + val.margen);
-        hashMap.set(val.familia, arre);
-      }
-    });
-    //console.log(hashMap);
-    return hashMap;
   };
 
   const openModal = (op, familia, dur, fres, maza, zaca, tecm) => {
@@ -141,23 +144,24 @@ export const Editamars = () => {
     } else {
       if (operation === 1) {
         let cambiaron = new Array([]);
-        if(margenDurango!==margenDurangoOld){
+        if (margenDurango !== margenDurangoOld) {
           cambiaron.push("Durango");
         }
-        if(margenFresnillo!==margenFresnilloOld){
+        if (margenFresnillo !== margenFresnilloOld) {
           cambiaron.push("Fresnillo");
         }
-        if(margenMazatlan!==margenMazatlanOld){
+        if (margenMazatlan !== margenMazatlanOld) {
           cambiaron.push("Mazatlán");
         }
-        if(margenZacatecas!==margenZacatecasOld){
+        if (margenZacatecas !== margenZacatecasOld) {
           cambiaron.push("Zacatecas");
         }
-        if(margenTecmin!==margenTecminOld){
-          cambiaron.push("Tecmin")
+        if (margenTecmin !== margenTecminOld) {
+          cambiaron.push("Tecmin");
         }
         cambiaron.shift();
-        console.log(cambiaron);
+
+        //console.log(cambiaron);
 
         parametros = {
           fa: family.trim(),
@@ -171,6 +175,8 @@ export const Editamars = () => {
         metodo = "PUT";
       }
       enviarSolicitud(metodo, parametros);
+      document.getElementById("btnCerrar").click();
+      getMargenes();
     }
   };
 
@@ -179,14 +185,14 @@ export const Editamars = () => {
       .then(function (respuesta) {
         var tipo = respuesta.status;
         console.log(tipo);
-        if (tipo === 200){
+        if (tipo === 200) {
           show_alerta("Actualizado exitósamente", "success");
-        }else{
+        } else {
           show_alerta("Hubo un problema", "error");
         }
         //console.log(tipo);
         //var msj = respuesta.data[1];
-        
+
         if (tipo === 200) {
           document.getElementById("btnCerrar").click();
           getMargenes();
@@ -198,31 +204,15 @@ export const Editamars = () => {
         //console.log(error);
       });
   };
- 
-    
+
   return (
     <>
+      <div className="row">
+        <div className="col">
+          <Nav />
+        </div>
+      </div>
       <div className="container-fluid">
-        {/* <div className="row mt-3">
-          <button
-            onClick={() =>
-              openModal(
-                1,
-                margenes.familia,
-                margenes.Durango,
-                margenes.Fresnillo,
-                margenes.Mazatlán,
-                margenes.Zacatecas,
-                margenes.Tecmin
-              )
-            }
-            className="btn btn-warning"
-            data-bs-toggle="modal"
-            data-bs-taget="#modalEdicion"
-          >
-            <i className="fa-solid fa-edit"></i>
-          </button>
-        </div> */}
         <div className="row mt-3">
           <div className="col-12 col-lg-8 offset-0 offset-lg-2">
             <div className="table-responsive">
@@ -296,7 +286,7 @@ export const Editamars = () => {
                 </div>
               </div>
             </div>
-    
+
             <div className="modal-body">
               <input type="hidden" id="id"></input>
               <div className="input-group mb-3">

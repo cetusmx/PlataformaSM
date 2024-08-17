@@ -24,6 +24,7 @@ export const Nav = () => {
           <a href="/">Home</a>
           <a href="/crud">Formulario</a>
           <a href="/cotizador">Cotizador</a>
+          <a href="/editamar">Editar Márgenes</a>
           <a onClick={logout} href="##">
             Salir
           </a>
