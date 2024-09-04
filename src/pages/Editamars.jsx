@@ -6,8 +6,8 @@ import { show_alerta } from "../functions";
 import { Nav } from "../components/Nav";
 
 export const Editamars = () => {
-  //const url = "https://servcotiza.onrender.com/actualiza";
-  const url = "http://localhost:3001/actualiza";
+  const url = "https://servcotiza.onrender.com/actualiza";
+  //const url = "http://localhost:3001/actualiza";
   const [family, setFamily] = useState("");
   const [margenes, setMargenes] = useState([]);
   const [margenesPivote, setMargenesPivote] = useState([]);
@@ -31,7 +31,7 @@ export const Editamars = () => {
   }, []);
 
   const getMargenes = () => {
-    Axios.get("http://localhost:3001/margenes").then((response) => {
+    Axios.get("https://servcotiza.onrender.com/margenes").then((response) => {
       setMargenes(response.data);
       let hashMap = new Map();
       response.data.map((val) => {
@@ -161,8 +161,6 @@ export const Editamars = () => {
         }
         cambiaron.shift();
 
-        //console.log(cambiaron);
-
         parametros = {
           fa: family.trim(),
           du: margenDurango.trim(),
@@ -190,9 +188,7 @@ export const Editamars = () => {
         } else {
           show_alerta("Hubo un problema", "error");
         }
-        //console.log(tipo);
-        //var msj = respuesta.data[1];
-
+        
         if (tipo === 200) {
           document.getElementById("btnCerrar").click();
           getMargenes();
@@ -214,7 +210,7 @@ export const Editamars = () => {
       </div>
       <div className="container-fluid">
         <div className="row mt-3">
-          <div className="col-12 col-lg-8 offset-0 offset-lg-2">
+          <div className="col-12 col-lg-10 offset-0 offset-lg-1">
             <div className="table-responsive">
               <table className="table table-bordered">
                 <thead>

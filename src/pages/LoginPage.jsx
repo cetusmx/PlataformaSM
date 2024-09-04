@@ -13,36 +13,38 @@ import {
 
 import { useState } from "react";
 import logo from "../assets/log3.jpg";
-import { useFirebaseApp } from "reactfire";
-import {getAuth, signInWithEmailAndPassword } from 'firebase/auth'
+import firebaseApp from "../firebase/credenciales";
+import {
+  getAuth,
+  signInWithEmailAndPassword
+} from "firebase/auth";
+
 import { useNavigate } from "react-router-dom";
 
-export const LoginPage = () => {
+const auth = getAuth(firebaseApp);
 
+export const LoginPage = () => {
   const [correo, setCorreo] = useState();
   const [pass, setPass] = useState();
 
   const navigate = useNavigate();
 
-  const validarUsuario = () => {
+  function submitHandler(e) {
+    e.preventDefault();
+    
+      signInWithEmailAndPassword(auth, correo, pass)
+        .then((userCredential) => {
+          console.log(userCredential.user);
 
-    const auth = getAuth();
-
-    signInWithEmailAndPassword(auth, correo,pass)
-    .then((userCredential)=>{
-      console.log(userCredential.user);
-      navigate("/cotizador");
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(errorCode);
-      console.log(errorMessage);
-    })
-    console.log(correo);
-    console.log(pass);
-    console.log("El botón fue oprimido");
-  };
+          navigate("/cotizador");
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log(errorCode);
+          console.log(errorMessage);
+        });
+  }
 
   return (
     <div className="row">
@@ -53,12 +55,11 @@ export const LoginPage = () => {
             <MDBRow className="g-0">
               <MDBCol md="6">
                 <MDBCardImage
-                src={logo}
-                //src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/img1.webp"
+                  src={logo}
+                  //src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/img1.webp"
                   alt="login form"
                   className="rounded-start w-100"
                 />
-                
               </MDBCol>
 
               <MDBCol md="6">
@@ -86,28 +87,30 @@ export const LoginPage = () => {
                   </h5>
 
                   <MDBInput
-                  onChange={(event) => {
-                    setCorreo(event.target.value);
-                  }}
+                    onChange={(event) => {
+                      setCorreo(event.target.value);
+                    }}
                     wrapperClass="mb-4"
                     label="Correo electrónico"
-                    id="formControlEMail"
+                    id="email"
+                    //id="formControlEMail"
                     type="email"
                     size="lg"
                   />
                   <MDBInput
-                  onChange={(event) => {
-                    setPass(event.target.value);
-                  }}
+                    onChange={(event) => {
+                      setPass(event.target.value);
+                    }}
                     wrapperClass="mb-4"
                     label="Contraseña"
-                    id="formControlPW"
+                    id="password"
+                    //id="formControlPW"
                     type="password"
                     size="lg"
                   />
 
                   <MDBBtn
-                    onClick={validarUsuario}
+                    onClick={submitHandler}
                     className="mb-4 px-5"
                     color="dark"
                     size="lg"
