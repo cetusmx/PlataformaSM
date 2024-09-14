@@ -11,10 +11,15 @@ export const HomePage = ({user}) => {
     <>
       <Nav />
       <div>HomePage</div>
+      {
+      user.rol === "admin" 
+      ? "Vista de Administrador  Rol: " +user.rol+ " Correo: "+ user.email +" Sucursal: " + user.sucursal 
+      : user.rol === "soporte1" 
+        ? "Vista de Soporte1  Rol: " +user.rol+ " Correo: "+ user.email +" Sucursal: " + user.sucursal 
+        : "Vista de user1"}
+      <div>
       <button onClick={()=> signOut(auth)}>Cerrar Sesión</button>
-
-      {user.rol === "admin" ? "Vista de Administrador: " + user.email : "Vista de usuario"}
-      
+      </div>
     </>
   );
 };

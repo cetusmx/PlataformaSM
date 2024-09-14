@@ -1,10 +1,25 @@
+import React, { useContext } from "react";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
-import { Nav } from "../components/Nav";
 import { useState, useEffect } from "react";
 import Axios from "axios";
+import "../styles/cotizador.css";
 
-export const Cotizador = () => {
+import { DataContext } from "../contexts/dataContext";
+
+const Cotizador = () => {
+
+  const { valor, valor2 } = useContext(DataContext);
+  const { contextData, setContextData } = valor;
+  const {contextsideBarNav, setContextSidebarNav} = valor2;
+  /* console.log("AppAdmin: " + contextData.uid);
+  console.log("AppAdmin=> navegacion: " + contextsideBarNav.page); */
+
+
+  //const { contextData, setContextData } = valor;
+  const infoUsuario = contextData;
+  console.log("Corrmail: " + infoUsuario.email);
+
   useEffect(() => {
     // Agrega opciones al Select cuando carga la página por primera vez
     populateFamiliaSelect();
@@ -22,8 +37,8 @@ export const Cotizador = () => {
   const calculaPrecio = () => {
     const m = getMargen();
 
-    let labelElement = document.getElementById("sucu");
-    labelElement.innerText = "Durango";
+    /* let labelElement = document.getElementById("sucu");
+    labelElement.innerText = "Durango"; */
   };
 
   let getMargen = () => {
@@ -64,11 +79,6 @@ export const Cotizador = () => {
     <>
       <div className="row">
         <div className="col">
-          <Nav />
-        </div>
-      </div>
-      <div className="row">
-        <div className="col">
           <br />
         </div>
       </div>
@@ -76,14 +86,17 @@ export const Cotizador = () => {
         <div className="col">
           <Card className="text-center">
             <Card.Header style={{ backgroundColor: "#D6DBDF" }}>
-              <h2>Cotizador</h2>
+              <div className="encab">
+                {/* <BiCalculator className="icono" /> */}
+                Calcular
+              </div>
             </Card.Header>
             <Card.Body>
               <label className="mb-2">Ingresa Costo</label>
               <input
                 onChange={(event) => {
                   setCosto(event.target.value);
-                  setSucursal("Durango");
+                  setSucursal(infoUsuario.sucursal);
                 }}
                 type="text"
                 className="form-control pxt-5"
@@ -119,7 +132,10 @@ export const Cotizador = () => {
         <div className="col">
           <Card className="text-center">
             <Card.Header style={{ backgroundColor: "#D6DBDF" }}>
-              <h2>Resultado</h2>
+            <div className="encab">
+                {/* <BiCalculator className="icono" /> */}
+                Resultado
+              </div>
             </Card.Header>
             <Card.Body>
               <label className="mb-2">Precio de venta</label>
@@ -148,7 +164,7 @@ export const Cotizador = () => {
               style={{ backgroundColor: "#D6DBDF" }}
             >
               <h3>
-                <label id="sucu"></label>
+                <label id="sucu">{infoUsuario.sucursal}</label>
               </h3>
             </Card.Footer>
           </Card>
@@ -157,3 +173,4 @@ export const Cotizador = () => {
     </>
   );
 };
+export default Cotizador;

@@ -72,6 +72,7 @@ export const Login = () => {
                     <select id='rol'>
                         <option value="admin">Administrador</option>
                         <option value="user">Usuario</option>
+                        <option value="soporte1">Soporte1</option>
                     </select>
                 </label>
 

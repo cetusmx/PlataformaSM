@@ -1,0 +1,14 @@
+.icono{
+    font-size: 1.8rem;
+
+}
+.encab{
+    text-align: center;
+    padding: 0x;
+    color: #27374d;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    gap: 10px;
+    font-size: 1.5rem;
+}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   MDBBtn,
   MDBContainer,
@@ -19,24 +19,24 @@ import {
   signInWithEmailAndPassword
 } from "firebase/auth";
 
-import { useNavigate } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { DataContext } from "../contexts/dataContext";
 
 const auth = getAuth(firebaseApp);
 
-export const LoginPage = () => {
+const LoginPage = () => {
   const [correo, setCorreo] = useState();
   const [pass, setPass] = useState();
 
-  const navigate = useNavigate();
+  const {contextData, setContextData} = useContext(DataContext);
 
   function submitHandler(e) {
     e.preventDefault();
     
       signInWithEmailAndPassword(auth, correo, pass)
         .then((userCredential) => {
-          console.log(userCredential.user);
-
-          navigate("/cotizador");
+          //console.log(userCredential.user);
+          setContextData(userCredential);
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -138,3 +138,5 @@ export const LoginPage = () => {
     </div>
   );
 };
+
+export default LoginPage;

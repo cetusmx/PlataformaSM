@@ -1,16 +1,21 @@
-import React, { useState } from "react";
-import { LoginPage } from "./pages/LoginPage";
-//import { Login } from "./pages/Login";
-import { HomePage } from "./pages/HomePage";
+import React, { useState, useContext } from "react";
+import "./App.css";
+import { DataContext } from "./contexts/dataContext";
 
 import firebaseApp from "./firebase/credenciales";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import {getFirestore, doc, getDoc} from "firebase/firestore";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
+import AppAdmin from "./AppAdmin";
+import LoginPage from "./pages/LoginPage";
 
 const auth = getAuth(firebaseApp); //pasamos nuestras credenciales
 
-function App(){
-    const [user, setUser]=useState(null);
+function App() {
+    const { valor, valor2 } = useContext(DataContext);
+    const { contextData, setContextData } = valor;
+    const {contextsideBarNav, setContextSidebarNav} = valor2;
+
+    const [usuario, setUser] = useState(null);
     const firestore = getFirestore(firebaseApp);
 
     async function getRol(uid) {
@@ -19,33 +24,45 @@ function App(){
         return docuCifrada.data();
     }
 
-function setUserWithFirebaseAndRol(usuarioFirebase){
-    getRol(usuarioFirebase.uid).then((docSnap) => {
-        const userData = {
-            uid: usuarioFirebase.uid,
-            email: usuarioFirebase.email,
-            rol: docSnap.rol,
-            sucursal: docSnap.sucursal
-        };
-        setUser(userData);
-        console.log("userData final", userData);
-    });
-}
+    function setUserWithFirebaseAndRol(usuarioFirebase) {
+        getRol(usuarioFirebase.uid).then((docSnap) => {
+            const userData = {
+                uid: usuarioFirebase.uid,
+                email: usuarioFirebase.email,
+                rol: docSnap.rol,
+                sucursal: docSnap.sucursal
+            };
+            setUser(userData);
+            setContextData(userData);
+            setContextSidebarNav("Inicio");
+            //console.log("App => setContextData ", {contextData});
+            //console.log("App => userData final ", userData);
+        });
+    }
 
-    onAuthStateChanged(auth, (usuarioFirebase)=>{
+    onAuthStateChanged(auth, (usuarioFirebase) => {
 
-        if(usuarioFirebase){
+        if (usuarioFirebase) {
 
-            if(!user){
+            if (!usuario) {
                 setUserWithFirebaseAndRol(usuarioFirebase);
+                //console.log(usuario);
             }
-            
-        }else{
+
+        } else {
             setUser(null);
         }
     });
 
-    return <>{user ? <HomePage user={user} /> : <LoginPage />}</>
-}
+    return (<>
+    {/* console.log("App=> " + {contextData}) */}
+        {
+            (usuario)
+                ? <AppAdmin usuari={usuario} />
+                : <LoginPage />
+        }
 
+        
+    </>)
+}
 export default App;
