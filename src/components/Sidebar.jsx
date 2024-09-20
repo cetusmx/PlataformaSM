@@ -28,11 +28,6 @@ const Sidebar = () => {
       });
   };
 
-  const cambiaNav = (e) => {
-    console.log(e);
-    setContextSidebarNav(e);
-  }
-
   return (
     <div className="menu">
       <div className="logo">
@@ -41,15 +36,15 @@ const Sidebar = () => {
       </div>
 
       <div className="menu--list">
-        <Link to="cotizador" className="item" onClick={cambiaNav("Cotizador")}>
+        <Link to="cotizador" className="item" onClick={()=>{setContextSidebarNav("Cotizador")}}>
           <BiCalculator className="icon" />
           Cotizador
         </Link>
-        <Link to="precios" className="item" onClick={cambiaNav("Precios")}>
+        <Link to="precios" className="item" onClick={()=>{setContextSidebarNav("Precios")}}>
           <BiDollar className="icon" />
           Precios
         </Link>
-        <Link to="admin" className="item" onClick={cambiaNav("Configuración")}>
+        <Link to="admin" className="item" onClick={()=>{setContextSidebarNav("Configuración")}}>
           <BiCog className="icon" />
           Configuración
         </Link>

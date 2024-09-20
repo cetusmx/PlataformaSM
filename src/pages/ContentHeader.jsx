@@ -10,8 +10,9 @@ const ContentHeader = () => {
   console.log("AppAdmin=> navegacion: " + contextsideBarNav.page); */
 
   const infoUsuario = contextData;
-  console.log("ContentHeader=> " + {contextData});
-  console.log("ContentHeader=> infoUsuario " + infoUsuario);
+  //console.log("ContentHeader=> " + contextData.rol);
+  //console.log("ContentHeader=> infoUsuario " + infoUsuario.sucursal);
+  console.log("ContentHeader=> contextsideBarNav " + contextsideBarNav);
 
   const nombre = () => {
     const correoUser = infoUsuario.email;

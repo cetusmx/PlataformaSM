@@ -10,7 +10,11 @@ const AppAdmin = ({usuari}) => {
   const { valor, valor2 } = useContext(DataContext);
   const { contextData, setContextData } = valor;
   const {contextsideBarNav, setContextSidebarNav} = valor2;
+
   console.log("AppAdmin: " + contextData.uid);
+  console.log("AppAdmin: " + contextData.email);
+  console.log("AppAdmin: " + contextData.rol);
+  console.log("AppAdmin: " + contextData.sucursal);
   //console.log("AppAdmin=> navegacion: " + contextsideBarNav.page);
   console.log("AppAdmin=> navegacion1: " + contextsideBarNav);
 

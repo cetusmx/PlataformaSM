@@ -1,22 +1,14 @@
-import React, { useContext } from "react";
 import ContentHeader from "./ContentHeader";
 import "../styles/content.css";
-import { DataContext } from "../contexts/dataContext";
+//import { DataContext } from "../contexts/dataContext";
 import Cotizador from "./Cotizador";
 import { Routes, Route } from "react-router-dom";
 import Configuracion from "./Configuracion";
-import Precios from "./Precios";
 import Inicio from "./Inicio";
+import Remision from "./Remision";
 
 const ContentAdmin = () => {
   
-  const { valor, valor2 } = useContext(DataContext);
-  const { contextData, setContextData } = valor;
-  const {contextsideBarNav, setContextSidebarNav} = valor2;
-  /* console.log("AppAdmin: " + contextData.uid);
-  console.log("AppAdmin=> navegacion: " + contextsideBarNav.page); */
-
-
   return (
     <div className="content">
       <ContentHeader />
@@ -26,7 +18,7 @@ const ContentAdmin = () => {
             <Route path="/" element={<Inicio />} />
             <Route path="cotizador" element={<Cotizador />} />
             <Route path="admin" element={<Configuracion />} />
-            <Route path="precios" element={<Precios />} />
+            <Route path="precios" element={<Remision />} />
         </Routes>
       </div>
     </div>

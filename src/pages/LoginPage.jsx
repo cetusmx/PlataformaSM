@@ -28,7 +28,8 @@ const LoginPage = () => {
   const [correo, setCorreo] = useState();
   const [pass, setPass] = useState();
 
-  const {contextData, setContextData} = useContext(DataContext);
+  const { valor, valor2 } = useContext(DataContext);
+  const { contextData, setContextData } = valor;
 
   function submitHandler(e) {
     e.preventDefault();

@@ -1,0 +1,65 @@
+.preciosDiv{
+    padding-top: 15px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    margin-left: 10%;
+}
+
+.posicion{
+    position: relative;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+}
+.tablaRemision{
+    /* z-index: 0; */
+    padding-top: 7px;
+    top: 110px;
+    position: absolute;
+    /* background-color: aquamarine; */
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.tablaRemision:empty{
+    height: 50vh;
+}
+.dropdown{
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #dde6ed;
+    position: inherit;
+    z-index: 30;
+    border-bottom-left-radius: 7px;
+    border-bottom-right-radius: 7px;
+    padding-bottom: 5px;
+}
+
+.dropdown:empty{
+    border: none;
+}
+
+.dropdown-row{
+    cursor: pointer;
+    text-align: start;
+    margin: 2px 0;
+    position: inherit;
+    z-index: 30;
+}
+
+.icon{
+    color: #969393;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+    /* transform: scale(1.04); */
+}
+
+.subtotales{
+    text-align: right;
+    top: 350px;
+    position: relative;
+}

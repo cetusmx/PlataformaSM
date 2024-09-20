@@ -14,15 +14,16 @@ function App() {
     const { valor, valor2 } = useContext(DataContext);
     const { contextData, setContextData } = valor;
     const {contextsideBarNav, setContextSidebarNav} = valor2;
-
     const [usuario, setUser] = useState(null);
     const firestore = getFirestore(firebaseApp);
+
 
     async function getRol(uid) {
         const docuRef = doc(firestore, `usuarios/${uid}`);
         const docuCifrada = await getDoc(docuRef);
         return docuCifrada.data();
     }
+
 
     function setUserWithFirebaseAndRol(usuarioFirebase) {
         getRol(usuarioFirebase.uid).then((docSnap) => {
