@@ -3,7 +3,7 @@ import "../styles/content.css";
 //import { DataContext } from "../contexts/dataContext";
 import Cotizador from "./Cotizador";
 import { Routes, Route } from "react-router-dom";
-import Configuracion from "./Configuracion";
+import Editamars from "./Editamars";
 import Inicio from "./Inicio";
 import Remision from "./Remision";
 
@@ -17,7 +17,7 @@ const ContentAdmin = () => {
         <Routes>
             <Route path="/" element={<Inicio />} />
             <Route path="cotizador" element={<Cotizador />} />
-            <Route path="admin" element={<Configuracion />} />
+            <Route path="admin" element={<Editamars />} />
             <Route path="precios" element={<Remision />} />
         </Routes>
       </div>

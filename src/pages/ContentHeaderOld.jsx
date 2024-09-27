@@ -1,17 +1,17 @@
 import React, { useContext } from "react";
-import { BiNotification, BiSearch, BiMap, BiUser, BiCalendar } from "react-icons/bi";
+import { BiNotification, BiSearch, BiMap, BiUser } from "react-icons/bi";
 import { DataContext } from "../contexts/dataContext";
 
-const ContentHeader = () => {
+const ContentHeaderOld = () => {
   const { valor, valor2 } = useContext(DataContext);
   const { contextData, setContextData } = valor;
   const {contextsideBarNav, setContextSidebarNav} = valor2;
   /* console.log("AppAdmin: " + contextData.uid);
   console.log("AppAdmin=> navegacion: " + contextsideBarNav.page); */
-  const fecha = Date.now();
-  const hoy = new Date(fecha);
 
   const infoUsuario = contextData;
+  //console.log("ContentHeader=> " + contextData.rol);
+  //console.log("ContentHeader=> infoUsuario " + infoUsuario.sucursal);
   console.log("ContentHeader=> contextsideBarNav " + contextsideBarNav);
 
   const nombre = () => {
@@ -24,12 +24,14 @@ const ContentHeader = () => {
 
   return (
     <div className="content--header">
-      <div style={{alignItems:"center", fontSize: "1.4rem"}}>{contextsideBarNav}</div>
+      <h4 className="header--title">{contextsideBarNav}</h4>
       <div className="header--activity">
-
-        <div className="fecha">
-          <BiCalendar className="icon1" />
-          <div className="cont-fecha"><h7>{hoy.toLocaleDateString()}</h7></div>
+        <div className="search-box">
+          <input type="text" placeholder="Buscar" />
+          <BiSearch className="icon" />
+        </div>
+        <div className="notify">
+          <BiNotification className="icon" />
         </div>
         <div className="ubicacion">
           <BiMap className="icon1" />
@@ -44,4 +46,4 @@ const ContentHeader = () => {
   );
 };
 
-export default ContentHeader;
+export default ContentHeaderOld;

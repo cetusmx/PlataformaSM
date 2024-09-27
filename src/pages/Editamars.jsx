@@ -5,7 +5,7 @@ import withReactContent from "sweetalert2-react-content";
 import { show_alerta } from "../functions";
 import { Nav } from "../components/Nav";
 
-export const Editamars = () => {
+ const Editamars = () => {
   const url = "https://servcotiza.onrender.com/actualiza";
   //const url = "http://localhost:3001/actualiza";
   const [family, setFamily] = useState("");
@@ -204,10 +204,7 @@ export const Editamars = () => {
   return (
     <>
       <div className="row">
-        <div className="col">
-          <Nav />
         </div>
-      </div>
       <div className="container-fluid">
         <div className="row mt-3">
           <div className="col-12 col-lg-10 offset-0 offset-lg-1">
@@ -377,3 +374,5 @@ export const Editamars = () => {
     </>
   );
 };
+
+export default Editamars

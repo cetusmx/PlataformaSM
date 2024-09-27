@@ -1,30 +1,37 @@
 .preciosDiv{
-    padding-top: 15px;
+    padding-top: 7px;
     position: relative;
     display: flex;
     flex-direction: column;
-    margin-left: 10%;
+    margin-left: 15%;
+    width: 70%;
 }
 
-.posicion{
-    position: relative;
-    z-index: 20;
-    display: flex;
-    flex-direction: column;
-}
 .tablaRemision{
-    /* z-index: 0; */
-    padding-top: 7px;
-    top: 110px;
+    width: 100%;
+    border: 1px solid #dde6ed;
+    border-radius: 5px;
+    z-index: 0;
+    overflow-y: scroll;
+    font-size: 0.8rem;
+    min-height: 55vh;
+    max-height: 55vh;
+    padding-top: 10px;
+}
+
+.div--impresion{
+    margin-top: 17vh;
     position: absolute;
-    /* background-color: aquamarine; */
+    z-index: 0;
     width: 100%;
     display: flex;
     flex-direction: column;
+    /* flex: 1; */
 }
-
 .tablaRemision:empty{
-    height: 50vh;
+    min-height: 55vh;
+    /* background: green; */
+    padding: 10px;
 }
 .dropdown{
     background-color: white;
@@ -58,8 +65,67 @@
     /* transform: scale(1.04); */
 }
 
+.icon2:hover{
+    transform: scale(1.3);
+    cursor: pointer;
+}
+
 .subtotales{
-    text-align: right;
-    top: 350px;
+    padding: 15px 5vh 0 0;
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.buscador{
+    display: flex;
+    justify-content: space-around;
+    
+    font-size: 0.8rem;
+    padding: 5px 0 5px 0;
+    /* border-top: 2px solid #dde6ed; */
+   /*  border-bottom: 1px solid #dde6ed; */
     position: relative;
+    z-index: 20;
+}
+.col2{
+    flex: 2;
+}
+.col4{
+    flex: 4;
+}
+.spaceLeft{
+    padding: 0 2px 10px 0;
+}
+.spaceRight{
+    padding: 0 0 10px 15px;
+    margin-left: auto;
+}
+.spaceCenter{
+    padding: 0 2px 10px 2px;
+}
+
+.control-botones{
+    display: flex;
+    gap: 20px;
+    border-bottom: 2px solid #dde6ed;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 5px;
+}
+.control-botones .icon2{
+    color: #969393;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: 0.5s ease-in-out;
+
+}
+.borrar{
+    display: flex;
+    gap: 3px;
+    font-size: 0.9rem;
+}
+.imprimir{
+    display: flex;
+    gap: 3px;
+    font-size: 0.9rem;
 }
