@@ -6,6 +6,8 @@ import { BiEraser, BiPrinter, BiTrash } from "react-icons/bi";
 import {useReactToPrint} from 'react-to-print';
 
 const Remision = () => {
+
+  const url = "http://18.224.118.226:3001";
   const printRef = useRef();
 
   useEffect(() => {
@@ -36,7 +38,7 @@ const Remision = () => {
   })
 
   let getPrecios = () => {
-    Axios.get(`https://servcotiza.onrender.com/getprecios`, {
+    Axios.get(url + `/getprecios`, {
       params: {
         sucursal: infoUsuario.sucursal,
       },

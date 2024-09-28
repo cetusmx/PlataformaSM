@@ -9,6 +9,8 @@ import { DataContext } from "../contexts/dataContext";
 
 const Cotizador = () => {
 
+  const url ="http://18.224.118.226:3001";
+
   const { valor, valor2 } = useContext(DataContext);
   const { contextData, setContextData } = valor;
   const {contextsideBarNav, setContextSidebarNav} = valor2;
@@ -38,7 +40,7 @@ const Cotizador = () => {
   };
 
   let getMargen = () => {
-    Axios.get(`https://servcotiza.onrender.com/getmargen`, {
+    Axios.get(url + `/getmargen`, {
       params: {
         familia: familia,
         sucursal: sucursal,
@@ -56,7 +58,7 @@ const Cotizador = () => {
   };
 
   const populateFamiliaSelect = () => {
-    Axios.get("https://servcotiza.onrender.com/getfamilias").then(
+    Axios.get(url + "/getfamilias").then(
       (response) => {
         setFamiliasselect(response.data);
         response.data.map((opcion) => {

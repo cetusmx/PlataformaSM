@@ -6,8 +6,8 @@ import { show_alerta } from "../functions";
 import { Nav } from "../components/Nav";
 
  const Editamars = () => {
-  const url = "https://servcotiza.onrender.com/actualiza";
-  //const url = "http://localhost:3001/actualiza";
+  const url = "http://18.224.118.226:3001/actualiza";
+  const urlServidorAPI = "http://18.224.118.226:3001";
   const [family, setFamily] = useState("");
   const [margenes, setMargenes] = useState([]);
   const [margenesPivote, setMargenesPivote] = useState([]);
@@ -31,7 +31,7 @@ import { Nav } from "../components/Nav";
   }, []);
 
   const getMargenes = () => {
-    Axios.get("https://servcotiza.onrender.com/margenes").then((response) => {
+    Axios.get(urlServidorAPI+"/margenes").then((response) => {
       setMargenes(response.data);
       let hashMap = new Map();
       response.data.map((val) => {
