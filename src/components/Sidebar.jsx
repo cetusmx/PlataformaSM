@@ -37,19 +37,19 @@ const Sidebar = () => {
 
       <div className="menu--list">
         <Link to="cotizador" className="item" onClick={()=>{setContextSidebarNav("Cotizador")}}>
-          <BiCalculator className="icon" />
+          <BiCalculator  />
           Cotizador
         </Link>
         <Link to="precios" className="item" onClick={()=>{setContextSidebarNav("Precios")}}>
-          <BiDollar className="icon" />
+          <BiDollar  />
           Precios
         </Link>
         <Link to="admin" className="item" onClick={()=>{setContextSidebarNav("Configuración")}}>
-          <BiCog className="icon" />
+          <BiCog />
           Configuración
         </Link>
         <button className="item" onClick={logout}>
-          <BiLogOut className="icon" />
+          <BiLogOut />
           Salir
         </button>
       </div>
