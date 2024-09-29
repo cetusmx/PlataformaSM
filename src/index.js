@@ -7,8 +7,8 @@ import { FirebaseAppProvider } from 'reactfire'
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "bootstrap/dist/js/bootstrap.bundle";
 import { DataContextProvider } from './contexts/dataContext';
-import "./index.css";
 import { BrowserRouter } from "react-router-dom";
+import './styles/index.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
