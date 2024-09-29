@@ -40,7 +40,7 @@ const Cotizador = () => {
   };
 
   let getMargen = () => {
-    Axios.get(url + `/getmargen`, {
+    Axios.get(url + `/getmargen/`, {
       params: {
         familia: familia,
         sucursal: sucursal,
@@ -58,7 +58,7 @@ const Cotizador = () => {
   };
 
   const populateFamiliaSelect = () => {
-    Axios.get(url + "/getfamilias").then(
+    Axios.get(url + "/getfamilias/").then(
       (response) => {
         setFamiliasselect(response.data);
         response.data.map((opcion) => {
