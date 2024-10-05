@@ -1,9 +1,12 @@
-import React from 'react'
+import React from "react";
+import Inicio from "./Inicio";
 
 const Configuracion = () => {
   return (
-    <div>Configuracion</div>
-  )
-}
+    <>
+      <Inicio />
+    </>
+  );
+};
 
-export default Configuracion
+export default Configuracion;

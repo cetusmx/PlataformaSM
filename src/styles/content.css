@@ -117,11 +117,11 @@
     align-items: center;
     flex-direction: column;
     gap: 20px;
-    transition: 0.5s ease-in-out;
+    /* transition: 0.5s ease-in-out; */
 }
 .cardM:hover {
-    transform: scale(1.04);
-    cursor: pointer;
+   /*  transform: scale(1.04); 
+    cursor: pointer;*/
 }
 .cardM--cover{
     background: #fff;
@@ -144,4 +144,52 @@
 }
 .content--interior{
     padding-top: 0px;
+}
+
+.contenedor-100porciento{
+    width: 100%;
+    
+}
+.content--header--editamars{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2px solid #dde6ed;
+    /* margin-top: 7px; */
+    padding-bottom: 15px;
+    margin-bottom: 10px;
+}
+.search-box-editmars .icon-1{
+    color: #969393;
+    font-size: 22px;
+    /* cursor: pointer;
+    transition: 0.5s ease-in-out; */
+}
+.search-box-editmars input{
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 5px;
+    outline: none;
+}
+.search-box-editmars {
+    background: #dde6ed;
+    padding: 8px 10px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+}
+.header--activity-file{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.8rem;
+}
+.button-admin{
+    border: none;
+    width: 100%;
+    background: #f5f7fa;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #526d82;
 }

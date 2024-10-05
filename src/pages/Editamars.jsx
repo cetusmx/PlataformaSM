@@ -3,8 +3,13 @@ import Axios from "axios";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { show_alerta } from "../functions";
+import { BiNotification, BiSearch, BiMap, BiUser } from "react-icons/bi";
+import * as XLSX from "xlsx";
 
- const Editamars = () => {
+const Editamars = () => {
+  const [search, setSearch] = useState("");
+  const [dataExcel, setDataExcel] = useState([]);
+
   const url = "http://18.224.118.226:3001/actualiza";
   const urlServidorAPI = "http://18.224.118.226:3001";
   const [family, setFamily] = useState("");
@@ -30,7 +35,7 @@ import { show_alerta } from "../functions";
   }, []);
 
   const getMargenes = () => {
-    Axios.get(urlServidorAPI+"/margenes").then((response) => {
+    Axios.get(urlServidorAPI + "/margenes").then((response) => {
       setMargenes(response.data);
       let hashMap = new Map();
       response.data.map((val) => {
@@ -187,7 +192,7 @@ import { show_alerta } from "../functions";
         } else {
           show_alerta("Hubo un problema", "error");
         }
-        
+
         if (tipo === 200) {
           document.getElementById("btnCerrar").click();
           getMargenes();
@@ -200,13 +205,58 @@ import { show_alerta } from "../functions";
       });
   };
 
+  const buscar = (e) => {
+    setSearch(e.target.value);
+    console.log(e.target.value);
+  };
+
+  const results = !search
+    ? margenesPivote
+    : margenesPivote.filter((dato) =>
+        dato.familia.toLowerCase().includes(search.toLocaleLowerCase())
+      );
+
+  const handleFileUpload = (e) => {
+    const reader = new FileReader();
+    reader.readAsBinaryString(e.target.files[0]);
+    reader.onload = (e) => {
+      const data = e.target.result;
+      const workbook = XLSX.read(data, { type: "binary" });
+      const sheetName = workbook.sheetName[0];
+      const sheet = workbook.sheet[sheetName];
+      const parsedData = XLSX.utils.sheet_to_json(sheet);
+      setDataExcel(parsedData);
+    };
+  };
+
   return (
     <>
-      <div className="row">
-        </div>
       <div className="container-fluid">
         <div className="row mt-3">
-          <div className="col-12 col-lg-10 offset-0 offset-lg-1">
+          {/* <div className="col-12 col-lg-10 offset-0 offset-lg-1"> */}
+          <div className="contenedor-100porciento">
+            <div className="content--header--editamars">
+              <div className="header--activity">
+                <div className="search-box-editmars">
+                  <input
+                    type="text"
+                    placeholder="Buscar"
+                    onChange={buscar}
+                    value={search}
+                  />
+                  <BiSearch className="icon-1" />
+                </div>
+              </div>
+              <div className="header--activity-file">
+                Carga masiva:
+                <input
+                  type="file"
+                  accept=".xlsx, .xls"
+                  onChange={handleFileUpload}
+                />
+              </div>
+            </div>
+            {/*** Contenedor de tabla *** */}
             <div className="table-responsive">
               <table className="table table-bordered">
                 <thead>
@@ -222,7 +272,7 @@ import { show_alerta } from "../functions";
                   </tr>
                 </thead>
                 <tbody className="=table-group-divider">
-                  {margenesPivote.map((margenes, i) => (
+                  {results.map((margenes, i) => (
                     <tr key={margenes.familia}>
                       <td>{i + 1}</td>
                       <td>{margenes.familia}</td>
@@ -374,4 +424,4 @@ import { show_alerta } from "../functions";
   );
 };
 
-export default Editamars
+export default Editamars;

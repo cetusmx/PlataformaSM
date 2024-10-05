@@ -1,0 +1,24 @@
+.barProgress{
+    color: #dde6ed;
+    width: 30%;
+}
+
+.barraDiv{
+    display: flex;
+    flex-direction: column;
+    padding-top: 15px;
+    align-items: center;
+    width: 100%;
+    /* background: rebeccapurple; */
+}
+.container-construccion{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #526d82;
+    padding-top: 7%;
+}
+.numeroBarra{
+    font-size: 1.5rem;
+}

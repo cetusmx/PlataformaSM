@@ -5,6 +5,7 @@ import {
   BiCog,
   BiLogOut,
   BiDollar,
+  BiHome,
 } from "react-icons/bi";
 import "../styles/sidebar.css";
 import { DataContext } from "../contexts/dataContext";
@@ -12,6 +13,7 @@ import { getAuth, signOut } from "firebase/auth";
 import { Link } from "react-router-dom";
 
 const Sidebar = () => {
+
   const { valor, valor2 } = useContext(DataContext);
   const { contextData, setContextData } = valor;
   const {contextsideBarNav, setContextSidebarNav} = valor2;
@@ -31,7 +33,7 @@ const Sidebar = () => {
   return (
     <div className="menu">
       <div className="logo">
-        <BiBookAlt className="logo-icon" />
+        <BiHome className="logo-icon" />
         <h4 style={{ padding: 0 }}>Seal Market</h4>
       </div>
 
@@ -44,9 +46,9 @@ const Sidebar = () => {
           <BiDollar  />
           Precios
         </Link>
-        <Link to="admin" className="item" onClick={()=>{setContextSidebarNav("Configuración")}}>
+        <Link to="admin" className="item" onClick={()=>{setContextSidebarNav("Administración")}}>
           <BiCog />
-          Configuración
+          Administración
         </Link>
         <button className="item" onClick={logout}>
           <BiLogOut />

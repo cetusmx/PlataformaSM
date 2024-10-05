@@ -21,7 +21,8 @@
     "reactfire": "^4.2.3",
     "sweetalert2": "^11.12.2",
     "sweetalert2-react-content": "^5.0.7",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "xlsx": "^0.18.5"
   },
   "homepage": "https://cotizador.sealmarket.mx",
   "scripts": {
