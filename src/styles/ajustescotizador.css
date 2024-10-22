@@ -12,7 +12,7 @@ padding: 10px;
 .enConstruccion{
     display: flex;
     height: 73vh;
-    
+
 }
 
 .item{
@@ -34,3 +34,13 @@ padding: 10px;
     background: #27374d;
     color: #dde6ed;
 }
+
+.contenedor-columnas1 {
+    display: flex;
+    flex-direction: row;
+    margin-top: auto;
+    width: 100%;
+    padding: 7px 0 7px 0;
+    border-bottom: 0.5px solid #dde6ed;
+    margin-bottom: 10px;
+  }

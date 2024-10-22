@@ -31,24 +31,22 @@ const Inicio = () => {
   const { valor3 } = useContext(DataContext);
   const { contextAdminNav, setContextAdminNav } = valor3;
 
+  const [opcionDeMenu, setOpcionDeMenu] = useState("");
+
   console.log(contextAdminNav);
 
   /* const[opcion, setOpcion] = useState(""); */
 
   const toggleDiv = (e) => {
-    /* (e.target.value==="Usuarios")
-    ? <Usuarios />
-    : (e.target.value==="Ajustes Cotizador")
-      ? <Editamars />
-      : <AjusPrecios />
- */
-      setContextAdminNav(e.target.value);
+    setOpcionDeMenu(e.target.value);
+      /* setContextAdminNav(e.target.value); */
     console.log(e.target.value);
   }
 
   return (
     <>
-    {contextAdminNav==="" ? (
+    {/* {contextAdminNav==="" ? ( */}
+    {opcionDeMenu==="" ? (
       
     <div className="cardM--container">
       {course.map((item) => (
@@ -61,9 +59,9 @@ const Inicio = () => {
       ))}
     </div>
     ) 
-    : contextAdminNav==="Ajustes Cotizador"
+    : opcionDeMenu==="Ajustes Cotizador"
       ? <AjustesCotizador />
-      : contextAdminNav==="Ajustes Precios"
+      : opcionDeMenu==="Ajustes Precios"
         ? <AjustesPrecios />
         : <Usuarios />
   }

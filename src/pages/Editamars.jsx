@@ -232,7 +232,7 @@ const Editamars = () => {
   return (
     <>
       <div className="container-fluid">
-        <div className="row mt-3">
+        <div className="row">
           {/* <div className="col-12 col-lg-10 offset-0 offset-lg-1"> */}
           <div className="contenedor-100porciento">
             <div className="content--header--editamars">
@@ -299,10 +299,6 @@ const Editamars = () => {
                           data-bs-target="#modalEdicion"
                         >
                           <i className="fa-solid fa-edit"></i>
-                        </button>
-                        &nbsp;
-                        <button className="btn btn-danger">
-                          <i className="fa-solid fa-trash"></i>
                         </button>
                       </td>
                     </tr>

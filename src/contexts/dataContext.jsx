@@ -5,7 +5,7 @@ export const DataContext = createContext();
 export function DataContextProvider(props){
     const [contextData, setContextData] = useState();
     const [contextsideBarNav, setContextSidebarNav] = useState();
-    const [contextAdminNav, setContextAdminNav] = useState();
+    const [contextAdminNav, setContextAdminNav] = useState("");
     
     const valor = {contextData, setContextData};
     const valor2 = {contextsideBarNav, setContextSidebarNav};

@@ -46,9 +46,9 @@ const Sidebar = () => {
           <BiDollar  />
           Precios
         </Link>
-        <Link to="admin" className="item" onClick={()=>{setContextSidebarNav("Administración")}}>
+        <Link to="admin" className="item" onClick={()=>{setContextSidebarNav("Ajustes")}}>
           <BiCog />
-          Administración
+          Ajustes
         </Link>
         <button className="item" onClick={logout}>
           <BiLogOut />

@@ -13,6 +13,7 @@ import {
 
 import { useState } from "react";
 import logo from "../assets/log3.jpg";
+import Logo from "../assets/Logo2.jpg";
 import firebaseApp from "../firebase/credenciales";
 import {
   getAuth,
@@ -21,6 +22,7 @@ import {
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import { DataContext } from "../contexts/dataContext";
+import "../styles/loginPage.css";
 
 const auth = getAuth(firebaseApp);
 
@@ -48,11 +50,12 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="row">
+    <>
+    <div className="row"  style={{marginTop: "-20px", height: "90vh"}}>
       <div className="col-2"></div>
-      <div className="col-8">
-        <MDBContainer className="my-5">
-          <MDBCard>
+      <div className="col-8" >
+        <MDBContainer className="my-0">
+          <MDBCard >
             <MDBRow className="g-0">
               <MDBCol md="6">
                 <MDBCardImage
@@ -65,15 +68,10 @@ const LoginPage = () => {
 
               <MDBCol md="6">
                 <MDBCardBody className="d-flex flex-column">
-                  <div className="d-flex flex-row mt-2">
-                    <MDBIcon
-                      fas
-                      icon="cubes fa-3x me-3"
-                      style={{ color: "#ff6219" }}
-                    />
+                  <div className="d-flex flex-row mt-1">
                     <span className="h1 fw-bold mb-0">
                       <MDBCardImage
-                        //src="https://scontent.fdgo1-1.fna.fbcdn.net/v/t39.30808-6/301869389_548403897073267_7724377148803879278_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeE_xGdNQincKQ75ENvV9ALc5ew82G6WlN3l7DzYbpaU3eBj9G09qyS3CEAogb8wDP1bemQ2oJejHgyIZwH3SbIW&_nc_ohc=P_J1c_0mrHsQ7kNvgFl7rD9&_nc_ht=scontent.fdgo1-1.fna&oh=00_AYDckewRDSuWONGlddN8_GqLRYRyswP_VyYoQBTVwmvJ7g&oe=669D3365"
+                      src={Logo}
                         alt="login form"
                         className="rounded-start w-50"
                       />
@@ -81,7 +79,7 @@ const LoginPage = () => {
                   </div>
 
                   <h5
-                    className="fw-normal my-4 pb-3"
+                    className="fw-normal my-4 pb-1"
                     style={{ letterSpacing: "1px" }}
                   >
                     Ingrese con su cuenta
@@ -91,7 +89,7 @@ const LoginPage = () => {
                     onChange={(event) => {
                       setCorreo(event.target.value);
                     }}
-                    wrapperClass="mb-4"
+                    wrapperClass="mb-3"
                     label="Correo electrónico"
                     id="email"
                     //id="formControlEMail"
@@ -102,7 +100,7 @@ const LoginPage = () => {
                     onChange={(event) => {
                       setPass(event.target.value);
                     }}
-                    wrapperClass="mb-4"
+                    wrapperClass="mb-3"
                     label="Contraseña"
                     id="password"
                     //id="formControlPW"
@@ -110,14 +108,22 @@ const LoginPage = () => {
                     size="lg"
                   />
 
-                  <MDBBtn
+                  <button
+                  id="login-button"
                     onClick={submitHandler}
-                    className="mb-4 px-5"
+                    className="mb-3 px-3 boton-login-ingreso"
+                    size="lg"
+                  >
+                    Ingresar
+                  </button>
+                  {/* <MDBBtn
+                    onClick={submitHandler}
+                    className="mb-3 px-3"
                     color="dark"
                     size="lg"
                   >
                     Ingresar
-                  </MDBBtn>
+                  </MDBBtn> */}
                   <a className="small text-muted" href="#!">
                     ¿Olvidó su contraseña?
                   </a>
@@ -137,6 +143,7 @@ const LoginPage = () => {
       </div>
       <div className="col-2"></div>
     </div>
+    </>
   );
 };
 
