@@ -4,8 +4,11 @@ import EnConstruccion from "./EnConstruccion";
 import { Link } from "react-router-dom";
 import { BiArrowBack } from "react-icons/bi";
 import { DataContext } from "../contexts/dataContext";
+import { MenuAjustesContext } from "../contexts/context-menu-ajustes";
 
 const Usuarios = () => {
+  const {posicionMenu, setPosicionMenu} = useContext(MenuAjustesContext);
+
   const { valor3 } = useContext(DataContext);
   const { contextAdminNav, setContextAdminNav } = valor3;
 
@@ -16,7 +19,7 @@ const Usuarios = () => {
         <div className="regresar">
           <button
             onClick={() => {
-              setContextAdminNav("");
+              setPosicionMenu("");
             }}
             className="item"
           >

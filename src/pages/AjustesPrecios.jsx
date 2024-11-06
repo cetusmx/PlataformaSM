@@ -13,8 +13,11 @@ import Swal from "sweetalert2";
 import Axios from "axios";
 import { Spinner } from "react-bootstrap";
 import { show_alerta } from "../functions";
+import { MenuAjustesContext } from "../contexts/context-menu-ajustes";
 
 const AjustesPrecios = () => {
+  const {posicionMenu, setPosicionMenu} = useContext(MenuAjustesContext);
+
   const [isOpenDgo, setIsOpenDgo] = useState(false);
   const [isOpenFllo, setIsOpenFllo] = useState(false);
   const [isOpenMzt, setIsOpenMzt] = useState(false);
@@ -212,7 +215,7 @@ const AjustesPrecios = () => {
               {/* <div className="regresar"> */}
               <button
                 onClick={() => {
-                  setContextAdminNav("");
+                  setPosicionMenu("");
                 }}
                 className="item"
               >

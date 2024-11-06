@@ -1,15 +1,15 @@
 import React from "react";
-import Inicio from "./Inicio";
 import MenuAjustesContextProvider from "../contexts/context-menu-ajustes";
+import InicioCotizador from "./InicioCotizador";
 
-const Configuracion = () => {
+const ContenedorCotizador = () => {
   return (
     <>
       <MenuAjustesContextProvider>
-        <Inicio />
+        <InicioCotizador />
       </MenuAjustesContextProvider>
     </>
   );
 };
 
-export default Configuracion;
+export default ContenedorCotizador;

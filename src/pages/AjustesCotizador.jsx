@@ -4,8 +4,11 @@ import { DataContext } from "../contexts/dataContext";
 import EnConstruccion from "./EnConstruccion";
 import "../styles/ajustescotizador.css";
 import Editamars from "./Editamars";
+import { MenuAjustesContext } from "../contexts/context-menu-ajustes";
 
 const AjustesCotizador = () => {
+  const {posicionMenu, setPosicionMenu} = useContext(MenuAjustesContext);
+
   const { valor3 } = useContext(DataContext);
   const { contextAdminNav, setContextAdminNav } = valor3;
   const porcentaje = 75;
@@ -27,7 +30,7 @@ const AjustesCotizador = () => {
               {/* <div className="regresar"> */}
               <button
                 onClick={() => {
-                  setContextAdminNav("");
+                  setPosicionMenu("");
                 }}
                 className="item"
               >
