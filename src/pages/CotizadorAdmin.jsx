@@ -35,7 +35,7 @@ const CotizadorAdmin = () => {
   useEffect(() => {
     // Agrega opciones al Select cuando carga la página por primera vez
     populateFamiliaSelect();
-    console.log("Dentro UseEffect");
+    /* console.log("Dentro UseEffect"); */
   }, []);
 
   const [costo, setCosto] = useState();
@@ -59,18 +59,18 @@ const CotizadorAdmin = () => {
       Object.keys(newObject).map((property) => {
         if (property === "sucursal") {
           /* console.log(newObject[property]); */
-          getMargen(newObject[property]);
+          console.log(getMargen(newObject[property]));
         }
       });
     });
 
-    console.log("Dentro calculaPre D " + precioDgo);
+    /* console.log("Dentro calculaPre D " + precioDgo);
     console.log("Dentro calculaPre F " + precioFllo);
     console.log("Dentro calculaPre Z " + precioZac);
     console.log("Dentro calculaPre M " + precioMzt);
-    console.log("Dentro calculaPre T " + precioTecmin);
+    console.log("Dentro calculaPre T " + precioTecmin); */
 
-    const listOfUpdatedObjects = updateObjects(sucursales);
+    //const listOfUpdatedObjects = updateObjects(sucursales);
 
     //setPrecio(listOfUpdatedObjects);
     /* console.log(sucursales); */
@@ -112,19 +112,19 @@ const CotizadorAdmin = () => {
      /*  console.log("Precio: " + sucursa + " -> " + convertedPrecioToString); */
       if(sucursa==="Durango"){
         setPrecioDgo(convertedPrecioToString);
-       /*  console.log("Dgo"); */
+        console.log("Dgo");
       } if(sucursa==="Fresnillo"){
         setPrecioFllo(convertedPrecioToString);
-       /*  console.log("Fres"); */
+        console.log("Fres");
       }if(sucursa==="Zacatecas"){
         setPrecioZac(convertedPrecioToString);
-        /* console.log("Zaca"); */
+        console.log("Zaca");
       }if(sucursa==="Mazatlán"){
         setPrecioMzt(convertedPrecioToString);
-        /* console.log("Mzt"); */
+        console.log("Mzt");
       }if(sucursa==="Tecmin"){
         setPrecioTecmin(convertedPrecioToString);
-        /* console.log("Tecm"); */
+        console.log("Tecm");
       }
       /* setPrecio([...precio, precioFormateado]); */
     });
@@ -203,15 +203,6 @@ const CotizadorAdmin = () => {
             className="list-group list-group-horizontal"
             style={{ width: "100%" }}
           >
-            {/* {precio?.length > 0 &&  (
-         {precio.map((val, key) => {
-          return (
-            <tr key={val.id}>
-              <td>{val.clave}</td>
-              <td>{val.precio}</td>
-              <td>{val.precioIVA}</td>
-            </tr>
-          )}
             <li className="list-group-item">
               <div className="row">
                 <div className="col">
@@ -225,15 +216,77 @@ const CotizadorAdmin = () => {
                     Durango
                   </div>
                   <div className="col">
-                    <div style={{ width: "100%", margin: "10px 0 10px 0" }}>
-                      First item
+                    <div style={{ width: "100%", margin: "10px 0 10px 0", textAlign: "center" }}>
+                      {precioDgo}
+                    </div>
+                  </div>
+                </div>
+                <div className="col">
+                  <div
+                    style={{
+                      width: "100%",
+                      borderBottom: "1px solid #dfe2e6",
+                      margin: "10px 0 10px 0",
+                    }}
+                  >
+                    Fresnillo
+                  </div>
+                  <div className="col">
+                    <div style={{ width: "100%", margin: "10px 0 10px 0", textAlign: "center" }}>
+                      {precioFllo}
+                    </div>
+                  </div>
+                </div>
+                <div className="col">
+                  <div
+                    style={{
+                      width: "100%",
+                      borderBottom: "1px solid #dfe2e6",
+                      margin: "10px 0 10px 0",
+                    }}
+                  >
+                    Mazatlán
+                  </div>
+                  <div className="col">
+                    <div style={{ width: "100%", margin: "10px 0 10px 0", textAlign: "center" }}>
+                      {precioMzt}
+                    </div>
+                  </div>
+                </div>
+                <div className="col">
+                  <div
+                    style={{
+                      width: "100%",
+                      borderBottom: "1px solid #dfe2e6",
+                      margin: "10px 0 10px 0",
+                    }}
+                  >
+                    Zacatecas
+                  </div>
+                  <div className="col">
+                    <div style={{ width: "100%", margin: "10px 0 10px 0", textAlign: "center" }}>
+                      {precioZac}
+                    </div>
+                  </div>
+                </div>
+                <div className="col">
+                  <div
+                    style={{
+                      width: "100%",
+                      borderBottom: "1px solid #dfe2e6",
+                      margin: "10px 0 10px 0",
+                    }}
+                  >
+                    Tecmin
+                  </div>
+                  <div className="col">
+                    <div style={{ width: "100%", margin: "10px 0 10px 0", textAlign: "center" }}>
+                      {precioTecmin}
                     </div>
                   </div>
                 </div>
               </div>
             </li>
-            )
-           } */}
           </ul>
         </div>
       </div>
