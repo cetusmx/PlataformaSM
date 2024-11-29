@@ -122,8 +122,6 @@ const AjustesPrecios = () => {
     } else {
       setIsDisabled(false);
     }
-
-    /*  openModal(); */
   };
 
   const openModal2 = () => {

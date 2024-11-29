@@ -49,15 +49,24 @@ const Remision = () => {
   };
 
   const onChange = (event) => {
-    setValue(event.target.value);
+    setValue(event.target.value); //Se coloca el valor en el input "Clave prod"
+
+    /* Aquí puedo implementar la búsqueda en el arreglo general */
+
   };
 
   const onSearch = (searchTerm) => {
-    setValue(searchTerm);
-    const filtrado = preciosList.filter((item) =>
+    //console.log(searchTerm);
+    setValue(searchTerm); //Se coloca el valor en el input "Clave prod"
+    const filtrado = preciosList.find((item) =>
       item.clave.toUpperCase().includes(searchTerm.toUpperCase())
     );
-    const precio_ = filtrado.map((item) => item.precio);
+    /* const filtrado = preciosList.filter((item) =>
+      item.clave.toUpperCase().includes(searchTerm.toUpperCase())
+    ); */
+    console.log(filtrado);
+    const precio_ = filtrado.precio;
+    /* const precio_ = filtrado.map((item) => item.precio); */
     const totalInp = qty * precio_;
     setTotalCab(totalInp);
     setPrice(precio_);

@@ -218,13 +218,15 @@ const Editamars = () => {
 
   const handleFileUpload = (e) => {
     const reader = new FileReader();
+    let parsedData;
     reader.readAsBinaryString(e.target.files[0]);
     reader.onload = (e) => {
       const data = e.target.result;
       const workbook = XLSX.read(data, { type: "binary" });
-      const sheetName = workbook.sheetName[0];
-      const sheet = workbook.sheet[sheetName];
-      const parsedData = XLSX.utils.sheet_to_json(sheet);
+      const sheetName = workbook.SheetNames[0];
+      console.log(sheetName);
+      const sheet = workbook.Sheets[sheetName];
+      parsedData = XLSX.utils.sheet_to_json(sheet);
       setDataExcel(parsedData);
     };
   };
@@ -256,6 +258,7 @@ const Editamars = () => {
                 />
               </div>
             </div>
+
             {/*** Contenedor de tabla *** */}
             <div className="table-responsive">
               <table className="table table-bordered">

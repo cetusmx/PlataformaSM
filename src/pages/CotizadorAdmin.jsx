@@ -198,6 +198,7 @@ const CotizadorAdmin = () => {
             </Card.Footer>
           </Card>
         </div>
+        {precioDgo?.length > 0 && (
         <div className="col-7">
           <ul
             className="list-group list-group-horizontal"
@@ -289,6 +290,7 @@ const CotizadorAdmin = () => {
             </li>
           </ul>
         </div>
+        )}
       </div>
     </>
   );
