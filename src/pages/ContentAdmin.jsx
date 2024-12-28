@@ -1,7 +1,7 @@
 import ContentHeader from "./ContentHeader";
 import "../styles/content.css";
 import { Routes, Route } from "react-router-dom";
-import Remision from "./Remision";
+import MenuHerramientas from "./MenuHerramientas";
 import Configuracion from "./Configuracion";
 import ContenedorCotizador from "./ContenedorCotizador";
 
@@ -16,7 +16,8 @@ const ContentAdmin = () => {
             <Route path="/" element={<ContenedorCotizador />} />
             <Route path="cotizador" element={<ContenedorCotizador />} />
             <Route path="admin" element={<Configuracion />} />
-            <Route path="precios" element={<Remision />} />
+            <Route path="herramientas" element={<MenuHerramientas />} />
+            {/* <Route path="precios" element={<Remision />} /> */}
         </Routes>
       </div>
     </div>

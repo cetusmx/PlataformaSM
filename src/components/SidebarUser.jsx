@@ -3,7 +3,8 @@ import {
   BiBookAlt,
   BiCalculator,
   BiLogOut,
-  BiDollar
+  BiDollar,
+  BiWrench
 } from "react-icons/bi";
 import "../styles/sidebar.css";
 import { getAuth, signOut } from "firebase/auth";
@@ -40,8 +41,8 @@ const SidebarUser = () => {
           Cotizador
         </Link>
         <Link to="precios" className="item" onClick={()=>{setContextSidebarNav("Precios")}}>
-          <BiDollar className="icon" />
-          Precios
+          <BiWrench className="icon" />
+          Herramientas
         </Link>
         <button className="item" onClick={logout}>
           <BiLogOut className="icon" />

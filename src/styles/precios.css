@@ -1,5 +1,5 @@
 .preciosDiv{
-    padding-top: 7px;
+    padding-top: 5px;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -14,8 +14,8 @@
     z-index: 0;
     overflow-y: scroll;
     font-size: 0.8rem;
-    min-height: 55vh;
-    max-height: 55vh;
+    min-height: 45vh;
+    max-height: 45vh;
     padding-top: 10px;
 }
 
@@ -29,7 +29,7 @@
     /* flex: 1; */
 }
 .tablaRemision:empty{
-    min-height: 55vh;
+    min-height: 45vh;
     /* background: green; */
     padding: 10px;
 }

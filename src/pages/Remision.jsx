@@ -3,10 +3,9 @@ import Axios from "axios";
 import { DataContext } from "../contexts/dataContext";
 import "../styles/precios.css";
 import { BiEraser, BiPrinter, BiTrash } from "react-icons/bi";
-import {useReactToPrint} from 'react-to-print';
+import { useReactToPrint } from "react-to-print";
 
 const Remision = () => {
-
   const url = "http://18.224.118.226:3001";
   const printRef = useRef();
 
@@ -34,8 +33,8 @@ const Remision = () => {
   const infoUsuario = contextData;
 
   const handlePrint = useReactToPrint({
-    content: () => printRef.current, 
-  })
+    content: () => printRef.current,
+  });
 
   let getPrecios = () => {
     Axios.get(url + `/getprecios/`, {
@@ -52,7 +51,6 @@ const Remision = () => {
     setValue(event.target.value); //Se coloca el valor en el input "Clave prod"
 
     /* Aquí puedo implementar la búsqueda en el arreglo general */
-
   };
 
   const onSearch = (searchTerm) => {
@@ -149,20 +147,17 @@ const Remision = () => {
     setPartidas([]);
     setSubtotal("0");
     setTotalCIva("0");
-  }
+  };
   return (
     <>
-      {/* <div>Precios</div> */}
       <div className="preciosDiv">
         <div className="control-botones">
           <div className="borrar">
-            <BiEraser className="icon2" 
-             onClick={() => borrarPartidas()}/>
+            <BiEraser className="icon2" onClick={() => borrarPartidas()} />
             <h7>Borrar</h7>
           </div>
           <div className="imprimir">
-            <BiPrinter className="icon2" 
-            onClick={()=> handlePrint()}/>
+            <BiPrinter className="icon2" onClick={() => handlePrint()} />
             <h7>Imprimir</h7>
           </div>
         </div>
@@ -188,6 +183,7 @@ const Remision = () => {
               placeholder="Buscar clave"
               value={value}
               onChange={onChange}
+              onBlur={onChange}
             />
             <div className="dropdown">
               {preciosList
@@ -196,9 +192,8 @@ const Remision = () => {
                   const clave = item.clave.toLowerCase();
 
                   return (
-                    searchTerm &&
-                    clave.startsWith(searchTerm) &&
-                    clave !== searchTerm
+                    searchTerm && clave.startsWith(searchTerm) /*  &&
+                    clave !== searchTerm  */
                   );
                 })
                 .slice(0, 10)
@@ -247,82 +242,81 @@ const Remision = () => {
           </div>
         </div>
         <div ref={printRef} className="div--impresion">
-        <div className="tablaRemision">
-          {/*********  Partidas ************** */}
+          <div className="tablaRemision">
+            {/*********  Partidas ************** */}
 
-          {partidas?.length > 0 && (
-            <table className="table table-striped">
-              <thead>
-                <tr>
-                  <th scope="col">Cant</th>
-                  <th scope="col">Clave</th>
-                  <th scope="col">P Unit</th>
-                  <th scope="col">Total</th>
-                  <th scope="col"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {partidas.map((val) => {
-                  return (
-                    <tr>
-                      <td>{val.cantidad}</td>
-                      <td>{val.clave}</td>
-                      <td>{val.precio}</td>
-                      <td>{val.total}</td>
-                      <td>
-                        <div
-                          className="btn-group"
-                          role="group"
-                          aria-label="Basic example"
-                        >
-                          <BiTrash
-                            className="icon"
-                            onClick={() => borrar(val)}
-                          />
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          )}
-        
-        </div>
-        <div className="subtotales">
-          <div style={{ textAlign: "right" }}>
-            <table>
-              <tr>
-                <td
-                  style={{
-                    fontWeight: "600",
-                    textAlign: "right",
-                    paddingRight: "7px",
-                  }}
-                >
-                  Subtotal
-                </td>
-                <td style={{ textAlign: "right", paddingLeft: "7px" }}>
-                  {subtotal}
-                </td>
-              </tr>
-              <tr>
-                <td
-                  style={{
-                    fontWeight: "600",
-                    textAlign: "right",
-                    paddingRight: "7px",
-                  }}
-                >
-                  Total
-                </td>
-                <td style={{ textAlign: "right", paddingLeft: "7px" }}>
-                  {totalCIva}
-                </td>
-              </tr>
-            </table>
+            {partidas?.length > 0 && (
+              <table className="table table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">Cant</th>
+                    <th scope="col">Clave</th>
+                    <th scope="col">P Unit</th>
+                    <th scope="col">Total</th>
+                    <th scope="col"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {partidas.map((val) => {
+                    return (
+                      <tr>
+                        <td>{val.cantidad}</td>
+                        <td>{val.clave}</td>
+                        <td>{val.precio}</td>
+                        <td>{val.total}</td>
+                        <td>
+                          <div
+                            className="btn-group"
+                            role="group"
+                            aria-label="Basic example"
+                          >
+                            <BiTrash
+                              className="icon"
+                              onClick={() => borrar(val)}
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
           </div>
-        </div>
+          <div className="subtotales">
+            <div style={{ textAlign: "right" }}>
+              <table>
+                <tr>
+                  <td
+                    style={{
+                      fontWeight: "600",
+                      textAlign: "right",
+                      paddingRight: "7px",
+                    }}
+                  >
+                    Subtotal
+                  </td>
+                  <td style={{ textAlign: "right", paddingLeft: "7px" }}>
+                    {subtotal}
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    style={{
+                      fontWeight: "600",
+                      textAlign: "right",
+                      paddingRight: "7px",
+                    }}
+                  >
+                    Total
+                  </td>
+                  <td style={{ textAlign: "right", paddingLeft: "7px" }}>
+                    {totalCIva}
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </>
