@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
 import { BiArrowBack } from "react-icons/bi";
-/* import "../styles/ajustescotizador.css"; */
 import "../styles/herramsiembraprods.css";
 import { MenuAjustesContext } from "../contexts/context-menu-ajustes";
-import Remision from "./Remision";
+import BusquedaSellos from "./BusquedaSellos";
 
-const HerramListaPrecios = () => {
+
+const HerramBusqSellos = () => {
 
     const {posicionMenu, setPosicionMenu} = useContext(MenuAjustesContext);
 
@@ -14,7 +14,7 @@ const HerramListaPrecios = () => {
     <div className="container-ajustesCot">
       <div className="contenedor-columnas1">
           <div className="columnaIzquierda">
-          <div className="row-col-izq-up"><h5>Lista de precios</h5></div>
+          <div className="row-col-izq-up"><h5>Búsqueda de productos</h5></div>
           </div>
           <div className="columnaDerecha1">
             <div
@@ -38,7 +38,7 @@ const HerramListaPrecios = () => {
           </div>
         </div>
         {
-          <Remision />
+          <BusquedaSellos />
         }
         
       </div>
@@ -46,4 +46,4 @@ const HerramListaPrecios = () => {
   )
 }
 
-export default HerramListaPrecios
+export default HerramBusqSellos

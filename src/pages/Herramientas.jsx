@@ -1,8 +1,11 @@
 import React, { useState, useContext } from 'react'
-import { BiPackage, BiDollar, BiSearch } from "react-icons/bi";
+import { BiPackage, BiDollar, BiSearch, BiBarcode } from "react-icons/bi";
 import { DataContext } from "../contexts/dataContext";
 import { MenuAjustesContext } from "../contexts/context-menu-ajustes";
 import HerramListaPrecios from './HerramListaPrecios';
+import HerramBusqSellos from './HerramBusqSellos';
+import HerramSiembraProds from './HerramSiembraProds';
+import HerramCodigoBarras from './HerramCodigoBarras';
 
 const course = [
     {
@@ -16,6 +19,10 @@ const course = [
     {
       title: "Siembra productos",
       icon: <BiPackage />,
+    },
+    {
+      title: "Códigos barras",
+      icon: <BiBarcode />,
     },
   ];
 
@@ -58,10 +65,12 @@ const Herramientas = () => {
           </div>
         ) : posicionMenu === "Lista de precios" ? (
           <HerramListaPrecios />
-        ) : posicionMenu === "Ajustes Precios" ? (
-          {/* <AjustesPrecios /> */}
+        ) : posicionMenu === "Búsqueda de sellos" ? (
+          <HerramBusqSellos />
+        ) : posicionMenu === "Siembra productos" ? (
+          <HerramSiembraProds />
         ) : (
-          {/* <Usuarios /> */}
+          <HerramCodigoBarras />
         )}
     </>
   )
