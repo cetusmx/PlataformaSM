@@ -1,3 +1,4 @@
+import React from "react";
 import ContentHeader from "./ContentHeader";
 import "../styles/content.css";
 import { Routes, Route } from "react-router-dom";
