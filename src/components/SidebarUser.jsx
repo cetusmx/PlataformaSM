@@ -1,10 +1,10 @@
-import React, { useContext }  from "react";
+import React, { useContext } from "react";
 import {
   BiBookAlt,
   BiCalculator,
   BiLogOut,
   BiDollar,
-  BiWrench
+  BiWrench,
 } from "react-icons/bi";
 import "../styles/sidebar.css";
 import { getAuth, signOut } from "firebase/auth";
@@ -12,10 +12,9 @@ import { DataContext } from "../contexts/dataContext";
 import { Link } from "react-router-dom";
 
 const SidebarUser = () => {
-
   const { valor, valor2 } = useContext(DataContext);
   const { contextData, setContextData } = valor;
-  const {contextsideBarNav, setContextSidebarNav} = valor2;
+  const { contextsideBarNav, setContextSidebarNav } = valor2;
 
   const logout = () => {
     const auth = getAuth();
@@ -32,15 +31,37 @@ const SidebarUser = () => {
     <div className="menu">
       <div className="logo">
         <BiBookAlt className="logo-icon" />
-        <h4 style={{padding:0}}>Seal Market</h4>
+        <h4 style={{ padding: 0 }}>Seal Market</h4>
       </div>
 
       <div className="menu--list">
-        <Link to="cotizador" className="item" onClick={()=>{setContextSidebarNav("Cotizador")}}>
+        <Link
+          to="cotizador"
+          className="item"
+          onClick={() => {
+            setContextSidebarNav("Cotizador");
+          }}
+        >
           <BiCalculator className="icon" />
           Cotizador
         </Link>
-        <Link to="precios" className="item" onClick={()=>{setContextSidebarNav("Precios")}}>
+        <Link
+          to="herramientas"
+          className="item"
+          onClick={() => {
+            setContextSidebarNav("Herramientas");
+          }}
+        >
+          <BiWrench />
+          Herramientas
+        </Link>
+        <Link
+          to="precios"
+          className="item"
+          onClick={() => {
+            setContextSidebarNav("Precios");
+          }}
+        >
           <BiWrench className="icon" />
           Herramientas
         </Link>
