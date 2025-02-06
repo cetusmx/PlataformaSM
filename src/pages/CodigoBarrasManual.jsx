@@ -58,9 +58,20 @@ const CodigoBarrasManual = () => {
       (partida) => partida.clave !== item.clave
     );
     setPartidas(resultado);
-    setPartidasPrint(resultado);
+    setPartidasPrint(updatePrintables(resultado));
     console.log(resultado);
   };
+
+  const updatePrintables = (resultado) => {
+    let temp = [];
+
+    for (let i=0; i < resultado.length; i++) {
+
+      for(let j=0; j < resultado.cantidad; j++){
+        temp.push(resultado.barcode);
+      }
+  }
+}
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
@@ -173,13 +184,6 @@ const CodigoBarrasManual = () => {
             )}
           </div>
         )}
-      </div>
-
-      <div class="d-flex bd-highlight">
-        <div class="p-2 flex-fill bd-highlight">
-          <div className="form-container cont-width"></div>
-        </div>
-        <div class="p-2 flex-fill bd-highlight"></div>
       </div>
     </>
   );
