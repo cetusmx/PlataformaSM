@@ -1,0 +1,75 @@
+.wrapper{
+  width: 100%;
+  /* display: flex;
+  flex-direction: row; */
+}
+.captura{
+  width: 50%;
+  float: left;
+}
+.formulario{
+  display: flex;
+  flex-direction: row;
+  float: left;
+  width: 100%;
+  min-height: 11vh;
+  max-height: 11vh;
+  padding-bottom: 10px;
+}
+.encabezado{
+  width: 100%;
+  float: left;
+  clear: both;
+}
+.cantidad{
+  margin-right: 10px;
+}
+.claveProd{
+  margin-right: 10px;
+}
+.div-boton{
+  display: flex;
+  align-items: end;
+}
+.div-boton-generar{
+  display: flex;
+  align-items: end;
+  padding: 10px;
+}
+.tablaProds{
+  width: 100%;
+  border: 1px solid #dde6ed;
+  border-radius: 5px;
+  z-index: 0;
+  overflow-y: scroll;
+  font-size: 0.8rem;
+  min-height: 55vh;
+  max-height: 55vh;
+}
+.codigosBarras{
+  width: 47%;
+  padding-left: 3%;
+  float: right;
+  min-height: 55vh;
+  max-height: 55vh;
+}
+.contenedorEtiquetas{
+  width: 100%;
+  float: right;
+  border: 1px solid #dde6ed;
+  border-radius: 5px;
+  min-height: 55vh;
+  max-height: 55vh;
+  overflow-y: scroll;
+  padding-left: 10%;
+}
+.codesHeader{
+  width: 100%;
+  min-height: 11vh;
+  max-height: 11vh;
+  display: flex;
+  flex-direction: column;
+  text-align: start;
+  justify-content: end;
+}
+

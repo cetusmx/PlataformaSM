@@ -6,6 +6,7 @@ import HerramListaPrecios from './HerramListaPrecios';
 import HerramBusqSellos from './HerramBusqSellos';
 import HerramSiembraProds from './HerramSiembraProds';
 import HerramCodigoBarras from './HerramCodigoBarras';
+import SubmenuCodBarras from './SubmenuCodBarras';
 
 const course = [
     {
@@ -34,14 +35,14 @@ const Herramientas = () => {
 
   const [opcionDeMenu, setOpcionDeMenu] = useState("");
 
-  console.log("PosicionMenu=>" + posicionMenu);
+  //console.log("PosicionMenu=>" + posicionMenu);
 
   /* const[opcion, setOpcion] = useState(""); */
 
   const toggleDiv = (e) => {
     setPosicionMenu(e.target.value);
     /* setContextAdminNav(e.target.value); */
-    console.log(e.target.value);
+    //console.log(e.target.value);
   };
 
   return (
@@ -70,7 +71,7 @@ const Herramientas = () => {
         ) : posicionMenu === "Siembra productos" ? (
           <HerramSiembraProds />
         ) : (
-          <HerramCodigoBarras />
+          <SubmenuCodBarras />
         )}
     </>
   )

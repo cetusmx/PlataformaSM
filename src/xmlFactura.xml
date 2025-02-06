@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cfdi:Comprobante xmlns:cfdi="http://www.sat.gob.mx/cfd/4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Version="4.0" Serie="APO" Folio="80041837" Fecha="2025-01-24T04:10:07" Sello="EzpbOYLGEhSYks6KRK8BuL5pxbz/kLcE1MjEaQF12YCdCpUqab1qj5mrid2dVWKZWqvYLpvOV5Lqzlx/m9CtncXFICLf15j4kGtnkA1bwDzT9qvOsxajbCVXFmuvqESgdfL1XVUZDsVB+c5GdFMSz27MdO4HQICYEgqN2XkFNzObTT2Vzkh0UT4S+Ac2xd9IoOeD0FLr43DXQERl+X5CcFB6187Jdym4IL8wujIGoEvuP0eyUeIRCvtkCPCWvK/+fcysl6Rzpt63vMIi8xgxfUHFavsW6xzO+imsZGUsPusnXFBIYvvIsoPEAYC/wJWJgD7Oh/18FxSXd3lKfnnpzg==" FormaPago="99" NoCertificado="00001000000709318897" Certificado="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" CondicionesDePago="30 dias" SubTotal="2058.22" Moneda="MXN" Total="2387.54" TipoDeComprobante="I" Exportacion="01" MetodoPago="PPD" LugarExpedicion="66600" xsi:schemaLocation="http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd">
+  <cfdi:Emisor Rfc="CSM030620TJ2" Nombre="LA CAPITAL DE SELLADAS DEL MUNDO" RegimenFiscal="601" />
+  <cfdi:Receptor Rfc="ROSA7504083F6" Nombre="ALBERTO RODRIGUEZ SALAS" DomicilioFiscalReceptor="34280" RegimenFiscalReceptor="612" UsoCFDI="G01" />
+  <cfdi:Conceptos>
+    <cfdi:Concepto ClaveProdServ="31401500" NoIdentificacion="G038042094GB/N-K68" Cantidad="3" ClaveUnidad="H87" Unidad="PIEZA" Descripcion="GE. 38 X 42 X 9.4 K68" ValorUnitario="13.5600" Importe="40.6800" ObjetoImp="02">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="40.6800" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="6.5088" />
+        </cfdi:Traslados>
+      </cfdi:Impuestos>
+      <cfdi:InformacionAduanera NumeroPedimento="24  81  3935  4000024" />
+    </cfdi:Concepto>
+    <cfdi:Concepto ClaveProdServ="31401500" NoIdentificacion="RCAT-6J9178" Cantidad="2" ClaveUnidad="H87" Unidad="H87" Descripcion="BR-90URE-1-3/4" ValorUnitario="33.5900" Importe="67.1800" ObjetoImp="02">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="67.1800" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="10.7488" />
+        </cfdi:Traslados>
+      </cfdi:Impuestos>
+      <cfdi:InformacionAduanera NumeroPedimento="24  24  3969  4000941" />
+    </cfdi:Concepto>
+    <cfdi:Concepto ClaveProdServ="31401500" NoIdentificacion="G094100125GB/N-K69" Cantidad="2" ClaveUnidad="H87" Unidad="PIEZA" Descripcion="GE. 94 X 100 X 12.5 K69" ValorUnitario="16.3900" Importe="32.7800" ObjetoImp="02">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="32.7800" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="5.2448" />
+        </cfdi:Traslados>
+      </cfdi:Impuestos>
+      <cfdi:InformacionAduanera NumeroPedimento="24  81  3935  4000064" />
+    </cfdi:Concepto>
+    <cfdi:Concepto ClaveProdServ="31401500" NoIdentificacion="J21252875375" Cantidad="3" ClaveUnidad="H87" Unidad="H87" Descripcion="RW. 2.125 X 2.875 X 0.375" ValorUnitario="145.4000" Importe="436.2000" ObjetoImp="02">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="436.2000" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="69.7920" />
+        </cfdi:Traslados>
+      </cfdi:Impuestos>
+      <cfdi:InformacionAduanera NumeroPedimento="23  24  3969  3001982" />
+    </cfdi:Concepto>
+    <cfdi:Concepto ClaveProdServ="31401500" NoIdentificacion="2-276/N70" Cantidad="7" ClaveUnidad="H87" Unidad="H87" Descripcion="OR.11.000 X 11.250 X 0.139" ValorUnitario="12.4600" Importe="87.2200" ObjetoImp="02">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="87.2200" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="13.9552" />
+        </cfdi:Traslados>
+      </cfdi:Impuestos>
+      <cfdi:InformacionAduanera NumeroPedimento="24  16  3341  4005390" />
+    </cfdi:Concepto>
+    <cfdi:Concepto ClaveProdServ="31401500" NoIdentificacion="RCAT-6J6917" Cantidad="2" ClaveUnidad="H87" Unidad="H87" Descripcion="BR-90URE-2" ValorUnitario="54.4000" Importe="108.8000" ObjetoImp="02">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="108.8000" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="17.4080" />
+        </cfdi:Traslados>
+      </cfdi:Impuestos>
+      <cfdi:InformacionAduanera NumeroPedimento="24  24  3969  4002430" />
+    </cfdi:Concepto>
+    <cfdi:Concepto ClaveProdServ="31401500" NoIdentificacion="J23753125375H862" Cantidad="2" ClaveUnidad="H87" Unidad="H87" Descripcion="RW. 2.375 X 3.125 X 0.375 -H862" ValorUnitario="68.9100" Importe="137.8200" ObjetoImp="02">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="137.8200" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="22.0512" />
+        </cfdi:Traslados>
+      </cfdi:Impuestos>
+      <cfdi:InformacionAduanera NumeroPedimento="24  24  3969  4001835" />
+    </cfdi:Concepto>
+    <cfdi:Concepto ClaveProdServ="31401500" NoIdentificacion="RCAT-6J9733" Cantidad="3" ClaveUnidad="H87" Unidad="H87" Descripcion="BR-90URE-1-1/2X2-1/16X.115" ValorUnitario="48.6600" Importe="145.9800" ObjetoImp="02">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="145.9800" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="23.3568" />
+        </cfdi:Traslados>
+      </cfdi:Impuestos>
+      <cfdi:InformacionAduanera NumeroPedimento="24  24  3969  4000803" />
+    </cfdi:Concepto>
+    <cfdi:Concepto ClaveProdServ="31401500" NoIdentificacion="W1017501000-H533" Cantidad="2" ClaveUnidad="H87" Unidad="H87" Descripcion="GE. 1.750 X 1.875 X 1.000" ValorUnitario="29.9000" Importe="59.8000" ObjetoImp="02">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="59.8000" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="9.5680" />
+        </cfdi:Traslados>
+      </cfdi:Impuestos>
+      <cfdi:InformacionAduanera NumeroPedimento="22  24  3969  2008532" />
+    </cfdi:Concepto>
+    <cfdi:Concepto ClaveProdServ="31401500" NoIdentificacion="W045053040WAU-K9" Cantidad="2" ClaveUnidad="H87" Unidad="H87" Descripcion="RW. 45 X 53 X 4/7 K09" ValorUnitario="17.1200" Importe="34.2400" ObjetoImp="02">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="34.2400" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="5.4784" />
+        </cfdi:Traslados>
+      </cfdi:Impuestos>
+      <cfdi:InformacionAduanera NumeroPedimento="24  81  3729  4000422" />
+      <cfdi:InformacionAduanera NumeroPedimento="24  81  3935  4000006" />
+    </cfdi:Concepto>
+    <cfdi:Concepto ClaveProdServ="31401500" NoIdentificacion="W060070070WOH860" Cantidad="2" ClaveUnidad="H87" Unidad="H87" Descripcion="RW. 60 X 70 X 7/10 H860" ValorUnitario="77.0500" Importe="154.1000" ObjetoImp="02">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="154.1000" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="24.6560" />
+        </cfdi:Traslados>
+      </cfdi:Impuestos>
+    </cfdi:Concepto>
+    <cfdi:Concepto ClaveProdServ="31401500" NoIdentificacion="W2030000375-H533" Cantidad="2" ClaveUnidad="H87" Unidad="H87" Descripcion="GE. 3.000 X 0.375 X 0.125" ValorUnitario="23.0000" Importe="46.0000" ObjetoImp="02">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="46.0000" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="7.3600" />
+        </cfdi:Traslados>
+      </cfdi:Impuestos>
+      <cfdi:InformacionAduanera NumeroPedimento="24  24  3969  4000377" />
+    </cfdi:Concepto>
+    <cfdi:Concepto ClaveProdServ="31401500" NoIdentificacion="W1020001000-H533" Cantidad="2" ClaveUnidad="H87" Unidad="H87" Descripcion="GE. 2.000X 2.125 X 1.000" ValorUnitario="29.4400" Importe="58.8800" ObjetoImp="02">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="58.8800" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="9.4208" />
+        </cfdi:Traslados>
+      </cfdi:Impuestos>
+    </cfdi:Concepto>
+    <cfdi:Concepto ClaveProdServ="31401500" NoIdentificacion="W2032500375-H533" Cantidad="6" ClaveUnidad="H87" Unidad="H87" Descripcion="GE. 3.250 X 0.375 X 0.125" ValorUnitario="25.3000" Importe="151.8000" ObjetoImp="02">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="151.8000" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="24.2880" />
+        </cfdi:Traslados>
+      </cfdi:Impuestos>
+      <cfdi:InformacionAduanera NumeroPedimento="22  24  3969  2007252" />
+    </cfdi:Concepto>
+    <cfdi:Concepto ClaveProdServ="31401500" NoIdentificacion="RP022030070B-SKF" Cantidad="2" ClaveUnidad="H87" Unidad="H87" Descripcion="PS. 022 X 030 X 070" ValorUnitario="52.9300" Importe="105.8600" ObjetoImp="02">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="105.8600" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="16.9376" />
+        </cfdi:Traslados>
+      </cfdi:Impuestos>
+      <cfdi:InformacionAduanera NumeroPedimento="24  24  3969  4006358" />
+    </cfdi:Concepto>
+    <cfdi:Concepto ClaveProdServ="31401500" NoIdentificacion="J35004500500H862" Cantidad="2" ClaveUnidad="H87" Unidad="H87" Descripcion="RW. 3.5 X 4.5 X 0.5 -H862" ValorUnitario="124.6100" Importe="249.2200" ObjetoImp="02">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="249.2200" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="39.8752" />
+        </cfdi:Traslados>
+      </cfdi:Impuestos>
+      <cfdi:InformacionAduanera NumeroPedimento="24  24  3969  4003055" />
+    </cfdi:Concepto>
+    <cfdi:Concepto ClaveProdServ="31401500" NoIdentificacion="TFER-04000" Cantidad="2" ClaveUnidad="H87" Unidad="H87" Descripcion="P. SEAL 4 X 3.445 X 0.284" ValorUnitario="70.8300" Importe="141.6600" ObjetoImp="02">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="141.6600" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="22.6656" />
+        </cfdi:Traslados>
+      </cfdi:Impuestos>
+      <cfdi:InformacionAduanera NumeroPedimento="24  24  3969  4002498" />
+    </cfdi:Concepto>
+  </cfdi:Conceptos>
+  <cfdi:Impuestos TotalImpuestosTrasladados="329.32">
+    <cfdi:Traslados>
+      <cfdi:Traslado Base="2058.22" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="329.32" />
+    </cfdi:Traslados>
+  </cfdi:Impuestos>
+<cfdi:Complemento><tfd:TimbreFiscalDigital xmlns:tfd="http://www.sat.gob.mx/TimbreFiscalDigital" xsi:schemaLocation="http://www.sat.gob.mx/TimbreFiscalDigital http://www.sat.gob.mx/sitio_internet/cfd/TimbreFiscalDigital/TimbreFiscalDigitalv11.xsd" Version="1.1" UUID="BB6AFD6F-205C-4053-9B77-B1145D90D59E" FechaTimbrado="2025-01-24T17:10:24" RfcProvCertif="SFE0807172W8" SelloCFD="EzpbOYLGEhSYks6KRK8BuL5pxbz/kLcE1MjEaQF12YCdCpUqab1qj5mrid2dVWKZWqvYLpvOV5Lqzlx/m9CtncXFICLf15j4kGtnkA1bwDzT9qvOsxajbCVXFmuvqESgdfL1XVUZDsVB+c5GdFMSz27MdO4HQICYEgqN2XkFNzObTT2Vzkh0UT4S+Ac2xd9IoOeD0FLr43DXQERl+X5CcFB6187Jdym4IL8wujIGoEvuP0eyUeIRCvtkCPCWvK/+fcysl6Rzpt63vMIi8xgxfUHFavsW6xzO+imsZGUsPusnXFBIYvvIsoPEAYC/wJWJgD7Oh/18FxSXd3lKfnnpzg==" NoCertificadoSAT="00001000000710052019" SelloSAT="bqxqCWGd9MpBxx4LlxUtHbMFKpln4E7FHAtR7kP5hL+2ptCyE67Lb65jP/FN82HuTNBQfn6dgnk9dRdbKTMHqf0C92MnfhBbEGS1vHMeRqyFHF3ZaHFkphV4WIMkwq+hMFaevdcOxsrO7XsHMBx0To5bxSgrQZYC546Jz1ouO6geDPTYtuWiDRH8QmE5DiXnyD5zRYe/xPoSQczzhlXlXn1XrR9qMLRBD3SZ1XbMvKeG2ks5pJ//RFAQu1/LE4bbvOCMOE4yOiBVl7xlkJ3WpL4sQYOXyMiYyiwHs/Hm5N4ufL90FxBXJ53qK0ujhABkCy9m9ADPA9uoJsAMjTN/Ow==" /></cfdi:Complemento></cfdi:Comprobante>

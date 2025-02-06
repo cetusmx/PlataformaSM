@@ -1,0 +1,11 @@
+.contenedor{
+    width: 50%;
+    font-size: 0.8rem;
+}
+
+.centrar{
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    justify-items: center;
+}
