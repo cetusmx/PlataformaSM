@@ -5,9 +5,9 @@ const CodeBarPrint = (props) => {
 
   //console.log(props);
 
-  props.partidas.map((elemento) => {
+  /* props.partidas.map((elemento) => {
     //console.log(elemento.id);
-    });
+    }); */
   
   return (
     <>

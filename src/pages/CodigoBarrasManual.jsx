@@ -58,20 +58,13 @@ const CodigoBarrasManual = () => {
       (partida) => partida.clave !== item.clave
     );
     setPartidas(resultado);
-    setPartidasPrint(updatePrintables(resultado));
-    console.log(resultado);
+    
+    const resultado2 = partidasPrint.filter(
+      (partida) => partida.clave !== item.clave
+    );
+    setPartidasPrint(resultado2);
+    //console.log(resultado);
   };
-
-  const updatePrintables = (resultado) => {
-    let temp = [];
-
-    for (let i=0; i < resultado.length; i++) {
-
-      for(let j=0; j < resultado.cantidad; j++){
-        temp.push(resultado.barcode);
-      }
-  }
-}
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
