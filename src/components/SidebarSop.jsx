@@ -40,7 +40,7 @@ const SidebarSop = () => {
           <BiCalculator className="icon" />
           Cotizador
         </Link>
-        <Link to="precios" className="item" onClick={()=>{setContextSidebarNav("Precios")}}>
+        <Link to="precios" className="item" onClick={()=>{setContextSidebarNav("Herramientas")}}>
           <BiWrench className="icon" />
           Herramientas
         </Link>

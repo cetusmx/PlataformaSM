@@ -55,16 +55,6 @@ const SidebarUser = () => {
           <BiWrench />
           Herramientas
         </Link>
-        <Link
-          to="precios"
-          className="item"
-          onClick={() => {
-            setContextSidebarNav("Precios");
-          }}
-        >
-          <BiWrench className="icon" />
-          Herramientas
-        </Link>
         <button className="item" onClick={logout}>
           <BiLogOut className="icon" />
           Salir
