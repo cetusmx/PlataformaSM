@@ -39,7 +39,7 @@ width: 100%; */
   color: #dde6ed;
 }
 
-.columnaIzquierda {
+.columnaIzquierdaAP {
   display: flex;
   flex-direction: column;
   /* justify-content: space-between; */
@@ -47,7 +47,7 @@ width: 100%; */
   /* background: #27374d; */
   margin-right: 0%;
 }
-.columnaDerecha {
+.columnaDerechaAP {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -66,7 +66,7 @@ width: 100%; */
   font-size: 0.8rem;
 }
 
-.contenedor-columnas {
+.contenedor-columnasAP {
   display: flex;
   flex-direction: row;
   width: 100%;
@@ -111,7 +111,6 @@ width: 100%; */
   width: 85%;
   margin-left: 5%;
 }
-
 .divFlecha {
 }
 

@@ -224,8 +224,8 @@ const AjustesPrecios = () => {
             </div>
           </div>
         </div>
-        <div className="contenedor-columnas">
-          <div className="columnaIzquierda">
+        <div className="contenedor-columnasAP">
+          <div className="columnaIzquierdaAP">
             <div className="row-col-izq-up">
               <Card style={{ width: "14rem" }}>
                 <Card.Header>Listas de Precios</Card.Header>
@@ -328,7 +328,7 @@ const AjustesPrecios = () => {
               </Card>
             </div>
           </div>
-          <div className="columnaDerecha">
+          <div className="columnaDerechaAP">
             <div style={{ width: "73%", marginRight: "2%" }}>
               {sucursal !== "" ? <TablaPrecios sucursal={sucursal} /> : null}
             </div>
