@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Barcode from "react-barcode";
+import Logo from "../assets/Logo2.jpg"
 
 const CodeBarPrint = (props) => {
 
@@ -13,7 +14,7 @@ const CodeBarPrint = (props) => {
     <>
       {props.partidas.map((val, key) => {
         return (
-          <div>{val.barcode}</div>
+          <div><img src={Logo} alt="Logo SM" width={"50px"} />{val.barcode}</div>
         );
       })}
     </>
