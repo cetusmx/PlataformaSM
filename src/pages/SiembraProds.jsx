@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import "../styles/siembraProds.css";
 import { show_alerta } from "../functions";
 import Axios from "axios";
@@ -11,17 +11,23 @@ const SiembraProds = () => {
   const [veces, setVeces] = useState("Ninguna vez");
   const [observaciones, setObservaciones] = useState("");
   const [sucursal1, setSucursal1] = useState("");
+  const [maximo, setMax] = useState("");
 
   const urlServidorAPI = "http://18.224.118.226:3001";
 
   const { valor, valor2 } = useContext(DataContext);
   const { contextData, setContextData } = valor;
   const infoUsuario = contextData;
-  //
+  
+  useEffect(() => {
+      // Agrega opciones al Select cuando carga la página por primera vez
+      setSucursal1(infoUsuario.sucursal);
+      console.log("Dentro UseEffect");
+    }, []);
 
   //Insertar nueva siembra
   const guardar = () => {
-    setSucursal1(infoUsuario.sucursal);
+    
     Axios({
       method: "POST",
       url: urlServidorAPI + "/insertarSiembra",
@@ -32,6 +38,7 @@ const SiembraProds = () => {
         veces: veces,
         observaciones: observaciones,
         sucursal: sucursal1,
+        maximo: maximo,
       },
     })
       .then((response) => {
@@ -48,7 +55,18 @@ const SiembraProds = () => {
       .catch(function (error) {
         JSON.parse(JSON.stringify(error));
       });
+
+      clearControles();
   };
+
+  const clearControles = () => {
+    setClave("");
+    setFamilia("");
+    setObservaciones("");
+    setMotivo("Consumo recurrente de un cliente");
+    setVeces("Ninguna vez");
+    setMax("");
+  }
 
   return (
     <>
@@ -58,8 +76,9 @@ const SiembraProds = () => {
           <div className="row">
             <div className="col">
               <div class="form-group st">
-                <label for="exampleFormControlInput1">Clave de proveedor</label>
+                <label for="exampleFormControlInput1">Clave (propia o de proveedor)</label>
                 <input
+                value={clave}
                   onChange={(event) => {
                     setClave(event.target.value);
                   }}
@@ -74,6 +93,7 @@ const SiembraProds = () => {
               <div class="form-group st">
                 <label for="exampleFormControlInput1">Familia sello</label>
                 <input
+                value={familia}
                   onChange={(event) => {
                     setFamilia(event.target.value);
                   }}
@@ -124,10 +144,26 @@ const SiembraProds = () => {
                 </select>
               </div>
             </div>
+            <div className="col">
+              <div class="form-group st">
+                <label for="exampleFormControlInput1">Máximo sugerido</label>
+                <input
+                value={maximo}
+                  onChange={(event) => {
+                    setMax(event.target.value);
+                  }}
+                  type="number"
+                  class="form-control"
+                  id="exampleFormControlInput1"
+                  placeholder="Máximo sugerido"
+                ></input>
+              </div>
+            </div>
           </div>
           <div class="form-group st">
             <label for="exampleFormControlTextarea1">Observaciones</label>
             <textarea
+            value={observaciones}
             onChange={(event) => {setObservaciones(event.target.value)}}
               class="form-control"
               id="exampleFormControlTextarea1"
