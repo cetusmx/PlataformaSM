@@ -12,6 +12,7 @@ const CodigoBarrasManual = () => {
   const [partidasPrint, setPartidasPrint] = useState([]);
   const [qty, setQty] = useState("1");
   const [value, setValue] = useState("");
+  const [clavesxLote, setClavesxLote] = useState("");
 
   const componentRef = useRef();
 
@@ -58,7 +59,7 @@ const CodigoBarrasManual = () => {
       (partida) => partida.clave !== item.clave
     );
     setPartidas(resultado);
-    
+
     const resultado2 = partidasPrint.filter(
       (partida) => partida.clave !== item.clave
     );
@@ -69,6 +70,29 @@ const CodigoBarrasManual = () => {
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
   });
+
+  const agregarLote = () => {
+    var lines = clavesxLote.split("\n");
+    //console.log(lines);
+    let loteTemp = [];
+      
+    for (var i = 0; i < lines.length; i++) {
+      //code here using lines[i] which will give you each line
+      const partida = [
+        {
+          cantidad: "1",
+          clave: lines[i],
+          barcode: <Barcode width={1} height={40} ref={ref} value={lines[i]} />,
+        },
+      ];
+
+      loteTemp = loteTemp.concat(partida);
+    }
+    console.log(loteTemp);
+    setPartidas(loteTemp);
+    setPartidasPrint(loteTemp);
+    //console.log(clavesxLote);
+  };
 
   return (
     <>
@@ -152,7 +176,19 @@ const CodigoBarrasManual = () => {
               </table>
             )}
           </div>
+          <div className="div-boton-generar">
+            <button
+              id="boton-print"
+              type="button"
+              className="btn btn-outline-secondary"
+              data-bs-toggle="modal"
+              data-bs-target="#myModal"
+            >
+              Por Lote
+            </button>
+          </div>
         </div>
+
         {partidas?.length > 0 && (
           <div className="codigosBarras">
             <div className="codesHeader">
@@ -177,6 +213,54 @@ const CodigoBarrasManual = () => {
             )}
           </div>
         )}
+      </div>
+
+      <div class="modal" id="myModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            {/* <!-- Modal Header --> */}
+            <div class="modal-header">
+              <h4 class="modal-title">Agregar claves por lote</h4>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+
+            {/* <!-- Modal body --> */}
+            <div class="modal-body">
+              <h6>Agregue las claves una sola en cada fila</h6>
+              <textarea
+                onChange={(e) => setClavesxLote(e.target.value)}
+                name="claves"
+                id="claves"
+                class="form-control"
+                rows={10}
+              ></textarea>
+            </div>
+
+            {/* <!-- Modal footer --> */}
+            <div class="modal-footer">
+              <button
+                onClick={() => agregarLote()}
+                type="button"
+                class="btn btn-primary"
+                data-bs-dismiss="modal"
+              >
+                Agregar
+              </button>
+              <button
+                id="btnCerrar"
+                type="button"
+                className="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );

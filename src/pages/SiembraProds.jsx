@@ -27,11 +27,13 @@ const SiembraProds = () => {
 
   //Insertar nueva siembra
   const guardar = () => {
+    const date = new Date().toJSON().slice(0, 10);
     
     Axios({
       method: "POST",
       url: urlServidorAPI + "/insertarSiembra",
       data: {
+        fecha: date,
         clave: clave,
         familia: familia,
         motivo: motivo,

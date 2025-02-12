@@ -1,0 +1,31 @@
+.formulario1 {
+  border: 1px solid #f7f9fa;
+  border-radius: 5px;
+  background-color: #f7f9fa;
+  font-size: 0.8rem;
+  width: 48%;
+  float: left;
+  padding-right: 1%;
+  padding-left: 1%;
+}
+.formulario2 {
+  padding-left: 1%;
+  width: 48%;
+  padding-right: 1%;
+  float: right;
+  font-size: 0.8rem;
+}
+.fontSize {
+  font-size: 0.8rem;
+}
+.contenedor-principal{
+    width: 100%;
+    /* border: 1px solid #dde6ed; */
+    border-radius: 5px;
+    z-index: 0;
+    overflow-y: scroll;
+    /* font-size: 0.8rem; */
+    min-height: 63vh;
+    max-height: 63vh;
+    padding-top: 10px;
+}

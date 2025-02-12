@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { BiSlider, BiDollar, BiGroup } from "react-icons/bi";
+import { BiSlider, BiDollar, BiGroup, BiPackage } from "react-icons/bi";
 import Editamars from "./Editamars";
 import Precios from "./Precios";
 import Usuarios from "./Usuarios";
@@ -7,6 +7,7 @@ import AjustesCotizador from "./AjustesCotizador";
 import AjustesPrecios from "./AjustesPrecios";
 import { DataContext } from "../contexts/dataContext";
 import { MenuAjustesContext } from "../contexts/context-menu-ajustes";
+import Gestion from "./admon/siembra/Gestion";
 
 
 const course = [
@@ -21,6 +22,10 @@ const course = [
   {
     title: "Ajustes Precios",
     icon: <BiDollar />,
+  },
+  {
+    title: "Siembra de Productos",
+    icon: <BiPackage />,
   },
 ];
 
@@ -68,6 +73,8 @@ const Inicio = () => {
           <AjustesCotizador />
         ) : posicionMenu === "Ajustes Precios" ? (
           <AjustesPrecios />
+        ) : posicionMenu === "Siembra de Productos" ? (
+          <Gestion />
         ) : (
           <Usuarios />
         )}
