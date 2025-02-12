@@ -230,7 +230,7 @@ const CodigoBarrasManual = () => {
 
             {/* <!-- Modal body --> */}
             <div class="modal-body">
-              <h6>Agregue las claves una sola en cada fila</h6>
+              <h6>Agregue las claves, una en cada fila</h6>
               <textarea
                 onChange={(e) => setClavesxLote(e.target.value)}
                 name="claves"
