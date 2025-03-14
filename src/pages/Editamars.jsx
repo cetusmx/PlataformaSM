@@ -5,6 +5,11 @@ import withReactContent from "sweetalert2-react-content";
 import { show_alerta } from "../functions";
 import { BiNotification, BiSearch, BiMap, BiUser } from "react-icons/bi";
 import * as XLSX from "xlsx";
+import "../styles/editamars.css";
+import ListGroup from "react-bootstrap/ListGroup";
+import Card from "react-bootstrap/Card";
+import TablaVistaPrevia from "./ajustes/cotizador/TablaVistaPrevia";
+import { Spinner } from "react-bootstrap";
 
 const Editamars = () => {
   const [search, setSearch] = useState("");
@@ -25,17 +30,33 @@ const Editamars = () => {
   const [margenZacatecasOld, setMargenZacatecasOld] = useState("");
   const [margenTecmin, setMargenTecmin] = useState("");
   const [margenTecminOld, setMargenTecminOld] = useState("");
+  const [margenMayorista, setMargenMayorista] = useState("");
+  const [margenMayoristaOld, setMargenMayoristaOld] = useState("");
   const [title, setTitle] = useState("1");
   const [operation, setOperation] = useState("");
+  const [isDisabled, setIsDisabled] = useState(true);
+
+  const [radioModoSubidaLista, setRadioModoSubidaLista] = useState(true);
+  const [isFetching, setIsFetching] = useState(true);
 
   useEffect(() => {
-    // Agrega opciones al Select cuando carga la página por primera vez
+    setIsFetching(true);
     getMargenes();
     console.log("Dentro UseEffect");
   }, []);
 
-  const getMargenes = () => {
-    Axios.get(urlServidorAPI + "/margenes").then((response) => {
+  useEffect(() => {
+    if (margenesPivote.length > 0) {
+      setIsFetching(false);
+    } else {
+      setIsFetching(true);
+    }
+    console.log("Dentro useEffect IsFetching");
+    //setIsDisabled(true);
+  }, [margenesPivote]);
+
+  const getMargenes = async () => {
+    await Axios.get(urlServidorAPI + "/margenes").then((response) => {
       setMargenes(response.data);
       let hashMap = new Map();
       response.data.map((val) => {
@@ -88,6 +109,10 @@ const Editamars = () => {
               const temp = { Tecmin: margi };
               family = Object.assign({}, family, temp);
             }
+            if (sucu === "Mayorista") {
+              const temp = { Mayorista: margi };
+              family = Object.assign({}, family, temp);
+            }
           }
         });
         if (Object.keys(family).length !== 0) {
@@ -98,9 +123,10 @@ const Editamars = () => {
       //console.log(arreglo);
       setMargenesPivote(arreglo);
     });
+    setIsFetching(false);
   };
 
-  const openModal = (op, familia, dur, fres, maza, zaca, tecm) => {
+  const openModal = (op, familia, dur, fres, maza, zaca, tecm, mayor) => {
     setFamily("");
     setMargenDurango("");
     setMargenDurangoOld("");
@@ -112,6 +138,8 @@ const Editamars = () => {
     setMargenZacatecasOld("");
     setMargenTecmin("");
     setMargenTecminOld("");
+    setMargenMayorista("");
+    setMargenMayoristaOld("");
     setOperation(op);
     if (op === 1) {
       setTitle("Editar Margen");
@@ -126,6 +154,8 @@ const Editamars = () => {
       setMargenZacatecasOld(zaca);
       setMargenTecmin(tecm);
       setMargenTecminOld(tecm);
+      setMargenMayorista(mayor);
+      setMargenMayoristaOld(mayor);
     }
     window.setTimeout(function () {
       document.getElementById("dgo").focus();
@@ -145,6 +175,8 @@ const Editamars = () => {
       show_alerta("Escribe un margen para Zacatecas", "warning");
     } else if (margenTecmin.trim() === "") {
       show_alerta("Escribe un margen para Tecmin", "warning");
+    } else if (margenMayorista.trim() === "") {
+      show_alerta("Escribe un margen para Mayorista", "warning");
     } else {
       if (operation === 1) {
         let cambiaron = new Array([]);
@@ -163,6 +195,9 @@ const Editamars = () => {
         if (margenTecmin !== margenTecminOld) {
           cambiaron.push("Tecmin");
         }
+        if (margenMayorista !== margenMayoristaOld) {
+          cambiaron.push("Mayorista");
+        }
         cambiaron.shift();
 
         parametros = {
@@ -172,6 +207,7 @@ const Editamars = () => {
           ma: margenMazatlan.trim(),
           za: margenZacatecas.trim(),
           te: margenTecmin.trim(),
+          my: margenMayorista.trim(),
           cambios: cambiaron,
         };
         metodo = "PUT";
@@ -217,18 +253,89 @@ const Editamars = () => {
       );
 
   const handleFileUpload = (e) => {
-    const reader = new FileReader();
-    let parsedData;
-    reader.readAsBinaryString(e.target.files[0]);
-    reader.onload = (e) => {
-      const data = e.target.result;
-      const workbook = XLSX.read(data, { type: "binary" });
-      const sheetName = workbook.SheetNames[0];
-      console.log(sheetName);
-      const sheet = workbook.Sheets[sheetName];
-      parsedData = XLSX.utils.sheet_to_json(sheet);
-      setDataExcel(parsedData);
-    };
+    console.log("Dentro de fileupload");
+    console.log(e.target.files[0]);
+
+    if (typeof e.target.files[0] !== "undefined") {
+      const reader = new FileReader();
+      let parsedData;
+      reader.readAsBinaryString(e.target.files[0]);
+      reader.onload = (e) => {
+        const data = e.target.result;
+        const workbook = XLSX.read(data, { type: "binary" });
+        const sheetName = workbook.SheetNames[0];
+        console.log(sheetName);
+        const sheet = workbook.Sheets[sheetName];
+        parsedData = XLSX.utils.sheet_to_json(sheet);
+        setDataExcel(parsedData);
+
+        setIsDisabled(false);
+        console.log("Inside handleFile");
+        if (!radioModoSubidaLista) {
+          setRadioModoSubidaLista(true);
+        }
+      };
+    }
+  };
+
+  const openModal2 = async () => {
+    console.log("Dentro de openModal2");
+    console.log(dataExcel);
+
+    // Radio true para  actualizar, false para borrar destino y escribir
+    if (radioModoSubidaLista) {
+      //Actualizar
+      console.log("Radio true " + radioModoSubidaLista);
+
+      Axios({
+        method: "POST",
+        url: urlServidorAPI + "/updateMargenes",
+        data: dataExcel,
+      })
+        .then((response) => {
+          var tipo = response.status;
+          console.log(tipo);
+          if (tipo === 200) {
+            show_alerta("Subido exitósamente", "success");
+          } else {
+            show_alerta("Hubo un problema", "error");
+          }
+
+          console.log(response.status);
+          getMargenes();
+        })
+        .catch(function (error) {
+          JSON.parse(JSON.stringify(error));
+        });
+    } else {
+      //setIsFetching(true);
+      setMargenesPivote([]);
+
+      ///Borrar e Insertar márgenes
+      await Axios({
+        method: "POST",
+        url: urlServidorAPI + "/insertarMargenes",
+        data: dataExcel,
+      })
+        .then((response) => {
+          var tipo = response.status;
+          console.log(tipo);
+          if (tipo === 200) {
+            //show_alerta("Subido exitósamente", "success");
+          } else {
+            show_alerta("Hubo un problema", "error");
+          }
+
+          console.log(response.status);
+          getMargenes();
+        })
+        .catch(function (error) {
+          JSON.parse(JSON.stringify(error));
+        });
+    }
+    setIsDisabled(true); /* Botón Subir (se desactiva) */
+    setDataExcel([]);
+    setRadioModoSubidaLista(true);
   };
 
   return (
@@ -237,77 +344,173 @@ const Editamars = () => {
         <div className="row">
           {/* <div className="col-12 col-lg-10 offset-0 offset-lg-1"> */}
           <div className="contenedor-100porciento">
-            <div className="content--header--editamars">
-              <div className="header--activity">
-                <div className="search-box-editmars">
-                  <input
-                    type="text"
-                    placeholder="Buscar"
-                    onChange={buscar}
-                    value={search}
-                  />
-                  <BiSearch className="icon-1" />
+            {
+              <div className="content--header--editamars">
+                <div className="header--activity-ajcot">
+                  <div className="search-box-editmars">
+                    <input
+                      type="text"
+                      placeholder="Buscar"
+                      onChange={buscar}
+                      value={search}
+                    />
+                    <BiSearch className="icon-1" />
+                  </div>
                 </div>
               </div>
-              <div className="header--activity-file">
-                Carga masiva:
-                <input
-                  type="file"
-                  accept=".xlsx, .xls"
-                  onChange={handleFileUpload}
-                />
-              </div>
-            </div>
+            }
 
-            {/*** Contenedor de tabla *** */}
-            <div className="table-responsive">
-              <table className="table table-bordered">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Familia</th>
-                    <th>Durango</th>
-                    <th>Fresnillo</th>
-                    <th>Mazatlán</th>
-                    <th>Zacatecas</th>
-                    <th>Tecmin</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody className="=table-group-divider">
-                  {results.map((margenes, i) => (
-                    <tr key={margenes.familia}>
-                      <td>{i + 1}</td>
-                      <td>{margenes.familia}</td>
-                      <td>{margenes.Durango}</td>
-                      <td>{margenes.Fresnillo}</td>
-                      <td>{margenes.Mazatlán}</td>
-                      <td>{margenes.Zacatecas}</td>
-                      <td>{margenes.Tecmin}</td>
-                      <td>
-                        <button
-                          onClick={() =>
-                            openModal(
-                              1,
-                              margenes.familia,
-                              margenes.Durango,
-                              margenes.Fresnillo,
-                              margenes.Mazatlán,
-                              margenes.Zacatecas,
-                              margenes.Tecmin
-                            )
-                          }
-                          className="btn btn-warning"
-                          data-bs-toggle="modal"
-                          data-bs-target="#modalEdicion"
-                        >
-                          <i className="fa-solid fa-edit"></i>
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="container-inferior">
+              {/*** Contenedor de tabla *** */}
+              <div style={{ fontSize: "0.8rem" }} className="div-table">
+                {isFetching && margenesPivote?.length === 0 && (
+                  <div>
+                    <div
+                      class="spinner-border"
+                      role="status"
+                      sx={{ display: "flex", justifyContent: "center" }}
+                      style={{
+                        width: "5rem",
+                        height: "5rem",
+                        margin: "22vh 0 0 55vh",
+                      }}
+                    >
+                      {/* <Spinner animation="border" role="status">
+                      {" "}
+                      <span className="visually-hidden">Cargando...</span>{" "}
+                    </Spinner> */}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: "1.2rem",
+                        justifyContent: "center",
+                        margin: "1vh 0 0 53vh",
+                      }}
+                    >
+                      <span>Cargando...</span>
+                    </div>
+                  </div>
+                )}
+                {results?.length > 0 &&
+                  !isFetching &&
+                  margenesPivote?.length > 0 && (
+                    <table className="table">
+                      <thead>
+                        <tr>
+                          <th className="td-table-cb">#</th>
+                          <th>Familia</th>
+                          <th>Durango</th>
+                          <th>Fresnillo</th>
+                          <th>Mazatlán</th>
+                          <th>Zacatecas</th>
+                          <th>Tecmin</th>
+                          <th>Mayorista</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody className="=table-group-divider">
+                        {results.map((margenes, i) => (
+                          <tr key={margenes.familia}>
+                            <td className="td-table-cb">{i + 1}</td>
+                            <td className="td-table-cb2">{margenes.familia}</td>
+                            <td className="td-table-cb">{margenes.Durango}</td>
+                            <td className="td-table-cb">
+                              {margenes.Fresnillo}
+                            </td>
+                            <td className="td-table-cb">{margenes.Mazatlán}</td>
+                            <td className="td-table-cb">
+                              {margenes.Zacatecas}
+                            </td>
+                            <td className="td-table-cb">{margenes.Tecmin}</td>
+                            <td className="td-table-cb">
+                              {margenes.Mayorista}
+                            </td>
+                            <td className="td-table-cb">
+                              <button
+                                onClick={() =>
+                                  openModal(
+                                    1,
+                                    margenes.familia,
+                                    margenes.Durango,
+                                    margenes.Fresnillo,
+                                    margenes.Mazatlán,
+                                    margenes.Zacatecas,
+                                    margenes.Tecmin,
+                                    margenes.Mayorista
+                                  )
+                                }
+                                className="btn btn-warning"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalEdicion"
+                              >
+                                <i className="fa-solid fa-edit"></i>
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+              </div>
+              <div className="cargaMasiva">
+                <Card style={{ width: "100%" }}>
+                  <Card.Header>Carga masiva</Card.Header>
+                  <ListGroup variant="flush">
+                    <ListGroup.Item>
+                      <input
+                        type="file"
+                        accept=".xlsx, .xls"
+                        onChange={(e) => handleFileUpload(e)}
+                        style={{ width: "140px" }}
+                      />
+                    </ListGroup.Item>
+                    <ListGroup.Item>
+                      <p style={{ margin: "2px" }}>Columnas necesarias:</p>
+                      <p style={{ margin: "2px", fontWeight: "500" }}>
+                        <i>familia, margen, sucursal</i>
+                      </p>
+                      <p
+                        style={{
+                          margin: "2px",
+                          marginTop: "10px",
+                          fontSize: "0.rem",
+                        }}
+                      >
+                        <i>Ejem.</i>
+                      </p>
+                      <p
+                        style={{
+                          /* margin: "2px", */
+                          marginTop: "5px",
+                          fontSize: "0.rem",
+                        }}
+                      >
+                        <i>ADHES, 0.8, Mazatlán</i>
+                      </p>
+                    </ListGroup.Item>
+                  </ListGroup>
+                  <ListGroup.Item>
+                    <div style={{ paddingLeft: "10px" }}>
+                      <button
+                        /* onClick={() => openModal2()} */
+                        disabled={isDisabled}
+                        style={{
+                          width: "110px",
+                          border: "1px solid #757575",
+                          padding: "0.1rem",
+                          margin: "0.4rem",
+                          fontSize: "0.8rem",
+                        }}
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalSubir"
+                      >
+                        {" "}
+                        Subir
+                      </button>
+                    </div>
+                  </ListGroup.Item>
+                </Card>
+              </div>
             </div>
           </div>
         </div>
@@ -400,6 +603,20 @@ const Editamars = () => {
                   onChange={(e) => setMargenTecmin(e.target.value)}
                 ></input>
               </div>
+              <div className="input-group mb-3">
+                <span className="input-group-text">
+                  <i className="fa-solid fa-industry me-2"></i>
+                  <div style={{ width: "100px" }}>Mayorista</div>
+                </span>
+                <input
+                  type="text"
+                  id="mayor"
+                  className="form-control"
+                  placeholder="Margen"
+                  value={margenMayorista}
+                  onChange={(e) => setMargenMayorista(e.target.value)}
+                ></input>
+              </div>
               <div className="d-grid col-6 mx-auto">
                 <button onClick={() => validar()} className="btn btn-success">
                   <i className="fa-solid fa-floppy-disk mx-2"></i>Guardar
@@ -414,6 +631,105 @@ const Editamars = () => {
                 data-bs-dismiss="modal"
               >
                 Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/**** MODAL SUBIDA ARCHIVO ******/}
+      <div id="modalSubir" className="modal fade" aria-hidden="true">
+        <div className="modal-dialog modal-dialog-scrollable">
+          <div className="modal-content">
+            <div className="modal-header">
+              <div className="container-fluid">
+                <div className="row pt-3">
+                  <div className="col-md-12">
+                    <label className="h5">
+                      Vista previa márgenes para Cotizador
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="modal-body">
+              <div className="container-fluid">
+                <div className="row">
+                  <TablaVistaPrevia data={dataExcel} />
+                </div>
+                {/* <div className="row">
+                  <div
+                    className="col-md-6 mx-auto"
+                    style={{ fontSize: "1.2rem" }}
+                  >
+                    <label
+                      style={{ paddingRight: "1rem" }}
+                      className="col-form-label"
+                    >
+                      {dataExcel.length}
+                    </label>
+                    <span id="passwordHelpInline" className="form-text">
+                      registros en total
+                    </span>
+                  </div>
+                </div> */}
+              </div>
+            </div>
+            <div className="modal-footer">
+              <div className="container-fluid">
+                <div className="row">
+                  <div className="col-8">
+                    <div className="form-check">
+                      <input
+                        onClick={() => setRadioModoSubidaLista(true)}
+                        className="form-check-input"
+                        type="radio"
+                        name="flexRadioDefault"
+                        id="flexRadioDefault1"
+                        checked
+                      />
+                      <label
+                        className="form-check-label"
+                        for="flexRadioDefault1"
+                      >
+                        Actualizar márgenes
+                      </label>
+                    </div>
+                    <div className="form-check">
+                      <input
+                        onClick={() => setRadioModoSubidaLista(false)}
+                        className="form-check-input"
+                        type="radio"
+                        name="flexRadioDefault"
+                        id="flexRadioDefault2"
+                      />
+                      <label
+                        className="form-check-label"
+                        for="flexRadioDefault2"
+                      >
+                        Borrar márgenes en destino
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button
+                id="btnCerrar"
+                type="button"
+                className="btn btn-secondary"
+                data-bs-dismiss="modal"
+                onClick={() => setIsDisabled(true)}
+              >
+                Cerrar
+              </button>
+              <button
+                id="btnAplicar"
+                onClick={openModal2}
+                type="button"
+                className="btn btn-primary"
+                data-bs-dismiss="modal"
+              >
+                Aplicar
               </button>
             </div>
           </div>

@@ -1,0 +1,7 @@
+.head-fixed th{
+    position: sticky;
+    top: -17px;
+}
+.contenedor-vista-previa{
+    margin-left: -10px;
+}

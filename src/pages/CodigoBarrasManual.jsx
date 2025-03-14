@@ -1,22 +1,51 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import "../styles/codigobarrasmanual.css";
 import { BiTrash } from "react-icons/bi";
 import Barcode from "react-barcode";
 import CodeBarPrint from "./CodeBarPrint";
+import { DataContext } from "../contexts/dataContext";
+import Axios from "axios";
 
 import { useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 
 const CodigoBarrasManual = () => {
+
+  useEffect(() => {
+      // Agrega opciones al Select cuando carga la página por primera vez
+      getPrecios();
+      console.log("Dentro UseEffect Precios");
+    }, []);
+
+  const url = "http://18.224.118.226:3001";
+  const [preciosList, setPreciosList] = useState([]);
   const [partidas, setPartidas] = useState([]);
   const [partidasPrint, setPartidasPrint] = useState([]);
   const [qty, setQty] = useState("1");
   const [value, setValue] = useState("");
   const [clavesxLote, setClavesxLote] = useState("");
 
+  const [totalCab, setTotalCab] = useState("0");
+  const [price, setPrice] = useState("0");
+
+  const { valor, valor2 } = useContext(DataContext);
+  const { contextData, setContextData } = valor;
+  const infoUsuario = contextData;
+
   const componentRef = useRef();
 
   const ref = useRef();
+
+  let getPrecios = () => {
+    Axios.get(url + `/getprecios/`, {
+      params: {
+        sucursal: infoUsuario.sucursal,
+      },
+    }).then((response) => {
+      setPreciosList(response.data);
+      console.log(response.data);
+    });
+  };
 
   const agregarPartida = () => {
     const partida = [
@@ -82,7 +111,7 @@ const CodigoBarrasManual = () => {
         {
           cantidad: "1",
           clave: lines[i],
-          barcode: <Barcode width={1} height={40} ref={ref} value={lines[i]} />,
+          barcode: <Barcode width={0.8} height={32} ref={ref} value={lines[i]} />,
         },
       ];
 
@@ -94,16 +123,40 @@ const CodigoBarrasManual = () => {
     //console.log(clavesxLote);
   };
 
+  const onChange = (event) => {
+    setValue(event.target.value); //Se coloca el valor en el input "Clave prod"
+
+    /* Aquí puedo implementar la búsqueda en el arreglo general */
+  };
+
+  const onSearch = (searchTerm) => {
+    //console.log(searchTerm);
+    setValue(searchTerm); //Se coloca el valor en el input "Clave prod"
+    const filtrado = preciosList.find((item) =>
+      item.clave.toUpperCase().includes(searchTerm.toUpperCase())
+    );
+    /* const filtrado = preciosList.filter((item) =>
+      item.clave.toUpperCase().includes(searchTerm.toUpperCase())
+    ); */
+    console.log(filtrado);
+    const precio_ = filtrado.precio;
+    /* const precio_ = filtrado.map((item) => item.precio); */
+    const totalInp = qty * precio_;
+    setTotalCab(totalInp);
+    setPrice(precio_);
+  };
+
   return (
     <>
       <div className="wrapper">
-        <div className="encabezado">
-          {/* <h6>Generar códigos de barras</h6> */}
+        <div className="encabezado-cb">
+          <h6>Herramienta para la generación de códigos de barras</h6>
+          <p style={{fontSize:"0.8rem"}}>Ingrese la cantidad de etiquetas que desee imprimir y la clave del producto.</p>
         </div>
         <div className="captura">
           <div className="formulario">
             <div className="cantidad">
-              <label for="exampleFormControlInput1">Cantidad</label>
+              <label for="exampleFormControlInput1">Cantidad etiquetas</label>
               <input
                 value={qty}
                 onChange={(event) => {
@@ -120,14 +173,34 @@ const CodigoBarrasManual = () => {
               <label for="exampleFormControlInput1">Clave producto</label>
               <input
                 value={value}
-                onChange={(event) => {
-                  setValue(event.target.value);
-                }}
+                onChange={onChange}
                 type="text"
                 class="form-control"
                 id="exampleFormControlInput1"
                 placeholder="Ingrese clave producto"
-              ></input>
+              />
+              <div className="dropdown">
+              {preciosList
+                .filter((item) => {
+                  const searchTerm = value.toLowerCase();
+                  const clave = item.clave.toLowerCase();
+
+                  return (
+                    searchTerm && clave.startsWith(searchTerm)   &&
+                    clave !== searchTerm  
+                  );
+                })
+                .slice(0, 10)
+                .map((item) => (
+                  <div
+                    onClick={() => onSearch(item.clave)}
+                    className="dropdown-row"
+                    key={item.clave}
+                  >
+                    {item.clave}
+                  </div>
+                ))}
+            </div>
             </div>
             <div class="div-boton">
               <button
@@ -194,8 +267,8 @@ const CodigoBarrasManual = () => {
             <div className="codesHeader">
               <h6>Vista previa</h6>
             </div>
-            <div className="contenedorEtiquetas">
-              <div ref={componentRef}>
+            <div className="contenedorEtiquetas2">
+              <div className="codebars" ref={componentRef}>
                 <CodeBarPrint partidas={partidasPrint} />
               </div>
             </div>

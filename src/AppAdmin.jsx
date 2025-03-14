@@ -4,6 +4,8 @@ import SidebarUser from "./components/SidebarUser";
 import SidebarSop from "./components/SidebarSop";
 import ContentAdmin from "./pages/ContentAdmin";
 import { DataContext } from "./contexts/dataContext";
+import SidebarTree from "./components/SidebarTree";
+import SidebarTreeUser from "./components/SidebarTreeUser";
 
 const AppAdmin = ({ usuari }) => {
   const { valor, valor2 } = useContext(DataContext);
@@ -20,9 +22,9 @@ const AppAdmin = ({ usuari }) => {
   return (
     <div className="dashboard">
       {usuari.rol === "admin" ? (
-        <Sidebar />
+        <SidebarTree />
       ) : usuari.rol === "user" ? (
-        <SidebarUser />
+        <SidebarTreeUser />
       ) : (
         <SidebarSop />
       )}

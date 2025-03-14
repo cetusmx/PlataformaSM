@@ -13,7 +13,7 @@ const Cotizador = () => {
 
   const { valor, valor2 } = useContext(DataContext);
   const { contextData, setContextData } = valor;
-  const {contextsideBarNav, setContextSidebarNav} = valor2;
+  //const {contextsideBarNav, setContextSidebarNav} = valor2;
 
   const infoUsuario = contextData;
   console.log("Corrmail: " + infoUsuario.email);

@@ -16,7 +16,7 @@ import { show_alerta } from "../functions";
 import { MenuAjustesContext } from "../contexts/context-menu-ajustes";
 
 const AjustesPrecios = () => {
-  const {posicionMenu, setPosicionMenu} = useContext(MenuAjustesContext);
+  /* const {posicionMenu, setPosicionMenu} = useContext(MenuAjustesContext); */
 
   const [isOpenDgo, setIsOpenDgo] = useState(false);
   const [isOpenFllo, setIsOpenFllo] = useState(false);
@@ -32,8 +32,8 @@ const AjustesPrecios = () => {
 
   const [dataExcel, setDataExcel] = useState([]);
 
-  const { valor3 } = useContext(DataContext);
-  const { contextAdminNav, setContextAdminNav } = valor3;
+ /*  const { valor3 } = useContext(DataContext);
+  const { contextAdminNav, setContextAdminNav } = valor3; */
   const porcentaje = 75;
 
   const urlServidorAPI = "http://18.224.118.226:3001";
@@ -197,7 +197,7 @@ const AjustesPrecios = () => {
           <div className="columnaIzquierda">
             <div className="row-col-izq-up"></div>
           </div>
-          <div className="columnaDerecha1">
+          {/* <div className="columnaDerecha1">
             {isDisabledTit ? (
               <div
                 style={{ width: "73%", marginRight: "2%", fontSize: "1.2rem" }}
@@ -210,7 +210,7 @@ const AjustesPrecios = () => {
               ></div>
             )}
             <div className="divRegresar">
-              {/* <div className="regresar"> */}
+              
               <button
                 onClick={() => {
                   setPosicionMenu("");
@@ -220,9 +220,9 @@ const AjustesPrecios = () => {
                 <BiArrowBack />
                 Regresar
               </button>
-              {/* </div> */}
+              {/* </div> 
             </div>
-          </div>
+          </div> */}
         </div>
         <div className="contenedor-columnasAP">
           <div className="columnaIzquierdaAP">

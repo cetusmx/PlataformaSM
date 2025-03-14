@@ -1,0 +1,56 @@
+.div-table {
+  width: 80%;
+  /* border-top: 1px solid #dfe2e6; */
+  /* padding-top: -1px; */
+  /* border-radius: 5px;
+    z-index: 0; */
+  overflow-y: scroll;
+  font-size: 0.8rem;
+  min-height: 66vh;
+  max-height: 66vh;
+  /* padding-top: 10px;
+    margin-top: 30px; */
+}
+.div-table th {
+  position: sticky;
+  top: 0;
+}
+/* .columnaDerechaAP1 {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 76%;
+  background: rebeccapurple;
+  margin-left: 2%;
+  font-size: 0.8rem;
+} */
+.contenedor-inferior {
+  width: 100%;
+}
+.container-inferior {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.cargaMasiva {
+  width: 19%;
+  justify-items: right;
+  margin-left: 1%;
+  font-size: 0.8rem;
+}
+.header--activity-ajcot {
+  padding-top: 0px;
+  padding-bottom: 0px;
+  /* margin-bottom: -5px; */
+}
+.td-table-cb{
+  vertical-align: middle;
+  text-align: center;
+}
+.td-table-cb2{
+  vertical-align: middle;
+}
+.content--header--editamars{
+  margin-top: 5vh;
+}

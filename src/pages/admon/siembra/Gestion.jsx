@@ -4,7 +4,7 @@ import { BiArrowBack } from "react-icons/bi";
 import Solicitudes from "./Solicitudes";
 
 const Gestion = () => {
-  const { posicionMenu, setPosicionMenu } = useContext(MenuAjustesContext);
+  /* const { posicionMenu, setPosicionMenu } = useContext(MenuAjustesContext); */
 
   return (
     <>
@@ -18,8 +18,8 @@ const Gestion = () => {
           <div
             style={{ width: "73%", marginRight: "2%", fontSize: "1.2rem" }}
           ></div>
-          <div className="divRegresar">
-            {/* <div className="regresar"> */}
+          {/* <div className="divRegresar">
+            
             <button
               onClick={() => {
                 setPosicionMenu("");
@@ -29,8 +29,8 @@ const Gestion = () => {
               <BiArrowBack />
               Regresar
             </button>
-            {/* </div> */}
-          </div>
+            
+          </div> */}
         </div>
       </div>
       <div style={{paddingTop: "15px"}}>

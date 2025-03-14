@@ -5,6 +5,9 @@ import {
   BiLogOut,
   BiDollar,
   BiWrench,
+  BiSearch,
+  BiBarcode,
+  BiPackage,
 } from "react-icons/bi";
 import "../styles/sidebar.css";
 import { getAuth, signOut } from "firebase/auth";
@@ -36,27 +39,57 @@ const SidebarUser = () => {
 
       <div className="menu--list">
         <Link
-          to="cotizador"
+          to="/"
           className="item"
           onClick={() => {
             setContextSidebarNav("Cotizador");
           }}
         >
-          <BiCalculator className="icon" />
+          <BiCalculator />
           Cotizador
         </Link>
         <Link
-          to="herramientas"
+          to="busquedasellos"
           className="item"
           onClick={() => {
-            setContextSidebarNav("Herramientas");
+            setContextSidebarNav("Búsqueda de sellos");
           }}
         >
-          <BiWrench />
-          Herramientas
+          <BiSearch />
+          Búsqueda sellos
+        </Link>
+        <Link
+          to="codigosbarras"
+          className="item"
+          onClick={() => {
+            setContextSidebarNav("Códigos de barras");
+          }}
+        >
+          <BiBarcode />
+          Códigos barras
+        </Link>
+        <Link
+          to="faltantes"
+          className="item"
+          onClick={() => {
+            setContextSidebarNav("Faltantes");
+          }}
+        >
+          <BiPackage />
+          Faltantes
+        </Link>
+        <Link
+          to="listaprecios"
+          className="item"
+          onClick={() => {
+            setContextSidebarNav("Lista de precios");
+          }}
+        >
+          <BiDollar />
+          Lista precios
         </Link>
         <button className="item" onClick={logout}>
-          <BiLogOut className="icon" />
+          <BiLogOut />
           Salir
         </button>
       </div>

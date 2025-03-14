@@ -7,6 +7,9 @@ import {
   BiDollar,
   BiHome,
   BiWrench,
+  BiSearch,
+  BiBarcode,
+  BiPackage,
 } from "react-icons/bi";
 import "../styles/sidebar.css";
 import { DataContext } from "../contexts/dataContext";
@@ -43,9 +46,21 @@ const Sidebar = () => {
           <BiCalculator  />
           Cotizador
         </Link>
-        <Link to="herramientas" className="item" onClick={()=>{setContextSidebarNav("Herramientas")}}>
-          <BiWrench  />
-          Herramientas
+        <Link to="busquedasellos" className="item" onClick={()=>{setContextSidebarNav("Búsqueda de sellos")}}>
+          <BiSearch  />
+          Búsqueda sellos
+        </Link>
+        <Link to="codigosbarras" className="item" onClick={()=>{setContextSidebarNav("Códigos de barras")}}>
+          <BiBarcode  />
+          Códigos barras
+        </Link>
+        <Link to="faltantes" className="item" onClick={()=>{setContextSidebarNav("Faltantes")}}>
+          <BiPackage  />
+          Faltantes
+        </Link>
+        <Link to="listaprecios" className="item" onClick={()=>{setContextSidebarNav("Lista de precios")}}>
+          <BiDollar  />
+          Lista precios
         </Link>
         <Link to="admin" className="item" onClick={()=>{setContextSidebarNav("Ajustes")}}>
           <BiCog />
@@ -55,6 +70,7 @@ const Sidebar = () => {
           <BiLogOut />
           Salir
         </button>
+        
       </div>
     </div>
   );

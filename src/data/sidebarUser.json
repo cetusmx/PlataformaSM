@@ -1,0 +1,44 @@
+[
+    {
+        "title": "Inventario",
+        "icon": "bi bi-box-seam",
+        "childrens": [
+            {
+                "title": "Búsqueda de sellos",
+                "icon": "bi bi-search",
+                "path": "/busquedasellos"
+            },
+            {
+                "title": "Códigos de barras",
+                "icon": "bi bi-upc",
+                "path": "/codigosbarras"
+            },
+            {
+                "title": "Faltantes",
+                "icon": "bi bi-puzzle",
+                "path": "/faltantes"
+            },
+            {
+                "title": "Recepción mercancía",
+                "icon": "bi bi-upc-scan",
+                "path": "/recepcionmercancia"
+            }
+        ]
+    },
+    {
+        "title": "Precios",
+        "icon": "bi bi-currency-dollar",
+        "childrens": [
+            {
+                "title": "Cotizador",
+                "icon": "bi bi-calculator",
+                "path": "/cotizador"
+            },
+            {
+                "title": "Lista de precios",
+                "icon": "bi bi-list",
+                "path": "/listaprecios"
+            }
+        ]
+    }
+]

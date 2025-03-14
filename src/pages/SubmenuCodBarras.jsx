@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   BiDollar,
   BiSearch,
@@ -24,9 +24,15 @@ const course = [
 ];
 
 const SubmenuCodBarras = () => {
-  const { posicionMenu, setPosicionMenu } = useContext(MenuAjustesContext);
+  const [ posicionMenu, setPosicionMenu ] = useState("");
+   //const [margenesPivote, setMargenesPivote] = useState([]);
 
-  console.log("PosicionMenuSubMenu=>" + posicionMenu);
+  useEffect(() => {
+      setPosicionMenu("Códigos barras");
+    }, []);
+  
+
+  //console.log("PosicionMenuSubMenu=>" + posicionMenu);
 
   const toggleDiv = (e) => {
     setPosicionMenu(e.target.value);
@@ -37,18 +43,18 @@ const SubmenuCodBarras = () => {
   return (
     <>
 
-      <div className="contenedor-columnas1">
-        <div className="columnaIzquierda">
+      {/* <div className="contenedor-columnas1"> */}
+        {/* <div className="columnaIzquierda">
           <div className="row-col-izq-up">
             <h5>Códigos de barras</h5>
           </div>
-        </div>
-        <div className="columnaDerecha1">
+        </div> */}
+        {/* <div className="columnaDerecha1">
           <div
             style={{ width: "73%", marginRight: "2%", fontSize: "1.2rem" }}
           ></div>
           <div className="divRegresar">
-            {/* <div className="regresar"> */}
+            
             <button
               onClick={() => {
                 setPosicionMenu("");
@@ -58,10 +64,10 @@ const SubmenuCodBarras = () => {
               <BiArrowBack />
               Regresar
             </button>
-            {/* </div> */}
+            
           </div>
-        </div>
-      </div>
+        </div> */}
+      {/* </div> */}
 
       {posicionMenu === "Códigos barras" ? (
         <div className="cardM--container">

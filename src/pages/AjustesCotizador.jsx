@@ -7,6 +7,7 @@ import Editamars from "./Editamars";
 import { MenuAjustesContext } from "../contexts/context-menu-ajustes";
 
 const AjustesCotizador = () => {
+  
   const {posicionMenu, setPosicionMenu} = useContext(MenuAjustesContext);
 
   const { valor3 } = useContext(DataContext);

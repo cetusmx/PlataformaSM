@@ -148,6 +148,7 @@ const Remision = () => {
     setSubtotal("0");
     setTotalCIva("0");
   };
+  
   return (
     <>
       <div className="preciosDiv">

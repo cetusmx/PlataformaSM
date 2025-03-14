@@ -16,10 +16,11 @@
   max-height: 11vh;
   padding-bottom: 10px;
 }
-.encabezado{
+.encabezado-cb{
   width: 100%;
   float: left;
   clear: both;
+  padding: 10px 0 0 0;
 }
 .cantidad{
   margin-right: 10px;
@@ -34,7 +35,7 @@
 .div-boton-generar{
   display: flex;
   align-items: end;
-  padding: 10px;
+  padding: 10px 0 0 10px;
 }
 .tablaProds{
   width: 100%;
@@ -43,25 +44,32 @@
   z-index: 0;
   overflow-y: scroll;
   font-size: 0.8rem;
-  min-height: 55vh;
-  max-height: 55vh;
+  min-height: 52vh;
+  max-height: 52vh;
 }
 .codigosBarras{
   width: 47%;
   padding-left: 3%;
   float: right;
-  min-height: 55vh;
-  max-height: 55vh;
+  min-height: 52vh;
+  max-height: 52vh;
 }
-.contenedorEtiquetas{
-  width: 100%;
-  float: right;
+.contenedorEtiquetas2{
+  display: flex;
+  flex-direction: column;
+  /* flex-shrink: 0; */
   border: 1px solid #dde6ed;
   border-radius: 5px;
-  min-height: 55vh;
-  max-height: 55vh;
+  min-height: 52vh;
+  max-height: 52vh;
   overflow-y: scroll;
   padding-left: 10%;
+}
+.codebars{
+  display: flex;
+  flex-direction: column;
+  /* background-color: aqua; */
+  max-height: 40px;
 }
 .codesHeader{
   width: 100%;

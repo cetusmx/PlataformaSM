@@ -7,16 +7,16 @@ import { DataContext } from "../contexts/dataContext";
 import { MenuAjustesContext } from "../contexts/context-menu-ajustes";
 
 const Usuarios = () => {
-  const {posicionMenu, setPosicionMenu} = useContext(MenuAjustesContext);
+  /* const {posicionMenu, setPosicionMenu} = useContext(MenuAjustesContext);
 
   const { valor3 } = useContext(DataContext);
-  const { contextAdminNav, setContextAdminNav } = valor3;
+  const { contextAdminNav, setContextAdminNav } = valor3; */
 
   const porcentaje = 75;
   return (
     <>
       <div className="container-usuarios">
-        <div className="regresar">
+        {/* <div className="regresar">
           <button
             onClick={() => {
               setPosicionMenu("");
@@ -26,7 +26,7 @@ const Usuarios = () => {
             <BiArrowBack />
             Regresar
           </button>
-        </div>
+        </div> */}
         <div className="enConstruccion">
           <EnConstruccion percentage={porcentaje} />
         </div>

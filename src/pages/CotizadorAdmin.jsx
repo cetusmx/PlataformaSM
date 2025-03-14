@@ -27,6 +27,10 @@ let sucursales = [
     sucursal: "Tecmin",
     price: "",
   },
+  {
+    sucursal: "Mayorista",
+    price: "",
+  },
 ];
 
 const CotizadorAdmin = () => {
@@ -44,6 +48,7 @@ const CotizadorAdmin = () => {
   const [precioZac, setPrecioZac] = useState([]);
   const [precioMzt, setPrecioMzt] = useState([]);
   const [precioTecmin, setPrecioTecmin] = useState([]);
+  const [precioMayorista, setPrecioMayorista] = useState([]);
   const [familia, setFamilia] = useState();
   const [familiasSelect, setFamiliasselect] = useState();
   const [sucursal, setSucursal] = useState();
@@ -125,6 +130,9 @@ const CotizadorAdmin = () => {
       }if(sucursa==="Tecmin"){
         setPrecioTecmin(convertedPrecioToString);
         console.log("Tecm");
+      }if(sucursa==="Mayorista"){
+        setPrecioMayorista(convertedPrecioToString);
+        console.log("Mayor");
       }
       /* setPrecio([...precio, precioFormateado]); */
     });
@@ -283,6 +291,22 @@ const CotizadorAdmin = () => {
                   <div className="col">
                     <div style={{ width: "100%", margin: "10px 0 10px 0", textAlign: "center" }}>
                       {precioTecmin}
+                    </div>
+                  </div>
+                </div>
+                <div className="col">
+                  <div
+                    style={{
+                      width: "100%",
+                      borderBottom: "1px solid #dfe2e6",
+                      margin: "10px 0 10px 0",
+                    }}
+                  >
+                    Mayorista
+                  </div>
+                  <div className="col">
+                    <div style={{ width: "100%", margin: "10px 0 10px 0", textAlign: "center" }}>
+                      {precioMayorista}
                     </div>
                   </div>
                 </div>
