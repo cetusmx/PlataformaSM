@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Axios from "axios";
 import "../styles/codigobarras.css";
@@ -10,8 +10,19 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Barcode from "react-barcode";
 import { useReactToPrint } from "react-to-print";
 import CodeBarPrint from "./CodeBarPrint";
+import { CiBarcode } from "react-icons/ci";
+import { show_alerta } from "../functions";
+import { DataContext } from "../contexts/dataContext";
 
 const CodigoBarras = () => {
+
+  const { valor, valor2 } = useContext(DataContext);
+  const { contextData, setContextData } = valor;
+  const infoUsuario = contextData;
+
+  const fecha = Date.now();
+  const hoy = new Date(fecha).toJSON().slice(0, 10);
+
   const urlServidorAPI = "http://18.224.118.226:3001";
   const [xmlContent, setXmlContent] = useState("");
   const [error, setError] = useState("");
@@ -28,6 +39,9 @@ const CodigoBarras = () => {
 
   const [productosRecepcionados, setProductosRecepcionados] = useState([]);
   const [productoEscaneado, setProductoEscaneado] = useState([]);
+  const [productoIngresadoManualmente, setProductoIngresadoManualmente] = useState("");
+  const [claveProveedorIngManualmente, setClaveProveedorIngManualmente] = useState("");
+  const [qtyManualmente, setQtyManualmente] = useState("");
   const [partidasPrint, setPartidasPrint] = useState([]);
 
   const ref = useRef();
@@ -37,13 +51,17 @@ const CodigoBarras = () => {
     <Tooltip {...props}>Da clic para generar código de barras</Tooltip>
   );
 
+  const renderTooltip2 = (props) => (
+    <Tooltip {...props}>Da clic para recibir producto manualmente</Tooltip>
+  );
+
   useEffect(() => {
     getClaves();
   }, [rfc]);
-  
+
   useEffect(() => {
-    if(partidasPrint.length !== 0){
-    handlePrint();
+    if (partidasPrint.length !== 0) {
+      handlePrint();
     }
   }, [partidasPrint]);
 
@@ -59,21 +77,44 @@ const CodigoBarras = () => {
 
   let unificaClaves = () => {
     let temp = [];
-    listaProductos.forEach((e, i) => {
-      const result = clavesProveedor.find(
-        (claveProv) => claveProv.claveprovedor === e.producto
-      );
-      e.clave = result.clave;
+    let encontrado = false;
 
-      let partida = {
-        cantidad: e.cantidad,
-        producto: e.producto,
-        clave: result.clave,
-      };
-      temp.push(partida);
+    listaProductos.forEach((e, i) => {
+      //Listaproductos son los contenidos en la factura. Campos... cantidad, producto, clave (vacio)
+
+      if (
+        clavesProveedor.some((partida) => partida.claveprovedor === e.producto)
+      ) {
+        //Checa si existe el producto de la factura en la BD. Campos... (clave, claveprovedor)
+        console.log("Sí encontrado");
+        const found = clavesProveedor.find(
+          (element) => element.claveprovedor === e.producto
+        );
+
+        /* const result = clavesProveedor.find(    //clavesproveedor son todos los productos de ese proveedor
+        (claveProv) => claveProv.claveprovedor === e.producto
+      ); */
+
+        e.clave = found.clave;
+
+        let partida = {
+          cantidad: e.cantidad,
+          producto: e.producto,
+          clave: found.clave,
+        };
+        temp.push(partida);
+      } else {
+        let partida = {
+          cantidad: e.cantidad,
+          producto: e.producto,
+          clave: "No-registrada",
+        };
+        temp.push(partida);
+      }
     });
     setClavesunificadas(temp);
   };
+
   let getClaves = () => {
     if (listaProductos.length > 0) {
       Axios.get(urlServidorAPI + `/getclaves`, {
@@ -156,17 +197,6 @@ const CodigoBarras = () => {
     console.log(e.target.value);
 
     e.preventDefault();
-    /* if(){
-      setExisteProductoEnFactura(true);
-      console.log("existe");
-    }else{
-      setExisteProductoEnFactura(false);
-      console.log("no existe");
-    } */
-
-    //setExisteProductoEnFactura(true);
-    /* console.log("inside handler");*/
-    //console.log(e.key);
     console.log(existeProductoEnFactura);
 
     if (
@@ -271,6 +301,69 @@ const CodigoBarras = () => {
     }, 500);
   }; */
 
+  const grabaClaveNoEncontrada = (valor) => {
+    let clave = valor.producto; //clave de proveedor no registrada en BD
+    setClaveProveedorIngManualmente(clave);
+    setQtyManualmente(valor.cantidad);
+  };
+
+  const agregarClaveManual = async () => {
+
+    var parametros;
+
+    parametros = {
+      clave: productoIngresadoManualmente.trim(),
+      sucursal: infoUsuario.sucursal,
+      proveedor: rfc,
+      factura: folioFactura,
+      claveProveedor: claveProveedorIngManualmente,
+      fecha: hoy,
+    };
+
+    console.log(parametros);
+
+    const url = "http://18.224.118.226:3001/insertClaveManualNoRegistrada";
+
+    await Axios({ method: "PUT", url: url, data: parametros })
+    .then(function (respuesta) {
+      var tipo = respuesta.status;
+      console.log(tipo);
+      if (tipo === 200) {
+        moverProductoaRecepcionados();
+        show_alerta("Registrado exitósamente", "success");
+      } else {
+        show_alerta("Hubo un problema", "error");
+      }
+
+      if (tipo === 200) {
+        document.getElementById("btnCerrar").click();
+      }
+    })
+    .catch(function (error) {
+      show_alerta("Error en la solicitud de escritura", "error");
+      //console.log(error);
+    });
+  }
+
+  const moverProductoaRecepcionados = () => {
+
+    let temporal = clavesunificadas.filter(
+      (claveProv) => claveProv.producto !== claveProveedorIngManualmente  //Solo quedan prods que no son el ing manualmente
+    );
+    /* console.log(temporal); */
+    setClavesunificadas(temporal);
+
+    let temp = [...productosRecepcionados];
+    
+    let partida = {
+      cantidad: qtyManualmente,
+      producto: claveProveedorIngManualmente,
+      clave: productoIngresadoManualmente,
+    };
+    temp.push(partida);
+    setProductosRecepcionados(temp);
+  }
+
   return (
     <>
       <div className="wrapperCB">
@@ -279,8 +372,11 @@ const CodigoBarras = () => {
             <div className="carga-archivo">
               <div className="instrucciones">
                 Elija el archivo .xml de la factura que desea recepcionar.
-                </div>           
-              <div style={{fontSize:"0.8rem"}} className="encabezado-izquierdoCB">
+              </div>
+              <div
+                style={{ fontSize: "0.8rem" }}
+                className="encabezado-izquierdoCB"
+              >
                 <div class="input-group">
                   <input
                     type="file"
@@ -346,6 +442,7 @@ const CodigoBarras = () => {
                           <th scope="col">Clave Proveedor</th>
                           <th scope="col">Clave</th>
                           <th scope="col"></th>
+                          <th scope="col"></th>
                         </tr>
                       </thead>
                       <tbody>
@@ -353,7 +450,7 @@ const CodigoBarras = () => {
                           return (
                             <tr key={val.id}>
                               <td
-                                className="td-table-cb"
+                                className="td-table-cb2"
                                 style={{ textAlign: "center" }}
                               >
                                 {val.cantidad}
@@ -361,17 +458,35 @@ const CodigoBarras = () => {
                               <td className="td-table-cb">{val.producto}</td>
                               <td className="td-table-cb">{val.clave}</td>
                               <td className="td-table-cb">
-                                <OverlayTrigger
-                                  placement="top"
-                                  overlay={renderTooltip}
-                                >
-                                  <button
-                                    onClick={() => printCodeBar(val)}
-                                    className="btn btn-outline-secondary boton-tb-cb"
+                                {val.clave !== "No-registrada" ? (
+                                  <OverlayTrigger
+                                    placement="top"
+                                    overlay={renderTooltip}
                                   >
-                                    <i className="fa-solid fa-barcode"></i>
-                                  </button>
-                                </OverlayTrigger>
+                                    <button
+                                      onClick={() => printCodeBar(val)}
+                                      className="btn btn-outline-secondary boton-tb-cb"
+                                    >
+                                      <i className="fa-solid fa-barcode"></i>
+                                    </button>
+                                  </OverlayTrigger>
+                                ) : (
+                                  <OverlayTrigger
+                                    placement="top"
+                                    overlay={renderTooltip2}
+                                  >
+                                    <button
+                                      onClick={() =>
+                                        grabaClaveNoEncontrada(val)
+                                      }
+                                      data-bs-toggle="modal"
+                                      data-bs-target="#myModal"
+                                      className="btn btn-outline-secondary boton-tb-cb2"
+                                    >
+                                      <i className="fa-solid fa-unlock"></i>
+                                    </button>
+                                  </OverlayTrigger>
+                                )}
                               </td>
                             </tr>
                           );
@@ -414,7 +529,7 @@ const CodigoBarras = () => {
                           return (
                             <tr key={val.id}>
                               <td
-                                className="td-table-cb"
+                                className="td-table-cb2"
                                 style={{ textAlign: "center" }}
                               >
                                 {val.cantidad}
@@ -454,7 +569,7 @@ const CodigoBarras = () => {
         {clavesunificadas.length > 0 ? (
           <div className="captura-lector">
             <div
-              style={{ width: "50%", paddingRight: "1%" }}
+              style={{ width: "55%", paddingRight: "1%" }}
               class="input-group mt-3"
             >
               <span class="input-group-text bg-primary text-white">
@@ -481,8 +596,12 @@ const CodigoBarras = () => {
           <div></div>
         )}
       </div>
-      
-      <div style={{maxHeight: "40px"}} className="printContent" ref={componentRef}>
+
+      <div
+        style={{ maxHeight: "40px" }}
+        className="printContent"
+        ref={componentRef}
+      >
         <CodeBarPrint partidas={partidasPrint} />
       </div>
 
@@ -491,30 +610,44 @@ const CodigoBarras = () => {
           <div class="modal-content">
             {/* <!-- Modal Header --> */}
             <div class="modal-header">
-              <h4 class="modal-title">Agregar claves por lote</h4>
+              <h5 class="modal-title">
+                Recepcionar producto sin clave registrada
+              </h5>
               <button
                 type="button"
                 class="btn-close"
                 data-bs-dismiss="modal"
               ></button>
             </div>
-
-            {/* <!-- Modal body --> */}
-            <div class="modal-body">
-              <h6>Agregue las claves, una en cada fila</h6>
-              <textarea
-                /* onChange={(e) => setClavesxLote(e.target.value)} */
-                name="claves"
-                id="claves"
-                class="form-control"
-                rows={10}
-              ></textarea>
+            <div class="modal-body modal-display-col">
+              <div className="indicaciones-en-modal">
+                <p>
+                  Si el producto cuenta con código de barras en su almacén,
+                  escanéelo para asegurar una correcta captura.
+                </p>
+              </div>
+              <div className="modal-display-row">
+                <div class="mb-3" style={{ width: "48%", paddingRight: "2%" }}>
+                  <label for="exampleFormControlInput12" class="form-label">
+                    Clave
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="exampleFormControlInput12"
+                    onChange={(e) => setProductoIngresadoManualmente(e.target.value)}
+                  />
+                </div>
+                <div className="item-scan">
+                  <i style={{fontSize:"2.2rem", textAlign:"center"}}><CiBarcode /> </i>
+                </div>
+              </div>
             </div>
 
             {/* <!-- Modal footer --> */}
             <div class="modal-footer">
               <button
-                /* onClick={() => agregarLote()} */
+                onClick={() => agregarClaveManual()}
                 type="button"
                 class="btn btn-primary"
                 data-bs-dismiss="modal"

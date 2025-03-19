@@ -3,6 +3,8 @@ import "../styles/siembraProds.css";
 import { show_alerta } from "../functions";
 import Axios from "axios";
 import { DataContext } from "../contexts/dataContext";
+import ListGroup from "react-bootstrap/ListGroup";
+import Card from "react-bootstrap/Card";
 
 const SiembraProds = () => {
   const [clave, setClave] = useState("");
@@ -93,14 +95,26 @@ const SiembraProds = () => {
   };
 
   return (
-    <>
-      <div style={{ paddingTop: "30px", paddingLeft: "10%" }}>
-        <h5>Registro de faltantes en sucursal {infoUsuario.sucursal}</h5>
-      </div>
-      <div style={{ paddingLeft: "10%" }} className="form-container">
-        <form>
-          <div className="row">
-            <div className="col">
+    <div className="contenedor-siembra-prods">
+      <div className="formulario-siembra">
+        <div style={{ paddingTop: "30px" }}>
+          <h5>Registro de faltantes en sucursal {infoUsuario.sucursal}</h5>
+        </div>
+        <div className="form-container">
+          <form>
+            <div className="row">
+              <div class="form-group st"  style={{ width: "20%" }}>
+                <label for="cantidad" /* class="form-label" */>
+                  Cantidad
+                </label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="cantidad"
+                  /* placeholder="Enter email" */
+                  name="cantidad"
+                />
+              </div>
               <div class="form-group st" style={{ width: "40%" }}>
                 <label for="exampleFormControlInput1">
                   Clave (propia o de proveedor)
@@ -140,27 +154,44 @@ const SiembraProds = () => {
                 </div>
               </div>
             </div>
-          </div>
-          <div class="form-group st">
-            <label for="exampleFormControlTextarea1">Observaciones</label>
-            <textarea
-              value={observaciones}
-              onChange={(event) => {
-                setObservaciones(event.target.value);
-              }}
-              class="form-control"
-              id="exampleFormControlTextarea1"
-              rows="3"
-            ></textarea>
-          </div>
-          <div className="form-group">
-            <button type="button" class="btn btn-primary" onClick={guardar}>
-              Guardar
-            </button>
-          </div>
-        </form>
+            <div class="form-group st">
+              <label for="exampleFormControlTextarea1">Observaciones</label>
+              <textarea
+                value={observaciones}
+                onChange={(event) => {
+                  setObservaciones(event.target.value);
+                }}
+                class="form-control"
+                id="exampleFormControlTextarea1"
+                rows="3"
+              ></textarea>
+            </div>
+            <div className="form-group">
+              <button type="button" class="btn btn-primary" onClick={guardar}>
+                Guardar
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </>
+      <div className="sidebar-right-faltantes">
+        <div className="mensaje-faltantes"></div>
+        <div className="instrucciones-faltantes">
+        <div
+              style={{ justifyItems: "right", marginLeft: "1%" }}
+            >
+              <Card style={{ width: "100%" }}>
+                <Card.Header><strong>Atención</strong></Card.Header>
+                <ListGroup variant="flush">
+                  <ListGroup.Item>
+                   <p>En el campo <i>Cantidad</i>, escribir el número de piezas faltantes para completar el pedido del cliente.</p>
+                  </ListGroup.Item>
+                </ListGroup>
+              </Card>
+            </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

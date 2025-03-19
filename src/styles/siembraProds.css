@@ -1,8 +1,30 @@
 .form-container{
-    width: 80%;
+    width: 100%;
     padding-top: 15px;
-    padding-left: 15px;
 }
 .st{
     padding-bottom: 10px;
+}
+.contenedor-siembra-prods{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+.formulario-siembra{
+    width: 79%;
+    margin-right: 1%;
+    padding-right: 1%;
+}
+.sidebar-right-faltantes{
+    display: flex;
+    flex-direction: column;
+    width: 20%;
+}
+.instrucciones-faltantes{
+    width: 100%;
+    font-size: 0.8rem;
+}
+.mensaje-faltantes{
+    width: 100%;
+    min-height: 10vh;
 }

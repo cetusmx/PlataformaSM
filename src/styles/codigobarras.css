@@ -29,7 +29,7 @@
 .columna-izquierdaCB {
   display: flex;
   flex-direction: column;
-  width: 50%;
+  width: 55%;
   padding-right: 1%;
   /* border: 1px solid #dde6ed;
     border-radius: 10px; */
@@ -38,7 +38,7 @@
 .columna-derechaCB {
   display: flex;
   flex-direction: column;
-  width: 50%;
+  width: 45%;
   padding-left: 1%;
   /* border: 1px solid #dde6ed;
     border-radius: 10px; */
@@ -172,7 +172,14 @@
 .boton-tb-cb{
   padding: 0.25rem 0.5rem 0.25rem 0.5rem;
 }
+.boton-tb-cb2{
+  padding: 0.25rem 0.60rem 0.25rem 0.60rem;
+}
 .td-table-cb{
+  vertical-align: middle;
+  text-align-last: justify;
+}
+.td-table-cb2{
   vertical-align: middle;
 }
 .captura-lector2 {
@@ -211,4 +218,18 @@
 .instrucciones{
   margin-top: 20px;
   padding-bottom: 10px;
+}
+.modal-display-row{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.indicaciones-en-modal{
+  font-size: 0.8rem;
+  width: 100%;
+}
+.item-scan{
+  display: flex;
+  flex-direction: column;
+  padding-top: 10px;
 }
