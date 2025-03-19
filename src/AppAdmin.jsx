@@ -26,7 +26,7 @@ const AppAdmin = ({ usuari }) => {
       ) : usuari.rol === "user" ? (
         <SidebarTreeUser />
       ) : (
-        <SidebarSop />
+        <SidebarTree />
       )}
 
       <div className="dashboard--content">
