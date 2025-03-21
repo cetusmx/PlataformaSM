@@ -1,0 +1,39 @@
+.wrapper-noregistradas{
+
+}
+.encabezado-noregistradas{
+    display: flex;
+    flex-direction: row;
+    width: 96%;
+    padding-left: 3%;
+}
+.tabla-noregistrada{
+    width: 96%;
+    padding-left: 3%;
+}
+.control-botones-clavesnoreg{
+    display: flex;
+    gap: 20px;
+    border-bottom: 1px solid #dde6ed;
+    /* border-top: 1px solid #dde6ed; */
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+}
+.control-botones-clavesnoreg .icon2{
+    color: #969393;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: 0.5s ease-in-out;
+
+}
+#descargarF{
+    cursor: pointer;
+    transition: 0.5s ease-in-out;
+    color:"#27374d";
+    margin-left:"3px";
+}

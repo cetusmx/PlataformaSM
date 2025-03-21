@@ -17,6 +17,7 @@ import AjustesPrecios from "./AjustesPrecios";
 import Usuarios from "./Usuarios";
 import Solicitudes from "./admon/siembra/Solicitudes";
 import Gestion from "./admon/siembra/Gestion";
+import ClavesNoRegistradas from "./ClavesNoRegistradas";
 
 const ContentAdmin = () => {
   
@@ -39,6 +40,7 @@ const ContentAdmin = () => {
             <Route path="ajustesprecios" element={<AjustesPrecios />} />
             <Route path="usuarios" element={<Usuarios />} />
             <Route path="admonfaltantes" element={<Gestion />} />
+            <Route path="noregistradas" element={<ClavesNoRegistradas />} />
         </Routes>
       </div>
     </div>

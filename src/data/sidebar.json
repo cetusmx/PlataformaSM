@@ -61,6 +61,11 @@
                 "path": "/ajustesprecios"
             },
             {
+                "title": "Claves no registradas",
+                "icon": "bi bi-clipboard-x",
+                "path": "/noregistradas"
+            },
+            {
                 "title": "Usuarios",
                 "icon": "bi bi-people",
                 "path": "/usuarios"
