@@ -3,7 +3,7 @@ import Axios from "axios";
 import Table from "../components/table";
 import * as XLSX from "xlsx";
 import "../styles/clavesnoregistradas.css";
-import { BiDownload, BiPrinter } from "react-icons/bi";
+import { BiDownload } from "react-icons/bi";
 
 const ClavesNoRegistradas = () => {
   const urlServidorAPI = "http://18.224.118.226:3001";
@@ -34,16 +34,11 @@ const ClavesNoRegistradas = () => {
           <div className="borrar">
             <BiDownload className="icon2" onClick={() => descargar()} />
               <h7 id="descargarF" onClick={()=>descargar()} >Descargar</h7>
-            {/* <h7>Descargar</h7> */}
           </div>
-          {/* <div className="imprimir">
-            <BiPrinter className="icon2" onClick={() => descargar()} />
-            <h7>Imprimir</h7>
-          </div> */}
         </div>
       </div>
       <div className="tabla-noregistrada">
-        <Table data={clavesNoRegistradas} rowsPerPage={10} />
+        <Table data={clavesNoRegistradas} rowsPerPage={9} />
       </div>
     </div>
   );

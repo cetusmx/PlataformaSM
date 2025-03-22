@@ -15,7 +15,6 @@ import { show_alerta } from "../functions";
 import { DataContext } from "../contexts/dataContext";
 
 const CodigoBarras = () => {
-
   const { valor, valor2 } = useContext(DataContext);
   const { contextData, setContextData } = valor;
   const infoUsuario = contextData;
@@ -33,14 +32,16 @@ const CodigoBarras = () => {
   const [folioFactura, setFolioFactura] = useState("");
   const [clavesProveedor, setClavesProveedor] = useState([]);
   const [clavesunificadas, setClavesunificadas] = useState([]);
-  const [isFileUploaded, setIsFileUploaded] = useState(true);
+  //const [isFileUploaded, setIsFileUploaded] = useState(true);
   const [mostrarCargaArchivo, setMostrarCargaArchivo] = useState(true);
   const [existeProductoEnFactura, setExisteProductoEnFactura] = useState(false);
 
   const [productosRecepcionados, setProductosRecepcionados] = useState([]);
   const [productoEscaneado, setProductoEscaneado] = useState([]);
-  const [productoIngresadoManualmente, setProductoIngresadoManualmente] = useState("");
-  const [claveProveedorIngManualmente, setClaveProveedorIngManualmente] = useState("");
+  const [productoIngresadoManualmente, setProductoIngresadoManualmente] =
+    useState("");
+  const [claveProveedorIngManualmente, setClaveProveedorIngManualmente] =
+    useState("");
   const [qtyManualmente, setQtyManualmente] = useState("");
   const [partidasPrint, setPartidasPrint] = useState([]);
 
@@ -56,6 +57,7 @@ const CodigoBarras = () => {
   );
 
   useEffect(() => {
+    console.log("Useeffect rfc, getClaves()")
     getClaves();
   }, [rfc]);
 
@@ -66,8 +68,18 @@ const CodigoBarras = () => {
   }, [partidasPrint]);
 
   useEffect(() => {
+    console.log("Useeffect clavesProveedor, unificaClaves()");
     unificaClaves();
   }, [clavesProveedor]);
+
+  useEffect(() => {
+    console.log("Cambió xmlContent");
+    if (xmlContent.length > 0) {
+      unificaClaves();
+    } else {
+      setClavesunificadas([]);
+    }
+  }, [xmlContent,folioFactura]);
 
   const myinput = useRef();
 
@@ -86,7 +98,7 @@ const CodigoBarras = () => {
         clavesProveedor.some((partida) => partida.claveprovedor === e.producto)
       ) {
         //Checa si existe el producto de la factura en la BD. Campos... (clave, claveprovedor)
-        console.log("Sí encontrado");
+        //console.log("Sí encontrado");
         const found = clavesProveedor.find(
           (element) => element.claveprovedor === e.producto
         );
@@ -129,8 +141,8 @@ const CodigoBarras = () => {
   };
 
   const handleFileUpload = (e) => {
-    //console.log("inside handle");
-    setIsFileUploaded(false);
+    console.log("inside handle");
+    //setIsFileUploaded(false);
     const file = e.target.files[0];
 
     if (!file) {
@@ -159,38 +171,42 @@ const CodigoBarras = () => {
 
   const showDatos = () => {
     //xmlDocument
-    var namespace = "http://www.sat.gob.mx/cfd/4";
-    var parser = new DOMParser();
-    var xml = parser.parseFromString(xmlContent, "text/xml");
-    var producto = xml.getElementsByTagNameNS(namespace, "Concepto");
-    var emisor = xml.getElementsByTagNameNS(namespace, "Emisor");
-    var comprobante = xml.getElementsByTagNameNS(namespace, "Comprobante");
-    let productos = new Array();
+    if (xmlContent.length > 0) {
+      //console.log("Dentro showDatos y xmlContent>0");
+      var namespace = "http://www.sat.gob.mx/cfd/4";
+      var parser = new DOMParser();
+      var xml = parser.parseFromString(xmlContent, "text/xml");
+      var producto = xml.getElementsByTagNameNS(namespace, "Concepto");
+      var emisor = xml.getElementsByTagNameNS(namespace, "Emisor");
+      var comprobante = xml.getElementsByTagNameNS(namespace, "Comprobante");
+      let productos = new Array();
 
-    for (let j = 0; j < producto.length; j++) {
-      const canti = producto[j].getAttribute("Cantidad");
-      const noId = producto[j].getAttribute("NoIdentificacion");
-      let partida = { cantidad: canti, producto: noId, clave: "" };
-      productos.push(partida);
-    }
-    setListaProductos(productos);
+      for (let j = 0; j < producto.length; j++) {
+        const canti = producto[j].getAttribute("Cantidad");
+        const noId = producto[j].getAttribute("NoIdentificacion");
+        let partida = { cantidad: canti, producto: noId, clave: "" };
+        //console.log(partida);
+        productos.push(partida);
+      }
+      setListaProductos(productos);
+      //console.log(productos);
 
-    for (let i = 0; i < emisor.length; i++) {
-      setRfc(emisor[i].getAttribute("Rfc"));
-      setNombreProveedor(emisor[i].getAttribute("Nombre"));
-    }
+      for (let i = 0; i < emisor.length; i++) {
+        setRfc(emisor[i].getAttribute("Rfc"));
+        setNombreProveedor(emisor[i].getAttribute("Nombre"));
+      }
 
-    for (let i = 0; i < comprobante.length; i++) {
-      setFolioFactura(comprobante[i].getAttribute("Folio"));
+      for (let i = 0; i < comprobante.length; i++) {
+        setFolioFactura(comprobante[i].getAttribute("Folio"));
+      }
+      setMostrarCargaArchivo(false);
+    } else {
+      show_alerta("Elija un archivo .xml", "warning");
     }
-    setMostrarCargaArchivo(false);
   };
 
   const cancelar = () => {
-    setMostrarCargaArchivo(true);
-    setIsFileUploaded(true);
-    setClavesunificadas([]);
-    setProductosRecepcionados([]);
+    //setIsFileUploaded(true);
   };
 
   const handlerFunction = (e) => {
@@ -295,20 +311,13 @@ const CodigoBarras = () => {
     content: () => componentRef.current,
   });
 
-  /* const openModal = (op, cantidad, producto, clave) => {
-    window.setTimeout(function () {
-      //document.getElementById("dgo").focus();
-    }, 500);
-  }; */
-
-  const grabaClaveNoEncontrada = (valor) => {
+    const grabaClaveNoEncontrada = (valor) => {
     let clave = valor.producto; //clave de proveedor no registrada en BD
     setClaveProveedorIngManualmente(clave);
     setQtyManualmente(valor.cantidad);
   };
 
   const agregarClaveManual = async () => {
-
     var parametros;
 
     parametros = {
@@ -325,36 +334,35 @@ const CodigoBarras = () => {
     const url = "http://18.224.118.226:3001/insertClaveManualNoRegistrada";
 
     await Axios({ method: "PUT", url: url, data: parametros })
-    .then(function (respuesta) {
-      var tipo = respuesta.status;
-      console.log(tipo);
-      if (tipo === 200) {
-        moverProductoaRecepcionados();
-        show_alerta("Registrado exitósamente", "success");
-      } else {
-        show_alerta("Hubo un problema", "error");
-      }
+      .then(function (respuesta) {
+        var tipo = respuesta.status;
+        console.log(tipo);
+        if (tipo === 200) {
+          moverProductoaRecepcionados();
+          show_alerta("Registrado exitósamente", "success");
+        } else {
+          show_alerta("Hubo un problema", "error");
+        }
 
-      if (tipo === 200) {
-        document.getElementById("btnCerrar").click();
-      }
-    })
-    .catch(function (error) {
-      show_alerta("Error en la solicitud de escritura", "error");
-      //console.log(error);
-    });
-  }
+        if (tipo === 200) {
+          document.getElementById("btnCerrar").click();
+        }
+      })
+      .catch(function (error) {
+        show_alerta("Error en la solicitud de escritura", "error");
+        //console.log(error);
+      });
+  };
 
   const moverProductoaRecepcionados = () => {
-
     let temporal = clavesunificadas.filter(
-      (claveProv) => claveProv.producto !== claveProveedorIngManualmente  //Solo quedan prods que no son el ing manualmente
+      (claveProv) => claveProv.producto !== claveProveedorIngManualmente //Solo quedan prods que no son el ing manualmente
     );
     /* console.log(temporal); */
     setClavesunificadas(temporal);
 
     let temp = [...productosRecepcionados];
-    
+
     let partida = {
       cantidad: qtyManualmente,
       producto: claveProveedorIngManualmente,
@@ -362,7 +370,7 @@ const CodigoBarras = () => {
     };
     temp.push(partida);
     setProductosRecepcionados(temp);
-  }
+  };
 
   return (
     <>
@@ -409,7 +417,14 @@ const CodigoBarras = () => {
               <div className="divRegresarCB">
                 <button
                   onClick={() => {
-                    cancelar();
+                    setMostrarCargaArchivo(true);
+                    setClavesunificadas([]);
+                    setProductosRecepcionados([]);
+                    setXmlContent([]);
+                    setListaProductos([]);
+                    /* setClavesProveedor([]); */
+                    /* setIsFileUploaded(true); */
+                    /* cancelar(); */
                   }}
                   className="itemCB"
                 >
@@ -635,11 +650,15 @@ const CodigoBarras = () => {
                     type="text"
                     class="form-control"
                     id="exampleFormControlInput12"
-                    onChange={(e) => setProductoIngresadoManualmente(e.target.value)}
+                    onChange={(e) =>
+                      setProductoIngresadoManualmente(e.target.value)
+                    }
                   />
                 </div>
                 <div className="item-scan">
-                  <i style={{fontSize:"2.2rem", textAlign:"center"}}><CiBarcode /> </i>
+                  <i style={{ fontSize: "2.2rem", textAlign: "center" }}>
+                    <CiBarcode />{" "}
+                  </i>
                 </div>
               </div>
             </div>
