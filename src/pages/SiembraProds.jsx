@@ -48,7 +48,8 @@ const SiembraProds = () => {
       url: urlServidorAPI + "/insertarSiembra",
       data: {
         fecha: date,
-        clave: clave,
+        clave: value,
+        qty: qty,
         observaciones: observaciones,
         sucursal: sucursal1,
       },
@@ -108,6 +109,10 @@ const SiembraProds = () => {
                   Cantidad
                 </label>
                 <input
+                value={qty}
+                onChange={(event) => {
+                  setQty(event.target.value);
+                }}
                   type="number"
                   class="form-control"
                   id="cantidad"
