@@ -333,7 +333,7 @@ const CodigoBarras = () => {
 
     const url = "http://18.224.118.226:3001/insertClaveManualNoRegistrada";
 
-    await Axios({ method: "PUT", url: url, data: parametros })
+    await Axios({ method: "POST", url: url, data: parametros })
       .then(function (respuesta) {
         var tipo = respuesta.status;
         console.log(tipo);

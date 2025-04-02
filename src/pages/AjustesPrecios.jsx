@@ -37,6 +37,7 @@ const AjustesPrecios = () => {
   const porcentaje = 75;
 
   const urlServidorAPI = "http://18.224.118.226:3001";
+  const urlServidorAPI2 = "http://localhost:8080";
 
   useEffect(() => {
     // Agrega opciones al Select cuando carga la página por primera vez
@@ -113,7 +114,8 @@ const AjustesPrecios = () => {
       console.log(sheetName);
       const sheet = workbook.Sheets[sheetName];
       parsedData = XLSX.utils.sheet_to_json(sheet);
-      setDataExcel(parsedData);
+      let temp = acondicionaDatos(parsedData);
+      setDataExcel(temp);
     };
     
     /** al inicio está en true (está deshabilitado por default) */
@@ -124,18 +126,19 @@ const AjustesPrecios = () => {
     }
   };
 
-  const openModal2 = () => {
+  const openModal2 = async () => {
     
     setIsDisabled(true); /* Botón Subir (se desactiva) */
     console.log("Dentro de openModal2");
-    console.log(dataExcel);
+    //setDataExcel(acondicionaDatos());
+    //console.log(dataExcel);
 
     // Radio true para  actualizar, false para borrar destino y escribir
     if (radioModoSubidaLista) {
       //Actualizar
-      console.log("Radio true " + radioModoSubidaLista);
+      //console.log("Radio true " + radioModoSubidaLista);
 
-      Axios({
+      await Axios({
         method: "POST",
         url: urlServidorAPI + "/updateListaPrecios",
         data: dataExcel,
@@ -159,16 +162,16 @@ const AjustesPrecios = () => {
       console.log("Radio false " + radioModoSubidaLista);
 
       //Borrar lista destino
-      Axios.get(urlServidorAPI + `/borrarLista/`, {
+      /* Axios.post(urlServidorAPI + `/borrarLista/`, {
         params: {
           sucursal: sucursal,
         },
       }).then((response) => {
         console.log(response.status);
-      });
+      }); */
 
       //Insertar nueva lista
-      Axios({
+      await Axios({
         method: "POST",
         url: urlServidorAPI + "/insertarLista",
         data: dataExcel,
@@ -188,7 +191,17 @@ const AjustesPrecios = () => {
           JSON.parse(JSON.stringify(error));
         });
     }
+    //document.getElementById("btnAplicar").click();
   };
+
+  const acondicionaDatos = (parsed) => {
+
+    const temp = parsed.map(partida => {
+      return {...partida, precio: partida.precio.replace(',','')}
+     /*  elemento.precio = elemento.precio.replace(',',''); */
+    });
+    return temp;
+  }
 
   return (
     <>
@@ -395,7 +408,7 @@ const AjustesPrecios = () => {
       </div>
 
       {/**** MODAL SUBIDA ARCHIVO ******/}
-      <div id="modalEdicion" className="modal fade" aria-hidden="true">
+      <div id="modalEdicion" className="modal fade" aria-hidden="false">
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
@@ -460,17 +473,6 @@ const AjustesPrecios = () => {
                     </div>
                   </div>
                   <div className="col-4 mx-auto">
-                    {/* {showSpinner && (
-                <div className="text-center mt-4">
-                    {" "}
-                    <Spinner animation="border" role="status">
-                        {" "}
-                        <span className="visually-hidden">Loading...</span>
-                        {" "}
-                    </Spinner>
-                    {" "}
-                </div>
-            )} */}
                   </div>
                 </div>
               </div>
