@@ -317,8 +317,9 @@ const CodigoBarras = () => {
     setQtyManualmente(valor.cantidad);
   };
 
-  const agregarClaveManual = async () => {
+  const agregarClaveManual = () => {
     var parametros;
+    var metodo;
 
     parametros = {
       clave: productoIngresadoManualmente.trim(),
@@ -330,10 +331,12 @@ const CodigoBarras = () => {
     };
 
     console.log(parametros);
+    metodo = "PUT";
+    //const url = "http://18.224.118.226:3001/insertClaveManualNoRegistrada";
 
-    const url = "http://18.224.118.226:3001/insertClaveManualNoRegistrada";
+    enviarSolicitud(metodo,parametros)
 
-    await Axios({ method: "POST", url: url, data: parametros })
+    /* Axios({ method: "POST", url: url, data: parametros })
       .then(function (respuesta) {
         var tipo = respuesta.status;
         console.log(tipo);
@@ -346,6 +349,30 @@ const CodigoBarras = () => {
 
         if (tipo === 200) {
           document.getElementById("btnCerrar").click();
+        }
+      })
+      .catch(function (error) {
+        show_alerta("Error en la solicitud de escritura", "error");
+        //console.log(error);
+      }); */
+  };
+
+  const enviarSolicitud = async (metodo, parametros) => {
+    const url = "http://18.224.118.226:3001/insertClaveManualNoRegistrada";
+
+    await Axios({ method: metodo, url: url, data: parametros })
+      .then(function (respuesta) {
+        var tipo = respuesta.status;
+        console.log(tipo);
+        if (tipo === 200) {
+          show_alerta("Registrado exitósamente", "success");
+        } else {
+          show_alerta("Hubo un problema", "error");
+        }
+
+        if (tipo === 200) {
+          document.getElementById("btnCerrar").click();
+          console.log("despues de getMargenes");
         }
       })
       .catch(function (error) {
