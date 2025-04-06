@@ -4,6 +4,7 @@ import Table from "../components/table";
 import * as XLSX from "xlsx";
 import "../styles/clavesnoregistradas.css";
 import { BiDownload } from "react-icons/bi";
+import TablaNoRegistradas from "./admon/siembra/TablaNoRegistradas";
 
 const ClavesNoRegistradas = () => {
   const urlServidorAPI = "http://18.224.118.226:3001";
@@ -36,9 +37,12 @@ const ClavesNoRegistradas = () => {
               <h7 id="descargarF" onClick={()=>descargar()} >Descargar</h7>
           </div>
         </div>
+        
       </div>
+      {/* <div className="encabezado-noregistradas"><h5>Tabla de datos</h5></div> */}
       <div className="tabla-noregistrada">
-        <Table data={clavesNoRegistradas} rowsPerPage={9} />
+        {/* <Table data={clavesNoRegistradas} rowsPerPage={9} /> */}
+        <TablaNoRegistradas rows={clavesNoRegistradas} />
       </div>
     </div>
   );
