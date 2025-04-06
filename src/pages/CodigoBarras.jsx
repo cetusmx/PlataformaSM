@@ -330,8 +330,8 @@ const CodigoBarras = () => {
       fecha: hoy,
     };
 
-    console.log(parametros);
-    metodo = "PUT";
+    
+    metodo = "POST";
     //const url = "http://18.224.118.226:3001/insertClaveManualNoRegistrada";
 
     enviarSolicitud(metodo,parametros)
@@ -358,7 +358,10 @@ const CodigoBarras = () => {
   };
 
   const enviarSolicitud = async (metodo, parametros) => {
-    const url = "http://18.224.118.226:3001/insertClaveManualNoRegistrada";
+
+    console.log(parametros);
+    /* const url = "http://18.224.118.226:3001/insertClaveManualNoRegistrada"; */
+    const url = "http://18.224.118.226:3002/api/v1/products";
 
     await Axios({ method: metodo, url: url, data: parametros })
       .then(function (respuesta) {
