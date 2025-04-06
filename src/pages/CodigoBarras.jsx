@@ -324,10 +324,11 @@ const CodigoBarras = () => {
     parametros = {
       clave: productoIngresadoManualmente.trim(),
       sucursal: infoUsuario.sucursal,
-      proveedor: rfc,
+      rfc: rfc,
       factura: folioFactura,
       claveProveedor: claveProveedorIngManualmente,
       fecha: hoy,
+      estatus: "Pendiente"
     };
 
     
@@ -367,13 +368,13 @@ const CodigoBarras = () => {
       .then(function (respuesta) {
         var tipo = respuesta.status;
         console.log(tipo);
-        if (tipo === 200) {
+        if (tipo === 201) {
           show_alerta("Registrado exitósamente", "success");
         } else {
           show_alerta("Hubo un problema", "error");
         }
 
-        if (tipo === 200) {
+        if (tipo === 201) {
           document.getElementById("btnCerrar").click();
           console.log("despues de getMargenes");
         }
