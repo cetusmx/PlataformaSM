@@ -4,6 +4,7 @@ import Table from "../siembra/table"
 import * as XLSX from "xlsx";
 
 import { BiDownload } from "react-icons/bi";
+import TablaFaltantes from "../../TablaFaltantes";
 
 const FaltantesTabla = () => {
 
@@ -40,7 +41,8 @@ const FaltantesTabla = () => {
           </div>
         </div>
         <div className="tabla-noregistrada">
-          <Table data={data} rowsPerPage={9} />
+          {/* <Table data={data} rowsPerPage={9} /> */}
+          <TablaFaltantes rows={data} />
         </div>
       </div>
     );
