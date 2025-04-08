@@ -7,7 +7,7 @@ const TablaPrecios = (props) => {
   const url = "http://18.224.118.226:3001";
   const [searchList, setSearchList] = useState("");
   const [listaPrecios, setListaPrecios] = useState("");
-  console.log("Sucursal:- " + props.sucursal);
+  
   let sucursalConsulta = props.sucursal;
 
   const [claveBuscada, setClaveBuscada] = useState("");
@@ -39,7 +39,7 @@ const TablaPrecios = (props) => {
     }).then((response) => {
       setListaPrecios(response.data);
       setSearchList(response.data);
-      console.log(response.data);
+      //console.log(response.data);
       setIsFetching(false);
     });
   };

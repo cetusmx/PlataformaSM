@@ -35,25 +35,26 @@ const AjustesPrecios = () => {
   const [habilitaBotonAplicar, setHabilitaBotonAplicar] = useState(true);
 
   const [dataExcel, setDataExcel] = useState([]);
+  const [copyDataExcel, setCopyDataExcel] = useState([]);
 
   /*  const { valor3 } = useContext(DataContext);
   const { contextAdminNav, setContextAdminNav } = valor3; */
   const porcentaje = 75;
 
   const urlServidorAPI = "http://18.224.118.226:3001";
-  const urlServidorAPI3 = "http://18.224.118.226:3002";
-  const urlServidorAPI2 = "http://localhost:3002";
+  /* const urlServidorAPI3 = "http://18.224.118.226:3002"; */
+  const urlServidorAPI3 = "http://localhost:3002";
 
   useEffect(() => {
-    console.log(sucursalPropietaria)
-    console.log(accionInfoExistente)
-  },[sucursalPropietaria, accionInfoExistente])
+    console.log(sucursalPropietaria);
+    console.log(accionInfoExistente);
+  }, [sucursalPropietaria, accionInfoExistente]);
 
   useEffect(() => {
     // Agrega opciones al Select cuando carga la página por primera vez
     console.log("Dentro UseEffect");
     setShowSpinner(true);
-    console.log(dataExcel);
+    //console.log(dataExcel);
   }, [dataExcel]);
 
   const showLista = (e) => {
@@ -114,20 +115,22 @@ const AjustesPrecios = () => {
   };
 
   const handleFileUpload = (e) => {
-    const reader = new FileReader();
-    let parsedData;
-    reader.readAsBinaryString(e.target.files[0]);
-    reader.onload = (e) => {
-      const data = e.target.result;
-      const workbook = XLSX.read(data, { type: "binary" });
-      const sheetName = workbook.SheetNames[0];
-      console.log(sheetName);
-      const sheet = workbook.Sheets[sheetName];
-      parsedData = XLSX.utils.sheet_to_json(sheet);
-      let temp = acondicionaDatos(parsedData);
-      setDataExcel(temp);
-    };
-
+    if (typeof e.target.files[0] !== "undefined") {
+      const reader = new FileReader();
+      let parsedData;
+      reader.readAsBinaryString(e.target.files[0]);
+      reader.onload = (e) => {
+        const data = e.target.result;
+        const workbook = XLSX.read(data, { type: "binary" });
+        const sheetName = workbook.SheetNames[0];
+        console.log(sheetName);
+        const sheet = workbook.Sheets[sheetName];
+        parsedData = XLSX.utils.sheet_to_json(sheet);
+        let temp = acondicionaDatos(parsedData);
+        setDataExcel(temp);
+        setCopyDataExcel(temp);
+      };
+    }
     /** al inicio está en true (está deshabilitado por default) */
     if (isDisabled) {
       setIsDisabled(false);
@@ -138,70 +141,137 @@ const AjustesPrecios = () => {
 
   const openModal2 = async () => {
     setIsDisabled(true); /* Botón Subir (se desactiva) */
-    console.log("Dentro de openModal2");
-    //setDataExcel(acondicionaDatos());
-    //console.log(dataExcel);
 
-    if(sucursalPropietaria==="Más de una sucursal"){
-      const propietarias = getPropietarias()
-    }else{  //Cuando es una sola sucursal
-
-    if (accionInfoExistente==="1") {  //es una lista nueva, no existe en BD
-      
-      Axios({
-        method: "POST",
-        url: urlServidorAPI3 + `/api/v1/listas/`,
-        data: dataExcel,
-      })
-        .then((response) => {
-          var tipo = response.status;
-          console.log(tipo);
-          if (tipo === 200) {
-            show_alerta("Subido exitósamente", "success");
-          } else {
-            show_alerta("Hubo un problema", "error");
-          }
-
-          console.log(response);
+    if (sucursalPropietaria === "Más de una sucursal") {
+      //es una lista nueva, no existe en BD
+      if (accionInfoExistente === "1") {
+        Axios({
+          method: "POST",
+          url: urlServidorAPI3 + `/api/v1/listas/`,
+          data: dataExcel,
         })
-        .catch(function (error) {
-          JSON.parse(JSON.stringify(error));
+          .then((response) => {
+            var tipo = response.status;
+            console.log(tipo);
+            if (tipo === 200) {
+              show_alerta("Subido exitósamente", "success");
+            } else {
+              show_alerta("Hubo un problema", "error");
+            }
+
+            console.log(response);
+          })
+          .catch(function (error) {
+            JSON.parse(JSON.stringify(error));
+          });
+      }
+
+      //Eliminar y reemplazar con nueva lista
+      if (accionInfoExistente === "2") {
+        const propietarias = getPropietarias();
+
+        console.log(propietarias);
+        propietarias.forEach((element) => {
+          let temp;
+          let sucursalLocal = element;
+          console.log(sucursal);
+          temp = dataExcel.filter(
+            (product) => product.sucursal === sucursalLocal
+          );
+          console.log(temp);
+
+          //Borrar lista destino
+          Axios({
+            method: "DELETE",
+            url: urlServidorAPI3 + `/api/v1/listas/${sucursalLocal}`,
+            /* data: dataExcel, */
+          }).then((response) => {
+            console.log(response.status);
+          });
+
+          //Insertar nueva lista
+          Axios({
+            method: "POST",
+            url: urlServidorAPI3 + `/api/v1/listas/`,
+            data: temp,
+          })
+            .then((response) => {
+              var tipo = response.status;
+              console.log(tipo);
+              if (tipo === 200) {
+                show_alerta("Subido exitósamente", "success");
+              } else {
+                show_alerta("Hubo un problema", "error");
+              }
+
+              console.log(response.status);
+            })
+            .catch(function (error) {
+              JSON.parse(JSON.stringify(error));
+            });
         });
-      console.log(sucursal);
-    } 
-    if(accionInfoExistente==="2") { //Eliminar y reemplazar con nueva lista
-      
-      //Borrar lista destino
-      await Axios({
-        method: "DELETE",
-        url: urlServidorAPI3 + `/api/v1/listas/${sucursalPropietaria}`,
-        data: dataExcel,
-      }).then((response) => {
-        console.log(response.status);
-      });
+      }
+    } else {
+      //Cuando es una sola sucursal
 
-      //Insertar nueva lista
-      await Axios({
-        method: "POST",
-        url: urlServidorAPI3 + `/api/v1/listas/`,
-        data: dataExcel,
-      })
-        .then((response) => {
-          var tipo = response.status;
-          console.log(tipo);
-          if (tipo === 200) {
-            show_alerta("Subido exitósamente", "success");
-          } else {
-            show_alerta("Hubo un problema", "error");
-          }
+      if (accionInfoExistente === "1") {
+        //es una lista nueva, no existe en BD
 
+        Axios({
+          method: "POST",
+          url: urlServidorAPI3 + `/api/v1/listas/`,
+          data: dataExcel,
+        })
+          .then((response) => {
+            var tipo = response.status;
+            console.log(tipo);
+            if (tipo === 200) {
+              show_alerta("Subido exitósamente", "success");
+            } else {
+              show_alerta("Hubo un problema", "error");
+            }
+
+            console.log(response);
+          })
+          .catch(function (error) {
+            JSON.parse(JSON.stringify(error));
+          });
+        console.log(sucursal);
+      }
+      if (accionInfoExistente === "2") {
+        //Eliminar y reemplazar con nueva lista
+
+        //Borrar lista destino
+        await Axios({
+          method: "DELETE",
+          url: urlServidorAPI3 + `/api/v1/listas/${sucursalPropietaria}`,
+          data: dataExcel,
+        }).then((response) => {
           console.log(response.status);
-        })
-        .catch(function (error) {
-          JSON.parse(JSON.stringify(error));
         });
+
+        //Insertar nueva lista
+        await Axios({
+          method: "POST",
+          url: urlServidorAPI3 + `/api/v1/listas/`,
+          data: dataExcel,
+        })
+          .then((response) => {
+            var tipo = response.status;
+            console.log(tipo);
+            if (tipo === 200) {
+              show_alerta("Subido exitósamente", "success");
+            } else {
+              show_alerta("Hubo un problema", "error");
+            }
+
+            console.log(response.status);
+          })
+          .catch(function (error) {
+            JSON.parse(JSON.stringify(error));
+          });
+      }
     }
-  }
     //document.getElementById("btnAplicar").click();
   };
 
@@ -214,8 +284,20 @@ const AjustesPrecios = () => {
   };
 
   const getPropietarias = () => {
-
-  }
+    var sucus = [];
+    //console.log(copyDataExcel)
+    let copyOfDataExcel = new Array([...copyDataExcel]);
+    //console.log(copyOfDataExcel)
+    const sucursales = copyOfDataExcel[0].map((item) => {
+      let temp = item.sucursal;
+      if (!sucus.includes(temp)) {
+        sucus.push(temp);
+      }
+      return temp;
+    });
+    //console.log(sucus)
+    return sucus;
+  };
 
   return (
     <>
@@ -420,7 +502,7 @@ const AjustesPrecios = () => {
               <div className="container-fluid">
                 <div className="row">
                   <div
-                    className="col-md-6 mx-auto"
+                    className="col-md-7 mx-auto"
                     style={{ fontSize: "1.2rem" }}
                   >
                     <label
@@ -443,8 +525,9 @@ const AjustesPrecios = () => {
                       paddingTop: "7px",
                     }}
                   >
-                    <label style={{fontSize:"0.9rem"}}>
-                    <strong style={{fontWeight: 500}}>Paso 1</strong> Elija la sucursal propietaria de la lista que va a subir:
+                    <label style={{ fontSize: "0.9rem" }}>
+                      <strong style={{ fontWeight: 500 }}>Paso 1</strong> Elija
+                      la sucursal propietaria de la lista que va a subir:
                     </label>
                   </div>
                 </div>
@@ -455,17 +538,19 @@ const AjustesPrecios = () => {
                   <div className="col-7">
                     <select
                       value={sucursalPropietaria}
-                                defaultValue={"0"}
-                                onChange={(event) => {
-                                  let index = event.target.selectedIndex;
-                                setSucursalPropietaria(event.target.options[index].text);
-                                if(event.target.value!=="0")
-                                {setHabilitaPaso2(false);
-                                  setHabilitaBotonAplicar(true);
-                                }
-                                if(event.target.value!=="0")
-                                {}
-                                }} 
+                      defaultValue={"0"}
+                      onChange={(event) => {
+                        let index = event.target.selectedIndex;
+                        setSucursalPropietaria(
+                          event.target.options[index].text
+                        );
+                        if (event.target.value !== "0") {
+                          setHabilitaPaso2(false);
+                          setHabilitaBotonAplicar(true);
+                        }
+                        if (event.target.value !== "0") {
+                        }
+                      }}
                       class="form-control"
                     >
                       <option value="-Seleccionar-">-Seleccionar-</option>
@@ -475,11 +560,16 @@ const AjustesPrecios = () => {
                       <option value="Zacatecas">Zacatecas</option>
                       <option value="Tecmin">Tecmin</option>
                       <option value="Mayorista">Mayorista</option>
-                      <option value="Más de una sucursal">Más de una sucursal</option>
+                      <option value="Más de una sucursal">
+                        Más de una sucursal
+                      </option>
                     </select>
                   </div>
                 </div>
-                <div className="row" style={{ paddingTop: "0px", paddingBottom: "7px" }}>
+                <div
+                  className="row"
+                  style={{ paddingTop: "0px", paddingBottom: "7px" }}
+                >
                   <div
                     className="col-12"
                     style={{
@@ -488,8 +578,9 @@ const AjustesPrecios = () => {
                       paddingTop: "7px",
                     }}
                   >
-                    <label style={{fontSize:"0.9rem"}}>
-                      <strong style={{fontWeight: 500}}>Paso 2</strong> ¿Qué hará con la información existente en la BD?
+                    <label style={{ fontSize: "0.9rem" }}>
+                      <strong style={{ fontWeight: 500 }}>Paso 2</strong> ¿Qué
+                      hará con la información existente en la BD?
                     </label>
                   </div>
                 </div>
@@ -498,22 +589,23 @@ const AjustesPrecios = () => {
                   style={{ paddingTop: "0px", paddingBottom: "7px" }}
                 >
                   <div className="col-12">
-                    <select                    
-                    disabled={habilitaPaso2}
+                    <select
+                      disabled={habilitaPaso2}
                       value={accionInfoExistente}
-                                defaultValue={"0"} 
-                                onChange={(event) => {
-                                setAccionInfoExistente(event.target.value);
-                                if(event.target.value!==0)
-                                setHabilitaBotonAplicar(false);
-                                }}
+                      defaultValue={"0"}
+                      onChange={(event) => {
+                        setAccionInfoExistente(event.target.value);
+                        if (event.target.value !== 0)
+                          setHabilitaBotonAplicar(false);
+                      }}
                       class="form-control"
                     >
-                       <option value="0">-Seleccionar-</option>
+                      <option value="0">-Seleccionar-</option>
                       <option value="1">
                         Es una lista(s) nueva, no existe en BD
                       </option>
-                      {/* {sucursalPropietaria !== "7" &&  */}<option value="2">
+                      {/* {sucursalPropietaria !== "7" &&  */}
+                      <option value="2">
                         Eliminar y reemplazar con la nueva lista
                       </option>
                       {/* <option value="3">
@@ -521,9 +613,11 @@ const AjustesPrecios = () => {
                       </option> */}
                     </select>
                   </div>
-                  
                 </div>
-                <div className="row" style={{ paddingTop: "0px", paddingBottom: "7px" }}>
+                <div
+                  className="row"
+                  style={{ paddingTop: "0px", paddingBottom: "7px" }}
+                >
                   <div
                     className="col-12"
                     /* style={{
@@ -532,8 +626,9 @@ const AjustesPrecios = () => {
                       paddingTop: "7px",
                     }} */
                   >
-                    <label style={{fontSize:"0.9rem", fontStyle:"italic"}}>
-                      Si existen nuevos productos en la lista que va a subir, elija la opción "Eliminar y reemplazar con la nueva lista"
+                    <label style={{ fontSize: "0.9rem", fontStyle: "italic" }}>
+                      Si existen nuevos productos en la lista que va a subir,
+                      elija la opción "Eliminar y reemplazar con la nueva lista"
                     </label>
                   </div>
                 </div>
@@ -546,15 +641,17 @@ const AjustesPrecios = () => {
                       paddingTop: "10px",
                     }}
                   >
-                    <h6 style={{fontWeight:500}}>NOTA</h6>
-                    <p style={{fontSize:"0.8rem"}}>
-                      Las listas de precios deben organizarse por sucursal e incluir todos los productos. Puede subir una o varias listas por lote.
+                    <h6 style={{ fontWeight: 500 }}>NOTA</h6>
+                    <p style={{ fontSize: "0.8rem" }}>
+                      Las listas de precios deben organizarse por sucursal e
+                      incluir todos los productos. Puede subir una o varias
+                      listas por lote.
                     </p>
                   </div>
                 </div>
                 <div className="row">
                   <div className="col-12">
-                  {/* <label style={{fontSize:"0.9rem", fontStyle: "italic"}}>
+                    {/* <label style={{fontSize:"0.9rem", fontStyle: "italic"}}>
                       En la opción "Conservar y solo actualizar precios" no agregará productos nuevos que sean incluidos en la lista
                     </label> */}
                   </div>
