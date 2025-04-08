@@ -57,7 +57,7 @@ const CodigoBarras = () => {
   );
 
   useEffect(() => {
-    console.log("Useeffect rfc, getClaves()")
+    console.log("Useeffect rfc, getClaves()");
     getClaves();
   }, [rfc]);
 
@@ -79,7 +79,7 @@ const CodigoBarras = () => {
     } else {
       setClavesunificadas([]);
     }
-  }, [xmlContent,folioFactura]);
+  }, [xmlContent, folioFactura]);
 
   const myinput = useRef();
 
@@ -311,7 +311,7 @@ const CodigoBarras = () => {
     content: () => componentRef.current,
   });
 
-    const grabaClaveNoEncontrada = (valor) => {
+  const grabaClaveNoEncontrada = (valor) => {
     let clave = valor.producto; //clave de proveedor no registrada en BD
     setClaveProveedorIngManualmente(clave);
     setQtyManualmente(valor.cantidad);
@@ -328,14 +328,13 @@ const CodigoBarras = () => {
       factura: folioFactura,
       claveProveedor: claveProveedorIngManualmente,
       fecha: hoy,
-      estatus: "Pendiente"
+      estatus: "Pendiente",
     };
 
-    
     metodo = "POST";
     //const url = "http://18.224.118.226:3001/insertClaveManualNoRegistrada";
 
-    enviarSolicitud(metodo,parametros)
+    enviarSolicitud(metodo, parametros);
 
     /* Axios({ method: "POST", url: url, data: parametros })
       .then(function (respuesta) {
@@ -359,7 +358,6 @@ const CodigoBarras = () => {
   };
 
   const enviarSolicitud = async (metodo, parametros) => {
-
     console.log(parametros);
     /* const url = "http://18.224.118.226:3001/insertClaveManualNoRegistrada"; */
     const url = "http://18.224.118.226:3002/api/v1/products";
@@ -369,6 +367,7 @@ const CodigoBarras = () => {
         var tipo = respuesta.status;
         console.log(tipo);
         if (tipo === 201) {
+          moverProductoaRecepcionados();
           show_alerta("Registrado exitósamente", "success");
         } else {
           show_alerta("Hubo un problema", "error");
