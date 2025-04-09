@@ -42,18 +42,18 @@ const AjustesPrecios = () => {
   const porcentaje = 75;
 
   const urlServidorAPI = "http://18.224.118.226:3001";
-  const urlServidorAPI3 = "http://18.224.118.226:3002";
-  /* const urlServidorAPI3 = "http://localhost:3002"; */
+  /* const urlServidorAPI3 = "http://18.224.118.226:3002"; */
+  const urlServidorAPI3 = "http://localhost:3002";
 
   useEffect(() => {
-    console.log(sucursalPropietaria);
-    console.log(accionInfoExistente);
+    //console.log(sucursalPropietaria);
+    //console.log(accionInfoExistente);
   }, [sucursalPropietaria, accionInfoExistente]);
 
   useEffect(() => {
     // Agrega opciones al Select cuando carga la página por primera vez
-    console.log("Dentro UseEffect");
-    setShowSpinner(true);
+    //console.log("Dentro UseEffect");
+    setShowSpinner(false);
     //console.log(dataExcel);
   }, [dataExcel]);
 
@@ -145,7 +145,7 @@ const AjustesPrecios = () => {
     if (sucursalPropietaria === "Más de una sucursal") {
       //es una lista nueva, no existe en BD
       if (accionInfoExistente === "1") {
-        Axios({
+        await Axios({
           method: "POST",
           url: urlServidorAPI3 + `/api/v1/listas/`,
           data: dataExcel,
@@ -170,49 +170,61 @@ const AjustesPrecios = () => {
       //Eliminar y reemplazar con nueva lista
       if (accionInfoExistente === "2") {
         const propietarias = getPropietarias();
-
+        var tipo = 0;
         console.log(propietarias);
-        propietarias.forEach((element) => {
+
+        for (const sucursalLocal of propietarias) {
           let temp;
-          let sucursalLocal = element;
-          console.log(sucursal);
+          //let sucursalLocal = element;
+          //console.log(sucursalLocal);
           temp = dataExcel.filter(
             (product) => product.sucursal === sucursalLocal
           );
-          console.log(temp);
+          //console.log(temp);
 
           //Borrar lista destino
-          Axios({
+          await Axios({
             method: "DELETE",
             url: urlServidorAPI3 + `/api/v1/listas/${sucursalLocal}`,
             /* data: dataExcel, */
           }).then((response) => {
-            console.log(response.status);
+            console.log(
+              `respuesta en delete más de una sucursal ${response.status} - ${sucursalLocal}`
+            );
           });
 
           //Insertar nueva lista
-          Axios({
+          await Axios({
             method: "POST",
             url: urlServidorAPI3 + `/api/v1/listas/`,
             data: temp,
           })
             .then((response) => {
-              var tipo = response.status;
-              console.log(tipo);
-              if (tipo === 200) {
-                show_alerta("Subido exitósamente", "success");
-              } else {
-                show_alerta("Hubo un problema", "error");
-              }
+              tipo = response.status;
+              console.log(
+                `respuesta en post más de una sucursal ${tipo} - ${sucursalLocal}`
+              );
+              console.log(response.data.message);
+              /* if (tipo === 200) {
+          show_alerta("Subido exitósamente", "success");
+        } else {
+          show_alerta("Hubo un problema", "error");
+        } */
 
-              console.log(response.status);
-              setShowSpinner(false);
+              //console.log(response.status);
             })
             .catch(function (error) {
               JSON.parse(JSON.stringify(error));
               setShowSpinner(false);
             });
-        });
+        } // Fin foreach
+        if (tipo === 200) {
+          show_alerta("Subido exitósamente", "success");
+        } else {
+          show_alerta("Hubo un problema", "error");
+        }
+
+        setShowSpinner(false);
       }
     } else {
       //Cuando es una sola sucursal
@@ -281,6 +293,8 @@ const AjustesPrecios = () => {
     }
     //document.getElementById("btnAplicar").click();
   };
+
+  const escribirMasDeUnaSucursal = async () => {};
 
   const acondicionaDatos = (parsed) => {
     const temp = parsed.map((partida) => {
@@ -419,9 +433,22 @@ const AjustesPrecios = () => {
             </div>
           </div>
           <div className="columnaDerechaAP">
-            <div style={{ width: "73%", marginRight: "2%" }}>
-              {sucursal !== "" ? <TablaPrecios sucursal={sucursal} /> : null}
-            </div>
+            {showSpinner && (
+              <div
+                sx={{ display: "flex", justifyContent: "center" }}
+                style={{ width: "50%", margin: "18vh 0 0 44vh" }}
+              >
+                <Spinner animation="border" role="status">
+                  {" "}
+                  <span className="visually-hidden">Cargando...</span>{" "}
+                </Spinner>
+              </div>
+            )}
+            {!showSpinner && (
+              <div style={{ width: "73%", marginRight: "2%" }}>
+                {sucursal !== "" ? <TablaPrecios sucursal={sucursal} /> : null}
+              </div>
+            )}
             {isDisabledTit ? (
               <div
                 style={{
