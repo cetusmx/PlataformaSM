@@ -7,7 +7,7 @@ const TablaPrecios = (props) => {
   const url = "http://18.224.118.226:3001";
   const [searchList, setSearchList] = useState("");
   const [listaPrecios, setListaPrecios] = useState("");
-  
+
   let sucursalConsulta = props.sucursal;
 
   const [claveBuscada, setClaveBuscada] = useState("");
@@ -82,42 +82,91 @@ const TablaPrecios = (props) => {
           <BiSearch style={{ color: "#969393", fontSize: "1.4rem" }} />
         </div>
       </div>
-      <div className="tablaDatos">
-        {isFetching && (
-          <div sx={{ display: "flex", justifyContent: "center" }} 
-          style={{width: "50%", margin: "18vh 0 0 44vh"}}>
-            <Spinner animation="border" role="status">
-              {" "}
-              <span className="visually-hidden">Cargando...</span>{" "}
-            </Spinner>
-          </div>
-        )}
-        {listaPrecios?.length > 0 && !isFetching && (
-          <table
-            className="table table-striped"
-            style={{ padding: "3px", autoHeight: true, fontSize: "0.8rem" }}
-          >
-            <thead>
-              <tr style={{ padding: "3px" }}>
-                <th scope="col">Clave</th>
-                <th scope="col">Precio</th>
-                <th scope="col">Precio c/IVA</th>
-              </tr>
-            </thead>
-            <tbody>
-              {searchList.map((val, key) => {
-                return (
-                  <tr key={val.id}>
-                    <td>{val.clave}</td>
-                    <td>{val.precio}</td>
-                    <td>{val.precioIVA}</td>
-                  </tr>
-                );
-              }).slice(0,10)}
-            </tbody>
-          </table>
-        )}
-      </div>
+      {sucursalConsulta !== "Todas" ? (
+        <div className="tablaDatos">
+          {isFetching && (
+            <div
+              sx={{ display: "flex", justifyContent: "center" }}
+              style={{ width: "50%", margin: "18vh 0 0 44vh" }}
+            >
+              <Spinner animation="border" role="status">
+                {" "}
+                <span className="visually-hidden">Cargando...</span>{" "}
+              </Spinner>
+            </div>
+          )}
+          {listaPrecios?.length > 0 && !isFetching && (
+            <table
+              className="table table-striped"
+              style={{ padding: "3px", autoHeight: true, fontSize: "0.8rem" }}
+            >
+              <thead>
+                <tr style={{ padding: "3px" }}>
+                  <th scope="col">Clave</th>
+                  <th scope="col">Precio</th>
+                  <th scope="col">Precio c/IVA</th>
+                </tr>
+              </thead>
+              <tbody>
+                {searchList
+                  .map((val, key) => {
+                    return (
+                      <tr key={val.id}>
+                        <td>{val.clave}</td>
+                        <td>{val.precio}</td>
+                        <td>{val.precioIVA}</td>
+                      </tr>
+                    );
+                  })
+                  .slice(0, 10)}
+              </tbody>
+            </table>
+          )}
+        </div>
+      ) : (
+        <div className="tablaDatos">
+          {isFetching && (
+            <div
+              sx={{ display: "flex", justifyContent: "center" }}
+              style={{ width: "50%", margin: "18vh 0 0 44vh" }}
+            >
+              <Spinner animation="border" role="status">
+                {" "}
+                <span className="visually-hidden">Cargando...</span>{" "}
+              </Spinner>
+            </div>
+          )}
+          {listaPrecios?.length > 0 && !isFetching && (
+            <table
+              className="table table-striped"
+              style={{ padding: "3px", autoHeight: true, fontSize: "0.8rem" }}
+            >
+              <thead>
+                <tr style={{ padding: "3px" }}>
+                  <th scope="col">Clave</th>
+                  <th scope="col">Precio</th>
+                  <th scope="col">Precio c/IVA</th>
+                  <th scope="col">Sucursal</th>
+                </tr>
+              </thead>
+              <tbody>
+                {searchList
+                  .map((val, key) => {
+                    return (
+                      <tr key={val.id}>
+                        <td>{val.clave}</td>
+                        <td>{val.precio}</td>
+                        <td>{val.precioIVA}</td>
+                        <td>{val.sucursal}</td>
+                      </tr>
+                    );
+                  })
+                  .slice(0, 10)}
+              </tbody>
+            </table>
+          )}
+        </div>
+      )}
     </>
   );
 };
