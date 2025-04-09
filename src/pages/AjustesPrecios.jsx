@@ -42,8 +42,8 @@ const AjustesPrecios = () => {
   const porcentaje = 75;
 
   const urlServidorAPI = "http://18.224.118.226:3001";
-  /* const urlServidorAPI3 = "http://18.224.118.226:3002"; */
-  const urlServidorAPI3 = "http://localhost:3002";
+  const urlServidorAPI3 = "http://18.224.118.226:3002";
+  /* const urlServidorAPI3 = "http://localhost:3002"; */
 
   useEffect(() => {
     console.log(sucursalPropietaria);
@@ -141,7 +141,7 @@ const AjustesPrecios = () => {
 
   const openModal2 = async () => {
     setIsDisabled(true); /* Botón Subir (se desactiva) */
-
+    setShowSpinner(true);
     if (sucursalPropietaria === "Más de una sucursal") {
       //es una lista nueva, no existe en BD
       if (accionInfoExistente === "1") {
@@ -158,11 +158,12 @@ const AjustesPrecios = () => {
             } else {
               show_alerta("Hubo un problema", "error");
             }
-
+            setShowSpinner(false);
             console.log(response);
           })
           .catch(function (error) {
             JSON.parse(JSON.stringify(error));
+            setShowSpinner(false);
           });
       }
 
@@ -205,9 +206,11 @@ const AjustesPrecios = () => {
               }
 
               console.log(response.status);
+              setShowSpinner(false);
             })
             .catch(function (error) {
               JSON.parse(JSON.stringify(error));
+              setShowSpinner(false);
             });
         });
       }
@@ -232,9 +235,11 @@ const AjustesPrecios = () => {
             }
 
             console.log(response);
+            setShowSpinner(false);
           })
           .catch(function (error) {
             JSON.parse(JSON.stringify(error));
+            setShowSpinner(false);
           });
         console.log(sucursal);
       }
@@ -266,9 +271,11 @@ const AjustesPrecios = () => {
             }
 
             console.log(response.status);
+            setShowSpinner(false);
           })
           .catch(function (error) {
             JSON.parse(JSON.stringify(error));
+            setShowSpinner(false);
           });
       }
     }
