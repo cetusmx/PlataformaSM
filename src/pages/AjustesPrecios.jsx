@@ -42,8 +42,8 @@ const AjustesPrecios = () => {
   const porcentaje = 75;
 
   const urlServidorAPI = "http://18.224.118.226:3001";
-  /* const urlServidorAPI3 = "http://18.224.118.226:3002"; */
-  const urlServidorAPI3 = "http://localhost:3002";
+  const urlServidorAPI3 = "http://18.224.118.226:3002";
+  /* const urlServidorAPI3 = "http://localhost:3002"; */
 
   useEffect(() => {
     //console.log(sucursalPropietaria);
