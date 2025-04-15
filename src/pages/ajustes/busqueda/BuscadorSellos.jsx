@@ -5,7 +5,7 @@ import * as XLSX from "xlsx";
 import { BiFilterAlt } from "react-icons/bi";
 import Axios from "axios";
 import { show_alerta } from "../../../functions";
-import { Spinner } from "react-bootstrap";
+import TablaProductosResumida from "./TablaProductosResumida";
 
 const BuscadorSellos = () => {
   const [dataExcel, setDataExcel] = useState([]);
@@ -150,7 +150,7 @@ const BuscadorSellos = () => {
               type="file"
               accept=".xlsx, .xls"
               onChange={(e) => handleFileUpload(e)}
-              /* style={{ width: "140px" }} */
+              style={{ width: "50%" }}
               class="form-control"
               id="formFile"
             />
@@ -165,6 +165,12 @@ const BuscadorSellos = () => {
             </p>
           </div>
         )}
+        {muestraFileUpload && (
+          <div>
+            <TablaProductosResumida />
+          </div>
+        )}
+
         {!muestraFileUpload && (
           <div>
             <div className="header--activity-busqueda">

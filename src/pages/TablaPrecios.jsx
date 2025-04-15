@@ -26,11 +26,6 @@ const TablaPrecios = (props) => {
     setSearchList([]);
   }, [sucursalConsulta]);
 
-  /* useEffect(() => {
-    console.log("UseEffect actualiza búsqueda");
-    onChange(claveBuscada);
-  },[claveBuscada]) */
-
   let getPrecios = () => {
     Axios.get(url + `/getprecios`, {
       params: {
