@@ -1,0 +1,47 @@
+.wrapper-ajus-busqueda {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.div-table {
+  font-size: 0.8rem;
+  max-height: 73vh;
+  min-height: 73vh;
+  overflow-y: scroll;
+  width: 100%;
+}
+.encabezado-ajus-busqueda {
+  padding: 10px 0 10px 0;
+}
+.header--activity-busqueda {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  row-gap: auto;
+  gap: 5px;
+  font-size: 0.8rem;
+  padding: 5px 0 5px 0;
+  border-bottom: #dde6ed solid 1px;
+  margin-bottom: 5px;
+}
+.boton-buscador-sellos {
+  display: flex;
+  flex-direction: row;
+  padding: 4px 5px;
+  width: 20%;
+  gap: 10px;
+}
+.search-box-busqueda {
+  background: #f1f3f4;
+  padding: 4px 5px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+}
+.search-box-busqueda input {
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 3px;
+  outline: none;
+}

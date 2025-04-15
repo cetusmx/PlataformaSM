@@ -123,7 +123,6 @@ const AjustesPrecios = () => {
         const data = e.target.result;
         const workbook = XLSX.read(data, { type: "binary" });
         const sheetName = workbook.SheetNames[0];
-        console.log(sheetName);
         const sheet = workbook.Sheets[sheetName];
         parsedData = XLSX.utils.sheet_to_json(sheet);
         let temp = acondicionaDatos(parsedData);

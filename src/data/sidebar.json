@@ -1,75 +1,80 @@
 [
-    {
+  {
+    "title": "Inventario",
+    "icon": "bi bi-box-seam",
+    "childrens": [
+      {
+        "title": "Búsqueda de sellos",
+        "icon": "bi bi-search",
+        "path": "/busquedasellos"
+      },
+      {
+        "title": "Códigos de barras",
+        "icon": "bi bi-upc",
+        "path": "/codigosbarras"
+      },
+      {
+        "title": "Faltantes",
+        "icon": "bi bi-puzzle",
+        "path": "/faltantes"
+      },
+      {
+        "title": "Recepción mercancía",
+        "icon": "bi bi-upc-scan",
+        "path": "/recepcionmercancia"
+      }
+    ]
+  },
+  {
+    "title": "Precios",
+    "icon": "bi bi-currency-dollar",
+    "childrens": [
+      {
+        "title": "Cotizador",
+        "icon": "bi bi-calculator",
+        "path": "/cotizador"
+      },
+      {
+        "title": "Lista de precios",
+        "icon": "bi bi-list",
+        "path": "/listaprecios"
+      }
+    ]
+  },
+  {
+    "title": "Ajustes",
+    "icon": "bi bi-gear",
+    "childrens": [
+      {
+        "title": "Cotizador",
+        "icon": "bi bi-calculator",
+        "path": "/ajustescotizador"
+      },
+      {
+        "title": "Claves no registradas",
+        "icon": "bi bi-clipboard-x",
+        "path": "/noregistradas"
+      },
+      {
+        "title": "Faltantes",
+        "icon": "bi bi-puzzle",
+        "path": "/admonfaltantes"
+      },
+      {
         "title": "Inventario",
         "icon": "bi bi-box-seam",
-        "childrens": [
-            {
-                "title": "Búsqueda de sellos",
-                "icon": "bi bi-search",
-                "path": "/busquedasellos"
-            },
-            {
-                "title": "Códigos de barras",
-                "icon": "bi bi-upc",
-                "path": "/codigosbarras"
-            },
-            {
-                "title": "Faltantes",
-                "icon": "bi bi-puzzle",
-                "path": "/faltantes"
-            },
-            {
-                "title": "Recepción mercancía",
-                "icon": "bi bi-upc-scan",
-                "path": "/recepcionmercancia"
-            }
-        ]
-    },
-    {
-        "title": "Precios",
+        "path": "/inventario"
+      },
+      {
+        "title": "Listas de precios",
         "icon": "bi bi-currency-dollar",
-        "childrens": [
-            {
-                "title": "Cotizador",
-                "icon": "bi bi-calculator",
-                "path": "/cotizador"
-            },
-            {
-                "title": "Lista de precios",
-                "icon": "bi bi-list",
-                "path": "/listaprecios"
-            }
-        ]
-    },
-    {
-        "title": "Ajustes",
-        "icon": "bi bi-gear",
-        "childrens": [
-            {
-                "title": "Cotizador",
-                "icon": "bi bi-calculator",
-                "path": "/ajustescotizador"
-            },
-            {
-                "title": "Faltantes",
-                "icon": "bi bi-puzzle",
-                "path": "/admonfaltantes"
-            },
-            {
-                "title": "Listas de precios",
-                "icon": "bi bi-currency-dollar",
-                "path": "/ajustesprecios"
-            },
-            {
-                "title": "Claves no registradas",
-                "icon": "bi bi-clipboard-x",
-                "path": "/noregistradas"
-            },
-            {
-                "title": "Usuarios",
-                "icon": "bi bi-people",
-                "path": "/usuarios"
-            }
-        ]
-    }
+        "path": "/ajustesprecios"
+      },
+      {
+        "title": "Usuarios",
+        "icon": "bi bi-people",
+        "path": "/usuarios"
+      }
+    ]
+  }
 ]
