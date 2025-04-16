@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../../../styles/buscadorsellos.css";
 import List from "./List";
 import * as XLSX from "xlsx";
@@ -13,9 +13,20 @@ const BuscadorSellos = () => {
   const [claveBuscada, setClaveBuscada] = useState("");
   const [searchList, setSearchList] = useState("");
   const [showSpinner, setShowSpinner] = useState(false);
+  const [showSpinner2, setShowSpinner2] = useState(true);
   /* const [lineaBuscada, setLineaBuscada] = useState(""); */
   const cardsPerRow = 2;
   const urlServidorAPI3 = "http://18.224.118.226:3002";
+
+  useEffect(() => {
+    // Use setTimeout to update the message after 2000 milliseconds (2 seconds)
+    const timeoutId = setTimeout(() => {
+      //setMessage('Delayed message after 2 seconds!');
+      setShowSpinner2(false);
+    }, 2000);
+    // Cleanup function to clear the timeout if the component unmounts
+    return () => clearTimeout(timeoutId);
+  }, []); // Empty dependency array ensures the effect runs only once
 
   const handleFileUpload = (e) => {
     if (typeof e.target.files[0] !== "undefined") {
@@ -142,33 +153,34 @@ const BuscadorSellos = () => {
     <>
       <div className="wrapper-ajus-busqueda">
         {muestraFileUpload && (
-          <div class="mb-3" style={{ paddingTop: "10px" }}>
-            <label for="formFile" class="form-label">
-              Carga del catálogo de productos para Buscador
-            </label>
-            <input
-              type="file"
-              accept=".xlsx, .xls"
-              onChange={(e) => handleFileUpload(e)}
-              style={{ width: "50%" }}
-              class="form-control"
-              id="formFile"
-            />
-            <p
-              style={{
-                fontStyle: "italic",
-                fontSize: "0.8rem",
-                paddingTop: "10px",
-              }}
-            >
-              Elija un archivo .xls o .xlsx con la información de los productos.
-            </p>
-          </div>
-        )}
-        {muestraFileUpload && (
-          <div>
-            <TablaProductosResumida />
-          </div>
+          <>
+            <div class="mb-3" style={{ paddingTop: "10px" }}>
+              <label for="formFile" class="form-label">
+                Carga del catálogo de productos para Buscador
+              </label>
+              <input
+                type="file"
+                accept=".xlsx, .xls"
+                onChange={(e) => handleFileUpload(e)}
+                style={{ width: "50%" }}
+                class="form-control"
+                id="formFile"
+              />
+              <p
+                style={{
+                  fontStyle: "italic",
+                  fontSize: "0.8rem",
+                  paddingTop: "10px",
+                }}
+              >
+                Elija un archivo .xls o .xlsx con la información de los
+                productos.
+              </p>
+            </div>
+            <div>
+              <TablaProductosResumida />
+            </div>
+          </>
         )}
 
         {!muestraFileUpload && (
@@ -183,6 +195,7 @@ const BuscadorSellos = () => {
                 />
                 <BiFilterAlt style={{ color: "#969393", fontSize: "1.4rem" }} />
               </div>
+              <div className="encabezado-busqueda-tabla">Vista previa</div>
               <div className="boton-buscador-sellos">
                 <button
                   id="boton-print"
@@ -291,7 +304,7 @@ const BuscadorSellos = () => {
                 className="btn btn-secondary"
                 data-bs-dismiss="modal"
               >
-                Cerrar
+                Cancelar
               </button>
               <button
                 id="btnAplicar"
