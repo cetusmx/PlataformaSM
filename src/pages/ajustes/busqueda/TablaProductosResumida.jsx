@@ -3,6 +3,7 @@ import Axios from "axios";
 import { BiFilterAlt } from "react-icons/bi";
 import Card from "./Card";
 import Prod from "./Producto";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 const TablaProductosResumida = () => {
   const [productos, setProductos] = useState([]);
@@ -16,9 +17,9 @@ const TablaProductosResumida = () => {
     getProductos();
   }, []);
 
-  /* useEffect(() => {
-    getProducto();
-  }, [claveModal]); */
+  const renderTooltip = (props) => (
+    <Tooltip {...props}>Da clic para más detalles</Tooltip>
+  );
 
   const getProductos = async () => {
     await Axios.get(urlServidorAPI + `/api/v1/productos`).then((response) => {
@@ -117,26 +118,28 @@ const TablaProductosResumida = () => {
               {searchList
                 .map((val, key) => {
                   return (
-                    <tr
-                      style={{ cursor: "pointer" }}
-                      onClick={() => {
-                        getProducto(val.clave);
-                        setClaveModal(val.clave);
-                      }}
-                      key={val.clave}
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalSubir"
-                    >
-                      <td>{val.clave}</td>
-                      <td>{val.descripcion}</td>
-                      <td>{val.linea}</td>
-                      <td>{val.perfil}</td>
-                      <td>{val.claveanterior}</td>
-                      <td>{val.createdAt}</td>
-                    </tr>
+                    <OverlayTrigger placement="top" overlay={renderTooltip}>
+                      <tr
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          getProducto(val.clave);
+                          setClaveModal(val.clave);
+                        }}
+                        key={val.clave}
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalSubir"
+                      >
+                        <td>{val.clave}</td>
+                        <td>{val.descripcion}</td>
+                        <td>{val.linea}</td>
+                        <td>{val.perfil}</td>
+                        <td>{val.claveanterior}</td>
+                        <td>{val.createdAt}</td>
+                      </tr>
+                    </OverlayTrigger>
                   );
                 })
-                .slice(0, 8)}
+                .slice(0, 7)}
             </tbody>
           </table>
         )}

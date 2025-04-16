@@ -124,9 +124,13 @@ const BuscadorSellos = () => {
     await Axios({
       method: "DELETE",
       url: urlServidorAPI3 + `/api/v1/productos/`,
-    }).then((response) => {
-      //console.log(response);
-    });
+    })
+      .then((response) => {
+        //console.log(response);
+      })
+      .catch(function (error) {
+        JSON.parse(JSON.stringify(error));
+      });
     //Insertar nueva lista
     await Axios({
       method: "POST",
