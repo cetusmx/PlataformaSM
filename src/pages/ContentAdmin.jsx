@@ -6,18 +6,16 @@ import MenuHerramientas from "./MenuHerramientas";
 import Configuracion from "./Configuracion";
 import ContenedorCotizador from "./ContenedorCotizador";
 import Remision from "./Remision";
-import BusquedaSellos from "./BusquedaSellos";
-import SubmenuCodBarras from "./SubmenuCodBarras";
 import SiembraProds from "./SiembraProds";
 import CodigoBarras from "./CodigoBarras";
 import CodigoBarrasManual from "./CodigoBarrasManual";
-import AjustesCotizador from "./AjustesCotizador";
 import Editamars from "./Editamars";
 import AjustesPrecios from "./AjustesPrecios";
 import Usuarios from "./Usuarios";
 import ClavesNoRegistradas from "./ClavesNoRegistradas";
 import FaltantesTabla from "./admon/siembra/FaltantesTabla";
 import BuscadorSellos from "./ajustes/busqueda/BuscadorSellos";
+import BuscadorUI from "./ajustes/busqueda/BuscadorUI";
 
 const ContentAdmin = () => {
   return (
@@ -27,7 +25,7 @@ const ContentAdmin = () => {
         <Routes>
           <Route path="/" element={<ContenedorCotizador />} />
           <Route path="cotizador" element={<ContenedorCotizador />} />
-          <Route path="busquedasellos" element={<Usuarios />} />
+          <Route path="busquedasellos" element={<BuscadorUI />} />
           <Route path="codigosbarras" element={<CodigoBarrasManual />} />
           <Route path="faltantes" element={<SiembraProds />} />
           <Route path="admin" element={<Configuracion />} />

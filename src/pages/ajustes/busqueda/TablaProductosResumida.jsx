@@ -109,8 +109,6 @@ const TablaProductosResumida = () => {
                 <th scope="col">Clave</th>
                 <th scope="col">Descripción</th>
                 <th scope="col">Línea</th>
-                <th scope="col">Perfil</th>
-                <th scope="col">Clave ant.</th>
                 <th scope="col">Fecha actualización</th>
               </tr>
             </thead>
@@ -132,9 +130,7 @@ const TablaProductosResumida = () => {
                         <td>{val.clave}</td>
                         <td>{val.descripcion}</td>
                         <td>{val.linea}</td>
-                        <td>{val.perfil}</td>
-                        <td>{val.claveanterior}</td>
-                        <td>{val.createdAt}</td>
+                        <td>{String(val.createdAt).substring(0, 10)}</td>
                       </tr>
                     </OverlayTrigger>
                   );

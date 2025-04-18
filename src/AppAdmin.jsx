@@ -6,16 +6,17 @@ import ContentAdmin from "./pages/ContentAdmin";
 import { DataContext } from "./contexts/dataContext";
 import SidebarTree from "./components/SidebarTree";
 import SidebarTreeUser from "./components/SidebarTreeUser";
+import ProductosContextProvider from "./contexts/contextProductos";
 
 const AppAdmin = ({ usuari }) => {
   const { valor, valor2 } = useContext(DataContext);
   const { contextData, setContextData } = valor;
   const { contextsideBarNav, setContextSidebarNav } = valor2;
 
-  console.log("AppAdmin: " + contextData.uid);
+  /*  console.log("AppAdmin: " + contextData.uid);
   console.log("AppAdmin: " + contextData.email);
   console.log("AppAdmin: " + contextData.rol);
-  console.log("AppAdmin: " + contextData.sucursal);
+  console.log("AppAdmin: " + contextData.sucursal); */
   //console.log("AppAdmin=> navegacion: " + contextsideBarNav.page);
   console.log("AppAdmin=> navegacion1: " + contextsideBarNav);
 
@@ -30,7 +31,9 @@ const AppAdmin = ({ usuari }) => {
       )}
 
       <div className="dashboard--content">
-        <ContentAdmin />
+        <ProductosContextProvider>
+          <ContentAdmin />
+        </ProductosContextProvider>
       </div>
     </div>
   );

@@ -51,7 +51,7 @@ const BuscadorSellos = () => {
           parsedData,
           originalHeader
         );
-        //console.log(successdata);
+        console.log(successdata);
         /* let temp = acondicionaDatos(parsedData);*/
         setDataExcel(successdata);
         setSearchList(successdata);
@@ -197,7 +197,7 @@ const BuscadorSellos = () => {
                   type="text"
                   placeholder="Filtrar por clave"
                 />
-                <BiFilterAlt style={{ color: "#969393", fontSize: "1.4rem" }} />
+                <BiFilterAlt />
               </div>
               <div className="encabezado-busqueda-tabla">Vista previa</div>
               <div className="boton-buscador-sellos">
