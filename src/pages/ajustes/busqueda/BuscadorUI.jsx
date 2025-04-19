@@ -191,12 +191,11 @@ const BuscadorUI = () => {
                 di={row.diametrointerior}
                 de={row.diametroexterior}
                 al={row.altura}
-                seccion={row.seccion}
                 syr={row.clavesellosyr}
                 lc={row.clavelacapital}
               />
             ))
-            .slice(0, 100)}
+            .slice(0, 10000)}
         </div>
       </div>
     </>
