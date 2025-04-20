@@ -12,21 +12,43 @@ const BuscadorUI = () => {
   const [altura, setAltura] = useState("");
   const [productos, setProductos] = useState([]);
   const [data, setData] = useState([]);
+  const [isSpinner, setIsSpinner] = useState(true);
+  const [claveBuscada, setClaveBuscada] = useState("");
 
   useEffect(() => {
     getProductos();
+    const timer = setTimeout(() => {
+      setIsSpinner(false);
+    }, 2000);
+    return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (!isSpinner) {
+      setIsSpinner(true);
+      console.log("spinner false");
+    }
+    const timer = setTimeout(() => {
+      console.log("Dentro timeout");
+      setIsSpinner(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [searchList]);
 
   const getProductos = async () => {
     await Axios.get(urlServidorAPI3 + `/api/v1/productos`).then((response) => {
       setProductos(response.data.body);
       setSearchList(response.data.body);
       setData(response.data.body);
-      console.log(response.data.body);
+      //console.log(response.data.body);
     });
   };
 
   const onchange = (event) => {
+    if (claveBuscada) {
+      setClaveBuscada("");
+    }
+    console.log("Spinner => " + isSpinner);
     let id = event.target.id;
     console.log(id);
     if (id === "input-di") {
@@ -46,7 +68,8 @@ const BuscadorUI = () => {
       const temp = productos.filter((row) => {
         return (
           (row.diametrointerior === di.trim() || di.trim() === "") &&
-          row.diametroexterior === event.target.value.trim() &&
+          row.diametroexterior === event.target.value.trim() /* ||
+            de.trim() === "" */ &&
           (row.altura === altura.trim() || altura.trim() === "")
         );
       });
@@ -59,16 +82,33 @@ const BuscadorUI = () => {
         return (
           (row.diametrointerior === di.trim() || di.trim() === "") &&
           (row.diametroexterior === de.trim() || de.trim() === "") &&
-          row.altura === event.target.value.trim()
+          (row.altura === event.target.value.trim() || altura.trim() === "")
         );
       });
       setSearchList(temp);
       setData(temp);
     }
+    setIsSpinner(false);
+    /* console.log("D.I. => " + di);
+    console.log("D.E. => " + de);
+    console.log("Altura => " + altura);
+    console.log("Spinner => " + isSpinner); */
+  };
 
-    console.log(event.target.value);
-    console.log(de);
-    console.log(di);
+  const onchange2 = (e) => {
+    setDi("");
+    setDe("");
+    setAltura("");
+
+    setClaveBuscada(e.target.value);
+    // Filter data based on search term
+    setSearchList(
+      productos
+        .filter((item) =>
+          item.clave.toUpperCase().includes(e.target.value.toUpperCase())
+        )
+        .slice(0, 70)
+    );
   };
 
   return (
@@ -85,6 +125,8 @@ const BuscadorUI = () => {
               className="form-control"
               aria-label="Sizing example input"
               aria-describedby="inputGroup-sizing-default"
+              onChange={onchange2}
+              value={claveBuscada}
             />
           </div>
         </div>
@@ -173,14 +215,42 @@ const BuscadorUI = () => {
               aria-label="Sizing example input"
               aria-describedby="inputGroup-sizing-sm"
               value={altura}
-              onChange={onchange}
+              onChange={(e) => {
+                setAltura(e.target.value);
+                onchange(e);
+              }}
             />
           </div>
         </div>
-
-        <div className="tabla-resultados-buscadorUI">
-          <Table productos={searchList} />
-        </div>
+        {isSpinner && (
+          <div
+            style={{
+              display: "flex",
+              /* flexDirection: "column", */
+              width: "100%",
+              justifyItems: "center",
+              justifyContent: "center",
+              /* textAlign: "center", */
+              paddingTop: "5rem",
+            }}
+          >
+            <div
+              class="spinner-border"
+              role="status"
+              /* sx={{ display: "flex", justifyContent: "center" }} */
+              style={{
+                width: "5rem",
+                height: "5rem",
+                /*margin: "22vh 0 0 55vh", */
+              }}
+            ></div>
+          </div>
+        )}
+        {!isSpinner && (
+          <div className="tabla-resultados-buscadorUI">
+            <Table productos={searchList} />
+          </div>
+        )}
       </div>
     </>
   );

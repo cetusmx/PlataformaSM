@@ -5,7 +5,8 @@ const TableRow = ({ producto }) => {
     <tr>
       <td colSpan={10}>
         <div
-          style={{
+          className="div-appears"
+          /* style={{
             width: "100%",
             paddingLeft: "5%",
             paddingRight: "5%",
@@ -13,7 +14,7 @@ const TableRow = ({ producto }) => {
             background: "#f7f9fa",
             paddingBottom: "10px",
             borderRadius: "10px",
-          }}
+          }} */
         >
           <table className="table table-striped">
             <thead style={{ fontWeight: "400" }}>

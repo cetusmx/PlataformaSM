@@ -117,15 +117,19 @@
 .toggle-btnS-rota > .toggle-btnS {
   transform: rotate(90deg);
 }
-.mostrar-transicion {
-  background: rgba(0, 0, 0, 0.3);
-  position: fixed;
-  z-index: 1;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  /* opacity: !isOpen ? "0" : "1", */
-  transition: all 0.2s;
-  /* visibility: !isOpen ? "hidden" : "visible", */
+
+.div-appears {
+  width: "100%";
+  padding-left: 5%;
+  padding-right: 5%;
+  padding-top: 10px;
+  background: #f7f9fa;
+  padding-bottom: 10px;
+  border-radius: 10px;
+}
+
+:focus + .div-appears {
+  opacity: 0;
+  display: none;
+  transition: opacity 0.5s, display 0.5s;
 }
