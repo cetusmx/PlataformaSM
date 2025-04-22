@@ -169,7 +169,11 @@ const Card = (props) => {
           </div>
           <div className="contenedor-busqueda">
             <div className="table-container-left-logo">
-              <img src={logo} alt="logo" className="imagen-busqueda" />
+              <img
+                src={`${process.env.PUBLIC_URL}/Perfiles/${props.producto.linea}.jpg`}
+                alt="logo"
+                className="imagen-busqueda"
+              />
             </div>
             <div className="table-container-right">
               <table className="tabla-card">
