@@ -80,7 +80,7 @@ const BuscadorSellos = () => {
     //console.log(originalHeader);
     // Define your mapping logic here
     const headerMap = {
-      "Clave de artículo": "clave",
+      Clave: "clave",
       Descripción: "descripcion",
       "Unidad de entrada": "unidad",
       Línea: "linea",
