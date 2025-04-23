@@ -15,7 +15,7 @@ const TableSection = ({ producto, index }) => {
           <img
             src={`${process.env.PUBLIC_URL}/Perfiles/${producto.linea}.jpg`}
             alt="logo"
-            className="img-fluid rounded-start imagen-busqueda"
+            className="img-fluid rounded-start imagen-busqueda-ui"
           />
         </td>
         <td className="td-center-buscadorUI">{producto.clave}</td>

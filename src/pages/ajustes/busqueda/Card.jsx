@@ -1,6 +1,5 @@
 import React from "react";
 import "./card-busqueda.css";
-import logo from "../../../assets/Logo20.jpeg";
 
 const Card = (props) => {
   console.log(props);

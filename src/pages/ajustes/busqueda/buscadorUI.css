@@ -43,6 +43,10 @@
   height: 100px;
   width: 100px;
 }
+.imagen-busqueda-ui {
+  height: 60px;
+  width: 60px;
+}
 .datos-vista-previa {
   display: flex;
   flex-direction: row;
