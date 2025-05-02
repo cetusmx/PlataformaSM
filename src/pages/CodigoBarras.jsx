@@ -88,19 +88,22 @@ const CodigoBarras = () => {
   };
 
   let unificaClaves = () => {
+    console.log("dentro de unifica claves");
     let temp = [];
     let encontrado = false;
+    //console.log(listaProductos);
+    //console.log(clavesProveedor);
 
     listaProductos.forEach((e, i) => {
-      //Listaproductos son los contenidos en la factura. Campos... cantidad, producto, clave (vacio)
+      //console.log(e.producto))
 
       if (
-        clavesProveedor.some((partida) => partida.claveprovedor === e.producto)
+        clavesProveedor.some((partida) => partida.claveprove === e.producto)
       ) {
         //Checa si existe el producto de la factura en la BD. Campos... (clave, claveprovedor)
         //console.log("Sí encontrado");
         const found = clavesProveedor.find(
-          (element) => element.claveprovedor === e.producto
+          (element) => element.claveprove === e.producto
         );
 
         /* const result = clavesProveedor.find(    //clavesproveedor son todos los productos de ese proveedor
