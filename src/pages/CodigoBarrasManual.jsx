@@ -10,12 +10,11 @@ import { useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 
 const CodigoBarrasManual = () => {
-
   useEffect(() => {
-      // Agrega opciones al Select cuando carga la página por primera vez
-      getPrecios();
-      console.log("Dentro UseEffect Precios");
-    }, []);
+    // Agrega opciones al Select cuando carga la página por primera vez
+    getPrecios();
+    console.log("Dentro UseEffect Precios");
+  }, []);
 
   const url = "http://18.224.118.226:3001";
   const [preciosList, setPreciosList] = useState([]);
@@ -73,7 +72,9 @@ const CodigoBarrasManual = () => {
         id: j,
         cantidad: qty,
         clave: value,
-        barcode: <Barcode width={1} height={35} ref={ref} value={value} />,
+        barcode: (
+          <Barcode width={1} height={35} ref={ref} value={value} />
+        ) /** height previo : 35 */,
       };
 
       partidasImpre.push(partidaImp);
@@ -104,14 +105,16 @@ const CodigoBarrasManual = () => {
     var lines = clavesxLote.split("\n");
     //console.log(lines);
     let loteTemp = [];
-      
+
     for (var i = 0; i < lines.length; i++) {
       //code here using lines[i] which will give you each line
       const partida = [
         {
           cantidad: "1",
           clave: lines[i],
-          barcode: <Barcode width={0.8} height={32} ref={ref} value={lines[i]} />,
+          barcode: (
+            <Barcode width={1} height={35} ref={ref} value={lines[i]} />
+          ) /* width: 0.8, height: 32 */,
         },
       ];
 
@@ -151,7 +154,10 @@ const CodigoBarrasManual = () => {
       <div className="wrapper">
         <div className="encabezado-cb">
           <h6>Herramienta para la generación de códigos de barras</h6>
-          <p style={{fontSize:"0.8rem"}}>Ingrese la cantidad de etiquetas que desee imprimir y la clave del producto.</p>
+          <p style={{ fontSize: "0.8rem" }}>
+            Ingrese la cantidad de etiquetas que desee imprimir y la clave del
+            producto.
+          </p>
         </div>
         <div className="captura">
           <div className="formulario">
@@ -180,27 +186,28 @@ const CodigoBarrasManual = () => {
                 placeholder="Ingrese clave producto"
               />
               <div className="dropdown">
-              {preciosList
-                .filter((item) => {
-                  const searchTerm = value.toLowerCase();
-                  const clave = item.clave.toLowerCase();
+                {preciosList
+                  .filter((item) => {
+                    const searchTerm = value.toLowerCase();
+                    const clave = item.clave.toLowerCase();
 
-                  return (
-                    searchTerm && clave.startsWith(searchTerm)   &&
-                    clave !== searchTerm  
-                  );
-                })
-                .slice(0, 10)
-                .map((item) => (
-                  <div
-                    onClick={() => onSearch(item.clave)}
-                    className="dropdown-row"
-                    key={item.clave}
-                  >
-                    {item.clave}
-                  </div>
-                ))}
-            </div>
+                    return (
+                      searchTerm &&
+                      clave.startsWith(searchTerm) &&
+                      clave !== searchTerm
+                    );
+                  })
+                  .slice(0, 10)
+                  .map((item) => (
+                    <div
+                      onClick={() => onSearch(item.clave)}
+                      className="dropdown-row"
+                      key={item.clave}
+                    >
+                      {item.clave}
+                    </div>
+                  ))}
+              </div>
             </div>
             <div class="div-boton">
               <button
