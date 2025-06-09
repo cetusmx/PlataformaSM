@@ -17,6 +17,7 @@ const BuscadorSellos = () => {
   /* const [lineaBuscada, setLineaBuscada] = useState(""); */
   const cardsPerRow = 2;
   const urlServidorAPI3 = "http://18.224.118.226:3002";
+  const urlServidorAPI4 = "http://localhost:5071";
 
   useEffect(() => {
     // Use setTimeout to update the message after 2000 milliseconds (2 seconds)
@@ -135,6 +136,39 @@ const BuscadorSellos = () => {
     await Axios({
       method: "POST",
       url: urlServidorAPI3 + `/api/v1/productos/`,
+      data: dataExcel,
+    })
+      .then((response) => {
+        if (response.status === 200) {
+          show_alerta("Subido exitósamente", "success");
+        } else {
+          show_alerta("Hubo un problema", "error");
+        }
+        setShowSpinner(false);
+        console.log(response.data.message);
+      })
+      .catch(function (error) {
+        JSON.parse(JSON.stringify(error));
+      });
+    setMuestraFileUpload(true);
+    setClaveBuscada("");
+  };
+  const subirdata2 = async () => {
+    setShowSpinner(true);
+    /* await Axios({
+      method: "DELETE",
+      url: urlServidorAPI4 + `/api/Producto/eliminarProductos`,
+    })
+      .then((response) => {
+        //console.log(response);
+      })
+      .catch(function (error) {
+        JSON.parse(JSON.stringify(error));
+      }); */
+    //Insertar nueva lista
+    await Axios({
+      method: "POST",
+      url: urlServidorAPI4 + `/api/Producto/insertProductos`,
       data: dataExcel,
     })
       .then((response) => {
@@ -312,7 +346,7 @@ const BuscadorSellos = () => {
               </button>
               <button
                 id="btnAplicar"
-                onClick={subirdata}
+                onClick={subirdata2}
                 type="button"
                 className="btn btn-primary"
                 data-bs-dismiss="modal"
