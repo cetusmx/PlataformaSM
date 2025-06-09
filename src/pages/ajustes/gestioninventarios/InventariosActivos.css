@@ -10,11 +10,24 @@ h2 {
   color: #333;
 }
 
+.inventario-scroll-container {
+  overflow-x: auto; /* Permite el scroll horizontal si las tarjetas no caben */
+  overflow-y: hidden; /* Oculta la barra de scroll vertical (aunque no debería aparecer) */
+  white-space: nowrap; /* Evita que las tarjetas se envuelvan a la siguiente línea si el ancho es limitado */
+  padding-bottom: 10px; /* Espacio para que la barra de scroll invisible no tape el contenido */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.inventario-scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
 .inventario-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Columnas responsivas */
+  grid-template-columns: repeat(4, minmax(250px, 1fr)); /* Columnas responsivas */
   gap: 25px; /* Espacio entre las tarjetas */
-  justify-content: center; /* Centra las tarjetas si no llenan la fila completa */
+  /*justify-content: center; /* Centra las tarjetas si no llenan la fila completa */
   padding: 0 15px; /* Padding horizontal para el grid */
 }
 

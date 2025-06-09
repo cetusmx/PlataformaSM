@@ -1,26 +1,47 @@
 // src/components/InventariosActivos.js
-import React, { useState, useEffect } from 'react';
-import { BiBox } from 'react-icons/bi'; // Importa el icono
-import './InventariosActivos.css'; // Estilos específicos para esta sección
+import React, { useState, useEffect } from "react";
+import { BiBox } from "react-icons/bi"; // Importa el icono
+import "./InventariosActivos.css"; // Estilos específicos para esta sección
 
 const InventarioCard = ({ inventario, onViewDetails }) => {
-  const { InventarioID, Fecha, qtyProductos, qtyLineas,Almacen, Ciudad, ProgressPorcentage } = inventario;
+  const {
+    InventarioID,
+    Fecha,
+    qtyProductos,
+    qtyLineas,
+    Almacen,
+    Ciudad,
+    ProgressPorcentage,
+  } = inventario;
 
   // Formatear la fecha
-  const formattedDate = Fecha ? new Date(Fecha).toLocaleDateString() : 'N/A';
+  const formattedDate = Fecha ? new Date(Fecha).toLocaleDateString() : "N/A";
 
   return (
-    <button className="inventario-card" onClick={() => onViewDetails(InventarioID)}>
+    <button
+      className="inventario-card"
+      onClick={() => onViewDetails(InventarioID)}
+    >
       <div className="card-icon">
         <BiBox size={40} color="#007bff" />
       </div>
       <div className="card-info">
         <h3>Inventario ID: {InventarioID}</h3>
-        <p><strong>Fecha de Alta:</strong> {formattedDate}</p>
-        <p><strong>Productos a Contar:</strong> {qtyProductos}</p>
-        <p><strong>Líneas a Contar:</strong> {qtyLineas}</p>
-        <p><strong>Almacén:</strong> {Almacen}</p>
-        <p><strong>Ciudad:</strong> {Ciudad}</p>
+        <p>
+          <strong>Fecha de Alta:</strong> {formattedDate}
+        </p>
+        <p>
+          <strong>Productos a Contar:</strong> {qtyProductos}
+        </p>
+        <p>
+          <strong>Líneas a Contar:</strong> {qtyLineas}
+        </p>
+        <p>
+          <strong>Almacén:</strong> {Almacen}
+        </p>
+        <p>
+          <strong>Ciudad:</strong> {Ciudad}
+        </p>
       </div>
       <div className="card-progress">
         <div className="progress-bar-container">
@@ -43,7 +64,9 @@ const InventariosActivos = ({ onViewDetails }) => {
   useEffect(() => {
     const fetchInventarios = async () => {
       try {
-        const response = await fetch('http://18.224.118.226:3001/getresumeninventarios');
+        const response = await fetch(
+          "http://18.224.118.226:3001/getresumeninventarios"
+        );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -51,7 +74,9 @@ const InventariosActivos = ({ onViewDetails }) => {
         setInventarios(data);
       } catch (e) {
         console.error("Error fetching inventarios:", e);
-        setError("No se pudieron cargar los inventarios. Inténtalo de nuevo más tarde.");
+        setError(
+          "No se pudieron cargar los inventarios. Inténtalo de nuevo más tarde."
+        );
       } finally {
         setLoading(false);
       }
@@ -69,19 +94,25 @@ const InventariosActivos = ({ onViewDetails }) => {
   }
 
   if (inventarios.length === 0) {
-    return <div className="no-data-message">No hay inventarios activos disponibles en este momento.</div>;
+    return (
+      <div className="no-data-message">
+        No hay inventarios activos disponibles en este momento.
+      </div>
+    );
   }
 
   return (
     <div className="inventarios-activos-container">
-      <div className="inventario-cards-grid">
-        {inventarios.map((inventario) => (
-          <InventarioCard
-            key={inventario.InventarioID} // Asegúrate de que el 'id' es único
-            inventario={inventario}
-            onViewDetails={onViewDetails}
-          />
-        ))}
+      <div className="inventario-scroll-container">
+        <div className="inventario-cards-grid">
+          {inventarios.map((inventario) => (
+            <InventarioCard
+              key={inventario.InventarioID} // Asegúrate de que el 'id' es único
+              inventario={inventario}
+              onViewDetails={onViewDetails}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
