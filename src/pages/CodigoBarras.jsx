@@ -349,6 +349,7 @@ const CodigoBarras = () => {
         proveedor: nombreProveedor,
         rfc: rfc,
         factura: folioFactura,
+        sucursal: infoUsuario.sucursal,
       };
   }));
 
