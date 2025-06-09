@@ -1,0 +1,20 @@
+/* src/components/InventarioNavBar.css o App.css */
+
+/* ... (estilos existentes de .inventario-nav-bar, .nav-tab, etc.) ... */
+
+.inventarios-management-container {
+  max-width: 100%; /* Define un ancho máximo para tu contenido */
+  max-height: 82vh;
+  min-height: 82vh;
+  margin: 0 auto; /* Centra el contenedor en la página */
+  margin-top: 20px;
+  padding: 20px; /* Añade algo de espacio alrededor del contenido */
+  background-color: #ffffff; /* Fondo blanco para el contenedor */
+  /*border-radius: 8px;  Bordes ligeramente redondeados */
+  /*box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  Sombra sutil para darle profundidad */
+}
+
+.inventarios-content-area {
+  padding: 20px 0; /* Espacio interno para el área de contenido */
+  /* Aquí podrías añadir estilos para el contenido que se renderiza */
+}

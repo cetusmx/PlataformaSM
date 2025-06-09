@@ -16,6 +16,7 @@ import ClavesNoRegistradas from "./ClavesNoRegistradas";
 import FaltantesTabla from "./admon/siembra/FaltantesTabla";
 import BuscadorSellos from "./ajustes/busqueda/BuscadorSellos";
 import BuscadorUI from "./ajustes/busqueda/BuscadorUI";
+import InventariosPage from "./ajustes/gestioninventarios/InventarioPage";
 
 const ContentAdmin = () => {
   return (
@@ -38,6 +39,7 @@ const ContentAdmin = () => {
           <Route path="admonfaltantes" element={<FaltantesTabla />} />
           <Route path="noregistradas" element={<ClavesNoRegistradas />} />
           <Route path="inventario" element={<BuscadorSellos />} />
+          <Route path="gestioninventarios" element={<InventariosPage />} />
         </Routes>
       </div>
     </div>

@@ -71,6 +71,11 @@
         "path": "/ajustesprecios"
       },
       {
+        "title": "Gestión de inventarios",
+        "icon": "bi bi-boxes",
+        "path": "/gestioninventarios"
+      },
+      {
         "title": "Usuarios",
         "icon": "bi bi-people",
         "path": "/usuarios"
