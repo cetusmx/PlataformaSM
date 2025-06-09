@@ -360,6 +360,50 @@ const CodigoBarras = () => {
       }); */
   };
 
+  const grabaProductosRecepcionados = async (metodo, parametros) => {
+    //console.log(metodo, parametros);
+    const newArray = await parametros.map((obj) => {
+      return {
+        ...obj,
+        proveedor: nombreProveedor,
+        rfc: rfc,
+        factura: folioFactura,
+      };
+    });
+    console.log(newArray);
+    if (newArray.length === 1) {
+      const url = "http://18.224.118.226:3002/api/v1/productorecepcionado";
+      await Axios({ method: metodo, url: url, data: parametros[0] })
+        .then(function (respuesta) {
+          var tipo = respuesta.status;
+          console.log(tipo);
+          if (tipo === 201) {
+            show_alerta("Registrado exitósamente", "success");
+          } else {
+            show_alerta("Hubo un problema", "error");
+          }
+        })
+        .catch(function (error) {
+          show_alerta("Error en la solicitud de escritura", "error");
+        });
+    } else {
+      const url = "http://18.224.118.226:3002/api/v1/productosrecepcionados";
+      await Axios({ method: metodo, url: url, data: parametros })
+        .then(function (respuesta) {
+          var tipo = respuesta.status;
+          console.log(tipo);
+          if (tipo === 201) {
+            show_alerta("Registrado exitósamente", "success");
+          } else {
+            show_alerta("Hubo un problema", "error");
+          }
+        })
+        .catch(function (error) {
+          show_alerta("Error en la solicitud de escritura", "error");
+        });
+    }
+  };
+
   const enviarSolicitud = async (metodo, parametros) => {
     console.log(parametros);
     /* const url = "http://18.224.118.226:3001/insertClaveManualNoRegistrada"; */
@@ -601,7 +645,12 @@ const CodigoBarras = () => {
                     id="boton-print"
                     type="button"
                     className="btn btn-outline-secondary"
-                    /* onClick={handlePrint} */
+                    onClick={() =>
+                      grabaProductosRecepcionados(
+                        "POST",
+                        productosRecepcionados
+                      )
+                    }
                   >
                     Terminar
                   </button>

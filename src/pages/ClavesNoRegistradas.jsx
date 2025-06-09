@@ -41,7 +41,7 @@ const ClavesNoRegistradas = () => {
       </div>
       {/* <div className="encabezado-noregistradas"><h5>Tabla de datos</h5></div> */}
       <div className="tabla-noregistrada">
-        {/* <Table data={clavesNoRegistradas} rowsPerPage={9} /> */}
+        <p>La columna Clave fue capturada manualmente durante la recepción de mercancía.</p>
         <TablaNoRegistradas rows={clavesNoRegistradas} />
       </div>
     </div>
