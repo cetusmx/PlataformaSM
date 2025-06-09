@@ -339,41 +339,23 @@ const CodigoBarras = () => {
 
     enviarSolicitud(metodo, parametros);
 
-    /* Axios({ method: "POST", url: url, data: parametros })
-      .then(function (respuesta) {
-        var tipo = respuesta.status;
-        console.log(tipo);
-        if (tipo === 200) {
-          moverProductoaRecepcionados();
-          show_alerta("Registrado exitósamente", "success");
-        } else {
-          show_alerta("Hubo un problema", "error");
-        }
-
-        if (tipo === 200) {
-          document.getElementById("btnCerrar").click();
-        }
-      })
-      .catch(function (error) {
-        show_alerta("Error en la solicitud de escritura", "error");
-        //console.log(error);
-      }); */
   };
 
   const grabaProductosRecepcionados = async (metodo, parametros) => {
     //console.log(metodo, parametros);
-    const newArray = await parametros.map((obj) => {
+    const newArray = await Promise.all(parametros.map( async(obj) => {
       return {
         ...obj,
         proveedor: nombreProveedor,
         rfc: rfc,
         factura: folioFactura,
       };
-    });
+  }));
+
     console.log(newArray);
     if (newArray.length === 1) {
       const url = "http://18.224.118.226:3002/api/v1/productorecepcionado";
-      await Axios({ method: metodo, url: url, data: parametros[0] })
+      await Axios({ method: metodo, url: url, data: newArray[0] })
         .then(function (respuesta) {
           var tipo = respuesta.status;
           console.log(tipo);
@@ -388,7 +370,7 @@ const CodigoBarras = () => {
         });
     } else {
       const url = "http://18.224.118.226:3002/api/v1/productosrecepcionados";
-      await Axios({ method: metodo, url: url, data: parametros })
+      await Axios({ method: metodo, url: url, data: newArray })
         .then(function (respuesta) {
           var tipo = respuesta.status;
           console.log(tipo);
@@ -402,6 +384,11 @@ const CodigoBarras = () => {
           show_alerta("Error en la solicitud de escritura", "error");
         });
     }
+    setMostrarCargaArchivo(true);
+    setClavesunificadas([]);
+    setProductosRecepcionados([]);
+    setXmlContent([]);
+    setListaProductos([]);
   };
 
   const enviarSolicitud = async (metodo, parametros) => {
