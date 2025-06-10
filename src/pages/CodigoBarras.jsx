@@ -213,23 +213,29 @@ const CodigoBarras = () => {
   };
 
   const handlerFunction = (e) => {
-    console.log(e.target.value);
-
+    //console.log(e.target.value);
+    console.log("Clavesunificadas",clavesunificadas)
     e.preventDefault();
     console.log(existeProductoEnFactura);
-
-    if (
-      e.key === "Enter" &&
-      typeof clavesunificadas.find(
-        (claveProv) => claveProv.clave === e.target.value
-      ) !== "undefined"
-    ) {
+    let cant ="";
+    if (e.key === "Enter" && (typeof clavesunificadas.find((claveProv) => claveProv.clave === e.target.value) !== "undefined" || typeof clavesunificadas.find((claveProv) => claveProv.producto === e.target.value) !== "undefined" )) {
       console.log("inside if key");
-      console.log(productoEscaneado);
-      let temporal = clavesunificadas.find(
+      //console.log(productoEscaneado);
+      if(clavesunificadas.find(
+        (claveProv) => claveProv.clave === e.target.value
+      )){
+        let temporal = clavesunificadas.find(
         (claveProv) => claveProv.clave === e.target.value
       );
-      const cant = temporal.cantidad;
+      console.log("Dentro primer if ", temporal);
+      cant = temporal.cantidad;
+      }else{
+        let temporal = clavesunificadas.find(
+        (claveProv) => claveProv.producto === e.target.value);
+        cant = temporal.cantidad;
+        console.log("Dentro else ", temporal);
+      }
+      
 
       Swal.fire({
         /* title: "<strong>Producto</strong>", */
@@ -248,36 +254,78 @@ const CodigoBarras = () => {
         confirmButtonText: "Sí",
       }).then((res) => {
         if (res.isConfirmed) {
-          let tempClavesunificadas = clavesunificadas.filter(
-            (product) => product.clave !== e.target.value
-          );
-          setClavesunificadas(tempClavesunificadas);
 
-          if (productosRecepcionados.length === 0) {
-            let temp = clavesunificadas.find(
+
+          if (
+            clavesunificadas.find(
               (claveProv) => claveProv.clave === e.target.value
+            )
+          ) {
+            let tempClavesunificadas = clavesunificadas.filter(
+              (product) => product.clave !== e.target.value
             );
-            const recep = [];
-            recep.push(temp);
-            setProductosRecepcionados(recep);
-            console.log(recep);
-          } else {
-            let copyRecepcionados = structuredClone(productosRecepcionados);
-            let temp = clavesunificadas.find(
-              (claveProv) => claveProv.clave === e.target.value
+            setClavesunificadas(tempClavesunificadas);
+
+            if (productosRecepcionados.length === 0) {
+              let temp = clavesunificadas.find(
+                (claveProv) => claveProv.clave === e.target.value
+              );
+              const recep = [];
+              recep.push(temp);
+              setProductosRecepcionados(recep);
+              console.log(recep);
+            } else {
+              let copyRecepcionados = structuredClone(productosRecepcionados);
+              let temp = clavesunificadas.find(
+                (claveProv) => claveProv.clave === e.target.value
+              );
+              copyRecepcionados.push(temp);
+              setProductosRecepcionados(copyRecepcionados);
+              //console.log(copyRecepcionados);
+            }
+            //setProductoEscaneado("");
+
+            const newArray = listaProductos.filter(
+              (item, index) => item.clave !== e.target.value
             );
-            copyRecepcionados.push(temp);
-            setProductosRecepcionados(copyRecepcionados);
-            //console.log(copyRecepcionados);
+
+            setListaProductos(newArray);
+            inputFocus();
+          }else{
+            let tempClavesunificadas = clavesunificadas.filter(
+              (product) => product.producto !== e.target.value
+            );
+            setClavesunificadas(tempClavesunificadas);
+
+            if (productosRecepcionados.length === 0) {
+              let temp = clavesunificadas.find(
+                (claveProv) => claveProv.producto === e.target.value
+              );
+              const recep = [];
+              recep.push(temp);
+              setProductosRecepcionados(recep);
+              console.log(recep);
+            } else {
+              let copyRecepcionados = structuredClone(productosRecepcionados);
+              let temp = clavesunificadas.find(
+                (claveProv) => claveProv.producto === e.target.value
+              );
+              copyRecepcionados.push(temp);
+              setProductosRecepcionados(copyRecepcionados);
+              //console.log(copyRecepcionados);
+            }
+            //setProductoEscaneado("");
+
+            const newArray = listaProductos.filter(
+              (item, index) => item.producto !== e.target.value
+            );
+
+            setListaProductos(newArray);
+            inputFocus();
           }
-          //setProductoEscaneado("");
 
-          const newArray = listaProductos.filter(
-            (item, index) => item.clave !== e.target.value
-          );
 
-          setListaProductos(newArray);
-          inputFocus();
+
         }
       });
     } else {
