@@ -16,19 +16,19 @@ const InventarioNavBar = ({ onSelectTab }) => {
         className={`nav-tab ${activeTab === 'activos' ? 'active' : ''}`}
         onClick={() => handleTabClick('activos')}
       >
-        Inventarios Activos
+        Inventarios Cíclicos
       </button>
       <button
         className={`nav-tab ${activeTab === 'en-conteo' ? 'active' : ''}`}
         onClick={() => handleTabClick('en-conteo')}
       >
-        Inventarios en Conteo
+        Inventarios Generales
       </button>
       <button
         className={`nav-tab ${activeTab === 'subir' ? 'active' : ''}`}
         onClick={() => handleTabClick('subir')}
       >
-        Subir Inventario
+        Registrar Inventario
       </button>
       {/* La pestaña de "Detalle de Inventarios" no es un tab fijo. 
         Se accederá a ella desde las vistas de "Activos" o "En Conteo".

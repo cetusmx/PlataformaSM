@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import InventarioNavBar from './InventarioNavBar';
 import InventariosActivos from './InventariosActivos'; // Importa el nuevo componente
 import "./InventarioPage.css";
+import SubirInventario from './SubirInventario';
 // import InventariosEnConteo from '../components/InventariosEnConteo';
 // import SubirInventario from '../components/SubirInventario';
 // import DetalleInventario from '../components/DetalleInventario';
@@ -30,7 +31,7 @@ const InventariosPage = () => {
         return <div>Contenido de Inventarios en Conteo</div>; // Placeholder
       case 'subir':
         // return <SubirInventario />;
-        return <div>Contenido para Subir Inventario</div>; // Placeholder
+        return <SubirInventario onUploadSuccess={() => setCurrentView('activos')} />; // Placeholder
       case 'detalle':
         // return <DetalleInventario inventarioId={selectedInventarioId} onBack={() => setCurrentView('activos')} />;
         return (

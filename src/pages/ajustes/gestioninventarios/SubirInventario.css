@@ -1,0 +1,283 @@
+/* src/components/SubirInventario.css */
+
+/* Nuevo contenedor principal para el scroll */
+.subir-inventario-scroll-container {
+  /*max-height: calc(100vh - 150px); /* Altura máxima, ajusta según tu layout. 100vh - (altura de header/navbar/footer) */
+  /*overflow-y: auto; /* Habilita el scroll vertical */
+  overflow-x: hidden; /* Oculta el scroll horizontal */
+  padding-right: 15px; /* Espacio para el scrollbar, incluso si está oculto */
+  max-height: 55vh;
+  /* Ocultar scrollbar para Webkit (Chrome, Safari) */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  /* Ocultar scrollbar para IE, Edge, Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.subir-inventario-container {
+  /*padding: 20px;*/
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  max-width: 800px;
+  margin: 10px auto;
+}
+
+h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+h5 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+h3 {
+  color: #007bff;
+  margin-top: 25px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+}
+
+.form-section {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+}
+
+.form-group {
+  margin-bottom: 15px;
+  position: relative; /* Para posicionar la lista de sugerencias */
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #555;
+}
+
+.form-group input[type="text"],
+.form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1em;
+  box-sizing: border-box;
+}
+
+.form-group input[type="text"]:focus,
+.form-group select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.radio-group label {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 20px;
+  font-weight: normal;
+}
+
+.radio-group input[type="radio"] {
+  margin-right: 8px;
+  transform: scale(1.1);
+}
+
+.divider {
+  border: 0;
+  height: 1px;
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0));
+  margin: 30px 0;
+}
+
+/* Dropzone Styles */
+.dropzone {
+  border: 2px dashed #007bff;
+  border-radius: 8px;
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  background-color: #f0f8ff;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  color: #007bff;
+  margin-bottom: 20px;
+}
+
+.dropzone.active {
+  background-color: #e6f7ff;
+  border-color: #0056b3;
+}
+
+.dropzone p {
+  margin: 0;
+  font-size: 1.1em;
+}
+
+.required-fields-info {
+  font-size: 0.9em;
+  color: #888;
+  margin-top: -10px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Preview Card */
+.preview-card {
+  background-color: #e9f7ef;
+  border: 1px solid #d4edda;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.preview-card h4 {
+  margin-top: 0;
+  color: #28a745;
+  margin-bottom: 15px;
+}
+
+.preview-card p {
+  margin: 5px 0;
+  color: #333;
+}
+
+/* Sugerencias de Líneas */
+.suggestions-list {
+  list-style: none;
+  padding: 0;
+  margin: 5px 0 0 0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  max-height: 150px; /* Altura máxima para el scroll de sugerencias */
+  overflow-y: auto;
+  background-color: #fff;
+  z-index: 1000; /* Asegura que la lista esté por encima de otros elementos */
+  position: absolute; /* Para que no afecte el layout y se posicione sobre otros elementos */
+  width: 100%; /* Mismo ancho que el input */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.suggestions-list li {
+  padding: 10px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+}
+
+.suggestions-list li:last-child {
+  border-bottom: none;
+}
+
+.suggestions-list li:hover {
+  background-color: #f0f8ff;
+  color: #007bff;
+}
+
+/* Etiquetas de líneas seleccionadas */
+.selected-lines-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 15px;
+  padding: 10px;
+  border: 1px dashed #cce5ff; /* Borde más suave */
+  border-radius: 5px;
+  background-color: #e6f2ff; /* Fondo para las etiquetas */
+  min-height: 40px; /* Altura mínima */
+  align-items: center; /* Centra verticalmente las etiquetas */
+}
+
+.line-tag {
+  display: inline-flex;
+  align-items: center;
+  background-color: #007bff;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 0.9em;
+  gap: 5px; /* Espacio entre el texto y el botón de cerrar */
+}
+
+.line-tag button {
+  background: none;
+  border: none;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0 4px;
+  font-size: 1.1em;
+  line-height: 1; /* Asegura que la "x" esté centrada */
+}
+
+.line-tag button:hover {
+  color: #ffcccc; /* Rojo claro al pasar el mouse por la 'x' */
+}
+
+
+/* Submit Button */
+.submit-button {
+  display: block;
+  width: 100%;
+  padding: 12px 20px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
+}
+
+.submit-button:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+.submit-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Mensajes de estado */
+.loading-inline, .warning-text, .loading-message-small, .no-data-message-small {
+  font-size: 0.85em;
+  margin-top: 5px;
+  display: block;
+}
+
+.loading-inline {
+  color: #007bff;
+}
+
+.warning-text {
+  color: #ffc107;
+  font-weight: bold;
+}
+
+.error-message {
+  color: #dc3545;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.no-data-message-small {
+    color: #888;
+    font-style: italic;
+    margin-top: 5px;
+}

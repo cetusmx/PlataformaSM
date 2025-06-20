@@ -57,7 +57,7 @@ const CodigoBarras = () => {
   );
 
   useEffect(() => {
-    console.log("Useeffect rfc, getClaves()");
+    //console.log("Useeffect rfc, getClaves()");
     getClaves();
   }, [rfc]);
 
@@ -68,12 +68,12 @@ const CodigoBarras = () => {
   }, [partidasPrint]);
 
   useEffect(() => {
-    console.log("Useeffect clavesProveedor, unificaClaves()");
+    //console.log("Useeffect clavesProveedor, unificaClaves()");
     unificaClaves();
   }, [clavesProveedor]);
 
   useEffect(() => {
-    console.log("Cambió xmlContent");
+    //console.log("Cambió xmlContent");
     if (xmlContent.length > 0) {
       unificaClaves();
     } else {
@@ -88,7 +88,7 @@ const CodigoBarras = () => {
   };
 
   let unificaClaves = () => {
-    console.log("dentro de unifica claves");
+    //console.log("dentro de unifica claves");
     let temp = [];
     let encontrado = false;
     //console.log(listaProductos);
@@ -214,12 +214,12 @@ const CodigoBarras = () => {
 
   const handlerFunction = (e) => {
     //console.log(e.target.value);
-    console.log("Clavesunificadas",clavesunificadas)
+    //console.log("Clavesunificadas",clavesunificadas)
     e.preventDefault();
-    console.log(existeProductoEnFactura);
+    //console.log(existeProductoEnFactura);
     let cant ="";
     if (e.key === "Enter" && (typeof clavesunificadas.find((claveProv) => claveProv.clave === e.target.value) !== "undefined" || typeof clavesunificadas.find((claveProv) => claveProv.producto === e.target.value) !== "undefined" )) {
-      console.log("inside if key");
+      //console.log("inside if key");
       //console.log(productoEscaneado);
       if(clavesunificadas.find(
         (claveProv) => claveProv.clave === e.target.value
@@ -227,7 +227,7 @@ const CodigoBarras = () => {
         let temporal = clavesunificadas.find(
         (claveProv) => claveProv.clave === e.target.value
       );
-      console.log("Dentro primer if ", temporal);
+      //console.log("Dentro primer if ", temporal);
       cant = temporal.cantidad;
       }else{
         let temporal = clavesunificadas.find(
@@ -273,7 +273,7 @@ const CodigoBarras = () => {
               const recep = [];
               recep.push(temp);
               setProductosRecepcionados(recep);
-              console.log(recep);
+              //console.log(recep);
             } else {
               let copyRecepcionados = structuredClone(productosRecepcionados);
               let temp = clavesunificadas.find(
@@ -390,25 +390,28 @@ const CodigoBarras = () => {
   };
 
   const grabaProductosRecepcionados = async (metodo, parametros) => {
-    //console.log(metodo, parametros);
+    console.log("Al principio de grabaProductosRecepcionados",metodo, parametros);
     const newArray = await Promise.all(parametros.map( async(obj) => {
       return {
         ...obj,
-        proveedor: nombreProveedor,
+        Cantidad: obj.cantidad,
+        Clave: obj.clave,
+        ClaveProveedor: obj.producto,
+        Proveedor: nombreProveedor,
         rfc: rfc,
-        factura: folioFactura,
-        sucursal: infoUsuario.sucursal,
+        Factura: folioFactura,
+        Sucursal: infoUsuario.sucursal,
       };
   }));
 
-    console.log(newArray);
+    console.log("Nuevo arreglo",newArray)
     if (newArray.length === 1) {
       const url = "http://18.224.118.226:3002/api/v1/productorecepcionado";
       await Axios({ method: metodo, url: url, data: newArray[0] })
         .then(function (respuesta) {
           var tipo = respuesta.status;
-          console.log(tipo);
-          if (tipo === 201) {
+          //console.log(tipo);
+          if (tipo === 200) {
             show_alerta("Registrado exitósamente", "success");
           } else {
             show_alerta("Hubo un problema", "error");
@@ -423,7 +426,7 @@ const CodigoBarras = () => {
         .then(function (respuesta) {
           var tipo = respuesta.status;
           console.log(tipo);
-          if (tipo === 201) {
+          if (tipo === 200) {
             show_alerta("Registrado exitósamente", "success");
           } else {
             show_alerta("Hubo un problema", "error");
@@ -477,9 +480,9 @@ const CodigoBarras = () => {
     let temp = [...productosRecepcionados];
 
     let partida = {
-      cantidad: qtyManualmente,
-      producto: claveProveedorIngManualmente,
-      clave: productoIngresadoManualmente,
+      Cantidad: qtyManualmente,
+      Producto: claveProveedorIngManualmente,
+      Clave: productoIngresadoManualmente,
     };
     temp.push(partida);
     setProductosRecepcionados(temp);
