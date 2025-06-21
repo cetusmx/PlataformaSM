@@ -138,6 +138,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
       });
 
       setDataExcel(parsedData);
+      console.log("Contenido archivo: ", parsedData)
 
       if (parsedData.length > 0) {
         const firstRow = parsedData[0];
