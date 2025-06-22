@@ -226,6 +226,24 @@ h3 {
     color: #333;
 }
 
+/* Botón para cancelar/subir nuevo archivo */
+.cancel-upload-button {
+    background-color: #ffc107;
+    color: #333;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    margin-top: 15px;
+    transition: background-color 0.3s ease;
+}
+
+.cancel-upload-button:hover {
+    background-color: #e0a800;
+}
+
+
 /* --- Estilos para la lista de sugerencias de líneas (cuando se teclea) --- */
 .suggestions-list {
     list-style: none;

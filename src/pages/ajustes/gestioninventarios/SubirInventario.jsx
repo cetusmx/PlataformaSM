@@ -14,6 +14,9 @@ const SubirInventario = ({ onUploadSuccess }) => {
     const [auditorSeleccionadoDropdown, setAuditorSeleccionadoDropdown] = useState('');
     const [auditoresSeleccionados, setAuditoresSeleccionados] = useState([]); // Array para los tags
     const [sucursalSeleccionada, setSucursalSeleccionada] = useState('');
+    const [almacenInput, setAlmacenInput] = useState(''); // Nuevo estado para Almacén
+    const [tipoSeleccionGeneral, setTipoSeleccionGeneral] = useState('lineas'); // 'lineas' o 'ubicaciones'
+    const [ubicacionesInput, setUbicacionesInput] = useState('');
     const [lineasSeleccionadas, setLineasSeleccionadas] = useState([]);
     const [lineasInput, setLineasInput] = useState('');
     const [sugerenciasLineas, setSugerenciasLineas] = useState([]);
@@ -33,7 +36,9 @@ const SubirInventario = ({ onUploadSuccess }) => {
     // --- Estados para carga de archivo (Inventario Cíclico) ---
     const [file, setFile] = useState(null);
     const [dataExcel, setDataExcel] = useState([]);
-    const [previewData, setPreviewData] = useState(null);
+    const [previewDataCiclico, setPreviewDataCiclico] = useState(null); // Renombrado para evitar conflicto
+    const [previewDataGeneral, setPreviewDataGeneral] = useState(null); // Nuevo estado para previsualización general
+
 
     // --- Efectos para cargar datos de APIs al inicio ---
     useEffect(() => {
@@ -113,14 +118,14 @@ const SubirInventario = ({ onUploadSuccess }) => {
                 alert('El archivo Excel está vacío o solo contiene encabezados.');
                 setFile(null);
                 setDataExcel([]);
-                setPreviewData(null);
+                setPreviewDataCiclico(null);
                 return;
             }
 
             const headers = json[0];
             const requiredHeaders = [
-                "InventarioID", "Almacen", "Ciudad", "Clave", "Descripcion",
-                "Linea", "Existencias", "PendientesSurtir", "Fecha", "LineaDesc", "Unidad"
+                "Almacen", "Clave", "Descripcion",
+                "Linea", "Existencias", "Unidad"
             ];
 
             const missingHeaders = requiredHeaders.filter(header => !headers.includes(header));
@@ -128,7 +133,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
                 alert(`Faltan las siguientes columnas requeridas en el archivo: ${missingHeaders.join(', ')}`);
                 setFile(null);
                 setDataExcel([]);
-                setPreviewData(null);
+                setPreviewDataCiclico(null);
                 return;
             }
 
@@ -148,21 +153,29 @@ const SubirInventario = ({ onUploadSuccess }) => {
                 const uniqueLines = new Set(parsedData.map(item => item.Linea)).size;
                 const totalProducts = parsedData.reduce((sum, item) => sum + (Number(item.Existencias) || 0), 0);
 
-                setPreviewData({
-                    InventarioID: firstRow.InventarioID,
+                setPreviewDataCiclico({
+                    InventarioID: nombreInventario,
                     cantidadProductos: totalProducts,
                     cantidadLineas: uniqueLines,
-                    ciudad: firstRow.Ciudad,
+                    ciudad: sucursalSeleccionada,
                     almacen: firstRow.Almacen,
+                    auditores: auditoresSeleccionados.map(auditor => auditor.Nombre)
                 });
             } else {
-                setPreviewData(null);
+                setPreviewDataCiclico(null);
             }
         };
         reader.readAsArrayBuffer(uploadedFile);
     };
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+
+    // Función para cancelar la carga de archivo en inventario cíclico
+    const handleCancelFileUpload = () => {
+        setFile(null);
+        setDataExcel([]);
+        setPreviewDataCiclico(null);
+    };
 
     // --- Lógica para el filtro y selección de Líneas (Inventario General) ---
     const handleLineasInputChange = (e) => {
@@ -214,6 +227,30 @@ const SubirInventario = ({ onUploadSuccess }) => {
         );
     };
 
+    // --- Actualizar previewDataGeneral cuando cambian los datos relevantes ---
+    useEffect(() => {
+        if (currentStep === 2 && tipoInventario === 'general') {
+            const hasRequiredData = sucursalSeleccionada && almacenInput && (
+                (tipoSeleccionGeneral === 'ubicaciones' && ubicacionesInput) ||
+                (tipoSeleccionGeneral === 'lineas' && lineasSeleccionadas.length > 0)
+            );
+
+            if (hasRequiredData) {
+                setPreviewDataGeneral({
+                    InventarioID: nombreInventario,
+                    Ciudad: sucursalSeleccionada,
+                    Almacen: almacenInput, // Usar el nuevo estado de almacén
+                    Auditores: auditoresSeleccionados.map(auditor => auditor.Nombre),
+                    Ubicaciones: tipoSeleccionGeneral === 'ubicaciones' ? ubicacionesInput : 'No aplica',
+                    Lineas: tipoSeleccionGeneral === 'lineas' ? lineasSeleccionadas.map(linea => linea.linea).join(', ') : 'No aplica'
+                });
+            } else {
+                setPreviewDataGeneral(null);
+            }
+        }
+    }, [nombreInventario, sucursalSeleccionada, almacenInput, auditoresSeleccionados, tipoInventario, tipoSeleccionGeneral, ubicacionesInput, lineasSeleccionadas, currentStep]);
+
+
     // --- Navegación entre vistas ---
     const handleNextStep = () => {
         // Validación para la primera vista antes de avanzar
@@ -234,8 +271,16 @@ const SubirInventario = ({ onUploadSuccess }) => {
 
     // --- Funciones para guardar inventario ---
     const handleGuardarInventarioGeneral = async () => {
-        if (!sucursalSeleccionada || lineasSeleccionadas.length === 0) {
-            alert('Por favor, selecciona una Sucursal y al menos una Línea de Producto.');
+        if (!sucursalSeleccionada || !almacenInput) { // Validar también el almacén
+            alert('Por favor, selecciona una Sucursal y un Almacén.');
+            return;
+        }
+        if (tipoSeleccionGeneral === 'ubicaciones' && !ubicacionesInput) {
+            alert('Por favor, ingresa al menos una Ubicación (Pasillo/Zona).');
+            return;
+        }
+        if (tipoSeleccionGeneral === 'lineas' && lineasSeleccionadas.length === 0) {
+            alert('Por favor, selecciona al menos una Línea de Producto.');
             return;
         }
 
@@ -245,9 +290,11 @@ const SubirInventario = ({ onUploadSuccess }) => {
                 InventarioID: nombreInventario,
                 Fecha: new Date().toISOString(),
                 Ciudad: sucursalSeleccionada,
-                Almacen: sucursalSeleccionada,
+                Almacen: almacenInput, // Usar el nuevo estado de almacén
                 Auditores: auditoresSeleccionados.map(auditor => auditor.Nombre),
-                LineasSeleccionadas: lineasSeleccionadas.map(linea => linea.id)
+                TipoSeleccion: tipoSeleccionGeneral,
+                Ubicaciones: tipoSeleccionGeneral === 'ubicaciones' ? ubicacionesInput.split(',').map(u => u.trim()) : [],
+                LineasSeleccionadas: tipoSeleccionGeneral === 'lineas' ? lineasSeleccionadas.map(linea => linea.id) : []
             };
 
             console.log('Objeto a enviar (Inventario General):', inventarioData);
@@ -286,6 +333,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
                 ...row,
                 InventarioID: nombreInventario,
                 Auditor: auditoresSeleccionados.map(auditor => auditor.Nombre).join(', '),
+                Ciudad: sucursalSeleccionada, // Asegúrate de que la ciudad esté definida para cíclico si es necesario
             }));
 
             console.log('Arreglo de objetos a enviar (Inventario Cíclico):', dataToSend);
@@ -321,7 +369,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
 
             {/* --- Vista 1: Configuración General --- */}
             {currentStep === 1 && (
-                <div className="form-view-step"> {/* Nueva clase para el scroll de la vista */}
+                <div className="form-view-step">
                     <h3>Configuración General</h3>
                     <div className="form-group">
                         <label className='titulos-label'>Tipo de Inventario:</label>
@@ -331,7 +379,10 @@ const SubirInventario = ({ onUploadSuccess }) => {
                                     type="radio"
                                     value="ciclico"
                                     checked={tipoInventario === 'ciclico'}
-                                    onChange={() => setTipoInventario('ciclico')}
+                                    onChange={() => {
+                                        setTipoInventario('ciclico');
+                                        setPreviewDataGeneral(null); // Limpiar preview general si cambia a cíclico
+                                    }}
                                 />
                                 Inventario Cíclico
                             </label>
@@ -340,7 +391,12 @@ const SubirInventario = ({ onUploadSuccess }) => {
                                     type="radio"
                                     value="general"
                                     checked={tipoInventario === 'general'}
-                                    onChange={() => setTipoInventario('general')}
+                                    onChange={() => {
+                                        setTipoInventario('general');
+                                        setPreviewDataCiclico(null); // Limpiar preview cíclico si cambia a general
+                                        setFile(null);
+                                        setDataExcel([]);
+                                    }}
                                 />
                                 Inventario General
                             </label>
@@ -388,7 +444,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
                         </select>
                         {loadingAuditores && <span className="loading-inline">Cargando auditores...</span>}
 
-                        <div className="selected-tags-container auditor-tags-container"> {/* Nueva clase para el scroll de los tags */}
+                        <div className="selected-tags-container auditor-tags-container">
                             {auditoresSeleccionados.map((auditor, index) => (
                                 <span key={index} className="selected-tag">
                                     {auditor.Nombre}
@@ -413,7 +469,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
 
             {/* --- Vista 2: Detalles Específicos del Inventario --- */}
             {currentStep === 2 && (
-                <div className="form-view-step"> {/* Nueva clase para el scroll de la vista */}
+                <div className="form-view-step">
                     <h3>Detalles del Inventario {tipoInventario === 'general' ? 'General' : 'Cíclico'}</h3>
                     {tipoInventario === 'general' ? (
                         // --- Contenido para Inventario General ---
@@ -434,44 +490,125 @@ const SubirInventario = ({ onUploadSuccess }) => {
                             </div>
 
                             <div className="form-group">
-                                <label className='titulos-label' htmlFor="lineasInput">Seleccionar Líneas de Productos:</label>
+                                <label className='titulos-label' htmlFor="almacenInput">Almacén:</label>
                                 <input
                                     type="text"
-                                    id="lineasInput"
-                                    value={lineasInput}
-                                    onChange={handleLineasInputChange}
-                                    placeholder="Empieza a teclear para buscar líneas..."
-                                    disabled={loadingLineas}
+                                    id="almacenInput"
+                                    value={almacenInput}
+                                    onChange={(e) => setAlmacenInput(e.target.value)}
+                                    placeholder="Ej: Almacén Principal"
                                 />
-                                {loadingLineas && <span className="loading-inline">Cargando líneas...</span>}
-                                {sugerenciasLineas.length > 0 && lineasInput.length > 0 && (
-                                    <ul className="suggestions-list">
-                                        {sugerenciasLineas.map((linea) => (
-                                            <li key={linea.id} onClick={() => handleSelectLinea(linea)}>
-                                                {linea.linea}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-                                <div className="selected-tags-container lineas-tags-container"> {/* Nueva clase para el scroll de los tags */}
-                                    {lineasSeleccionadas.map((linea) => (
-                                        <span key={linea.id} className="selected-tag">
-                                            {linea.linea}
-                                            <button onClick={() => handleSelectLinea(linea)}>x</button>
-                                        </span>
-                                    ))}
-                                    {lineasSeleccionadas.length === 0 && lineasInput.length === 0 && !loadingLineas && (
-                                        <p className="no-data-message-small">No hay líneas seleccionadas.</p>
-                                    )}
+                            </div>
+
+                            <div className="form-group">
+                                <label className='titulos-label'>Selección por:</label>
+                                <div className="radio-group">
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            value="ubicaciones"
+                                            checked={tipoSeleccionGeneral === 'ubicaciones'}
+                                            onChange={() => {
+                                                setTipoSeleccionGeneral('ubicaciones');
+                                                setLineasSeleccionadas([]); // Limpiar líneas if changes to ubicaciones
+                                                setLineasInput('');
+                                            }}
+                                        />
+                                        Ubicación (Pasillos/Zonas)
+                                    </label>
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            value="lineas"
+                                            checked={tipoSeleccionGeneral === 'lineas'}
+                                            onChange={() => {
+                                                setTipoSeleccionGeneral('lineas');
+                                                setUbicacionesInput(''); // Limpiar ubicaciones if changes to líneas
+                                            }}
+                                        />
+                                        Líneas de Productos
+                                    </label>
                                 </div>
                             </div>
+
+                            {tipoSeleccionGeneral === 'ubicaciones' && (
+                                <div className="form-group">
+                                    <label className='titulos-label' htmlFor="ubicacionesInput">Ubicación(es) (Pasillos/Zonas):</label>
+                                    <input
+                                        type="text"
+                                        id="ubicacionesInput"
+                                        value={ubicacionesInput}
+                                        onChange={(e) => setUbicacionesInput(e.target.value)}
+                                        placeholder="Ej: A1, B2, Zona Principal"
+                                    />
+                                    <p className="required-fields-info">
+                                        Ingresa múltiples ubicaciones separadas por comas.
+                                    </p>
+                                </div>
+                            )}
+
+                            {tipoSeleccionGeneral === 'lineas' && (
+                                <div className="form-group">
+                                    <label className='titulos-label' htmlFor="lineasInput">Seleccionar Líneas de Productos:</label>
+                                    <input
+                                        type="text"
+                                        id="lineasInput"
+                                        value={lineasInput}
+                                        onChange={handleLineasInputChange}
+                                        placeholder="Empieza a teclear para buscar líneas..."
+                                        disabled={loadingLineas}
+                                    />
+                                    {loadingLineas && <span className="loading-inline">Cargando líneas...</span>}
+                                    {sugerenciasLineas.length > 0 && lineasInput.length > 0 && (
+                                        <ul className="suggestions-list">
+                                            {sugerenciasLineas.map((linea) => (
+                                                <li key={linea.id} onClick={() => handleSelectLinea(linea)}>
+                                                    {linea.linea}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    <div className="selected-tags-container lineas-tags-container">
+                                        {lineasSeleccionadas.map((linea) => (
+                                            <span key={linea.id} className="selected-tag">
+                                                {linea.linea}
+                                                <button onClick={() => handleSelectLinea(linea)}>x</button>
+                                            </span>
+                                        ))}
+                                        {lineasSeleccionadas.length === 0 && lineasInput.length === 0 && !loadingLineas && (
+                                            <p className="no-data-message-small">No hay líneas seleccionadas.</p>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Mostrar la vista preliminar solo si sucursal, almacen y al menos una ubicacion/linea están capturados */}
+                            {previewDataGeneral && sucursalSeleccionada && almacenInput && (
+                                (tipoSeleccionGeneral === 'ubicaciones' && ubicacionesInput) ||
+                                (tipoSeleccionGeneral === 'lineas' && lineasSeleccionadas.length > 0)
+                            ) && (
+                                <div className="preview-card">
+                                    <h4>Datos Preliminares del Inventario</h4>
+                                    <p><strong>Inventario ID:</strong> {previewDataGeneral.InventarioID}</p>
+                                    <p><strong>Ciudad:</strong> {previewDataGeneral.Ciudad}</p>
+                                    <p><strong>Almacén:</strong> {previewDataGeneral.Almacen}</p>
+                                    <p><strong>Auditor(es):</strong> {previewDataGeneral.Auditores.join(', ')}</p>
+                                    {tipoSeleccionGeneral === 'ubicaciones' && previewDataGeneral.Ubicaciones !== 'No aplica' && (
+                                        <p><strong>Ubicaciones:</strong> {previewDataGeneral.Ubicaciones}</p>
+                                    )}
+                                    {tipoSeleccionGeneral === 'lineas' && previewDataGeneral.Lineas !== 'No aplica' && (
+                                        <p><strong>Líneas:</strong> {previewDataGeneral.Lineas}</p>
+                                    )}
+                                </div>
+                            )}
+
 
                             <div className="form-actions">
                                 <button className="back-button" onClick={handlePrevStep}>Atrás</button>
                                 <button
                                     className="submit-button"
                                     onClick={handleGuardarInventarioGeneral}
-                                    disabled={isSubmitting || loadingLineas || !sucursalSeleccionada || lineasSeleccionadas.length === 0}
+                                    disabled={isSubmitting || loadingLineas || !sucursalSeleccionada || !almacenInput || (tipoSeleccionGeneral === 'ubicaciones' && !ubicacionesInput) || (tipoSeleccionGeneral === 'lineas' && lineasSeleccionadas.length === 0)}
                                 >
                                     {isSubmitting ? 'Guardando...' : 'Guardar Inventario General'}
                                 </button>
@@ -480,29 +617,38 @@ const SubirInventario = ({ onUploadSuccess }) => {
                     ) : (
                         // --- Contenido para Inventario Cíclico ---
                         <>
-                            <div className="form-group">
-                                <label className='titulos-label'>Cargar Archivo Excel:</label>
-                                <div {...getRootProps({ className: `dropzone ${isDragActive ? 'active' : ''}` })}>
-                                    <input {...getInputProps()} />
-                                    {file ? (
-                                        <p>Archivo seleccionado: <strong>{file.name}</strong></p>
-                                    ) : (
-                                        <p>Arrastra y suelta tu archivo Excel aquí, o haz clic para seleccionar</p>
-                                    )}
+                            {!previewDataCiclico && (
+                                <div className="form-group">
+                                    <label className='titulos-label'>Cargar Archivo Excel:</label>
+                                    <div {...getRootProps({ className: `dropzone ${isDragActive ? 'active' : ''}` })}>
+                                        <input {...getInputProps()} />
+                                        {file ? (
+                                            <p>Archivo seleccionado: <strong>{file.name}</strong></p>
+                                        ) : (
+                                            <p>Arrastra y suelta tu archivo Excel aquí, o haz clic para seleccionar</p>
+                                        )}
+                                    </div>
+                                    <p className="required-fields-info">
+                                        **Campos requeridos en el archivo Excel:** Almacen, Clave, Descripcion, Linea, Existencias, Unidad.
+                                    </p>
                                 </div>
-                                <p className="required-fields-info">
-                                    **Campos requeridos en el archivo Excel:** InventarioID, Almacen, Ciudad, Clave, Descripcion, Linea, Existencias, PendientesSurtir, Fecha, LineaDesc, Unidad.
-                                </p>
-                            </div>
+                            )}
 
-                            {previewData && (
+                            {previewDataCiclico && (
                                 <div className="preview-card">
                                     <h4>Datos Preliminares del Archivo</h4>
-                                    <p><strong>Inventario ID:</strong> {previewData.InventarioID}</p>
-                                    <p><strong>Cantidad de Productos:</strong> {previewData.cantidadProductos}</p>
-                                    <p><strong>Cantidad de Líneas:</strong> {previewData.cantidadLineas}</p>
-                                    <p><strong>Ciudad:</strong> {previewData.ciudad}</p>
-                                    <p><strong>Almacén:</strong> {previewData.almacen}</p>
+                                    <p><strong>Inventario ID:</strong> {previewDataCiclico.InventarioID}</p>
+                                    <p><strong>Cantidad de Productos:</strong> {previewDataCiclico.cantidadProductos}</p>
+                                    <p><strong>Cantidad de Líneas:</strong> {previewDataCiclico.cantidadLineas}</p>
+                                    <p><strong>Ciudad:</strong> {previewDataCiclico.ciudad}</p>
+                                    <p><strong>Almacén:</strong> {previewDataCiclico.almacen}</p>
+                                    <p><strong>Auditor(es) Asignado(s):</strong> {previewDataCiclico.auditores.join(', ')}</p>
+                                    <button
+                                        className="cancel-upload-button"
+                                        onClick={handleCancelFileUpload}
+                                    >
+                                        Cancelar / Subir Nuevo Archivo
+                                    </button>
                                 </div>
                             )}
 
