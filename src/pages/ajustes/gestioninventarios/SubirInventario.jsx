@@ -13,8 +13,8 @@ const SubirInventario = ({ onUploadSuccess }) => {
     const [nombreInventario, setNombreInventario] = useState('');
     const [auditorSeleccionadoDropdown, setAuditorSeleccionadoDropdown] = useState('');
     const [auditoresSeleccionados, setAuditoresSeleccionados] = useState([]); // Array para los tags
-    const [sucursalSeleccionada, setSucursalSeleccionada] = useState('');
-    const [almacenInput, setAlmacenInput] = useState(''); // Nuevo estado para Almacén
+    const [sucursalSeleccionada, setSucursalSeleccionada] = useState(''); // Estado de Sucursal, ahora en Step 1
+    const [almacenInput, setAlmacenInput] = useState('');
     const [tipoSeleccionGeneral, setTipoSeleccionGeneral] = useState('lineas'); // 'lineas' o 'ubicaciones'
     const [ubicacionesInput, setUbicacionesInput] = useState('');
     const [lineasSeleccionadas, setLineasSeleccionadas] = useState([]);
@@ -28,7 +28,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
 
     // --- Estados de carga y error ---
     const [loadingNombres, setLoadingNombres] = useState(true);
-    const [loadingAuditores, setLoadingAuditores] = useState(true);
+    const [loadingAuditores, setLoadingAuditores] = true;
     const [loadingLineas, setLoadingLineas] = useState(true);
     const [errorApi, setErrorApi] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,8 +36,8 @@ const SubirInventario = ({ onUploadSuccess }) => {
     // --- Estados para carga de archivo (Inventario Cíclico) ---
     const [file, setFile] = useState(null);
     const [dataExcel, setDataExcel] = useState([]);
-    const [previewDataCiclico, setPreviewDataCiclico] = useState(null); // Renombrado para evitar conflicto
-    const [previewDataGeneral, setPreviewDataGeneral] = useState(null); // Nuevo estado para previsualización general
+    const [previewDataCiclico, setPreviewDataCiclico] = useState(null);
+    const [previewDataGeneral, setPreviewDataGeneral] = useState(null);
 
 
     // --- Efectos para cargar datos de APIs al inicio ---
@@ -239,7 +239,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
                 setPreviewDataGeneral({
                     InventarioID: nombreInventario,
                     Ciudad: sucursalSeleccionada,
-                    Almacen: almacenInput, // Usar el nuevo estado de almacén
+                    Almacen: almacenInput,
                     Auditores: auditoresSeleccionados.map(auditor => auditor.Nombre),
                     Ubicaciones: tipoSeleccionGeneral === 'ubicaciones' ? ubicacionesInput : 'No aplica',
                     Lineas: tipoSeleccionGeneral === 'lineas' ? lineasSeleccionadas.map(linea => linea.linea).join(', ') : 'No aplica'
@@ -254,8 +254,8 @@ const SubirInventario = ({ onUploadSuccess }) => {
     // --- Navegación entre vistas ---
     const handleNextStep = () => {
         // Validación para la primera vista antes de avanzar
-        if (!nombreInventario || auditoresSeleccionados.length === 0) {
-            alert('Por favor, completa el Nombre del Inventario y asigna al menos un Auditor antes de continuar.');
+        if (!nombreInventario || auditoresSeleccionados.length === 0 || !sucursalSeleccionada) { // Validar sucursal
+            alert('Por favor, completa el Nombre del Inventario, asigna al menos un Auditor y selecciona una Sucursal antes de continuar.');
             return;
         }
         if (nombresInventarioExistentes.includes(nombreInventario)) {
@@ -271,8 +271,8 @@ const SubirInventario = ({ onUploadSuccess }) => {
 
     // --- Funciones para guardar inventario ---
     const handleGuardarInventarioGeneral = async () => {
-        if (!sucursalSeleccionada || !almacenInput) { // Validar también el almacén
-            alert('Por favor, selecciona una Sucursal y un Almacén.');
+        if (!almacenInput) { // Sucursal ya se valida en el paso anterior
+            alert('Por favor, ingresa un Almacén.');
             return;
         }
         if (tipoSeleccionGeneral === 'ubicaciones' && !ubicacionesInput) {
@@ -290,7 +290,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
                 InventarioID: nombreInventario,
                 Fecha: new Date().toISOString(),
                 Ciudad: sucursalSeleccionada,
-                Almacen: almacenInput, // Usar el nuevo estado de almacén
+                Almacen: almacenInput,
                 Auditores: auditoresSeleccionados.map(auditor => auditor.Nombre),
                 TipoSeleccion: tipoSeleccionGeneral,
                 Ubicaciones: tipoSeleccionGeneral === 'ubicaciones' ? ubicacionesInput.split(',').map(u => u.trim()) : [],
@@ -333,7 +333,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
                 ...row,
                 InventarioID: nombreInventario,
                 Auditor: auditoresSeleccionados.map(auditor => auditor.Nombre).join(', '),
-                Ciudad: sucursalSeleccionada, // Asegúrate de que la ciudad esté definida para cíclico si es necesario
+                Ciudad: sucursalSeleccionada,
             }));
 
             console.log('Arreglo de objetos a enviar (Inventario Cíclico):', dataToSend);
@@ -420,6 +420,22 @@ const SubirInventario = ({ onUploadSuccess }) => {
                         )}
                     </div>
 
+                    {/* Campo de selección de Sucursal - MOVIDO AQUÍ */}
+                    <div className="form-group">
+                        <label className='titulos-label' htmlFor="sucursal">Sucursal:</label>
+                        <select
+                            id="sucursal"
+                            value={sucursalSeleccionada}
+                            onChange={(e) => setSucursalSeleccionada(e.target.value)}
+                        >
+                            <option value="">-- Seleccione una sucursal --</option>
+                            <option value="Durango">Durango</option>
+                            <option value="Fresnillo">Fresnillo</option>
+                            <option value="Mazatlan">Mazatlán</option>
+                            <option value="Zacatecas">Zacatecas</option>
+                        </select>
+                    </div>
+
                     {/* Campo de selección de Auditor con Dropdown */}
                     <div className="form-group">
                         <label className='titulos-label' htmlFor="auditorDropdown">Auditor(es) Asignado(s):</label>
@@ -460,7 +476,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
                     <button
                         className="submit-button"
                         onClick={handleNextStep}
-                        disabled={loadingNombres || loadingAuditores || isSubmitting || !nombreInventario || auditoresSeleccionados.length === 0 || nombresInventarioExistentes.includes(nombreInventario)}
+                        disabled={loadingNombres || loadingAuditores || isSubmitting || !nombreInventario || auditoresSeleccionados.length === 0 || nombresInventarioExistentes.includes(nombreInventario) || !sucursalSeleccionada}
                     >
                         Siguiente
                     </button>
@@ -474,20 +490,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
                     {tipoInventario === 'general' ? (
                         // --- Contenido para Inventario General ---
                         <>
-                            <div className="form-group">
-                                <label className='titulos-label' htmlFor="sucursal">Sucursal:</label>
-                                <select
-                                    id="sucursal"
-                                    value={sucursalSeleccionada}
-                                    onChange={(e) => setSucursalSeleccionada(e.target.value)}
-                                >
-                                    <option value="">-- Seleccione una sucursal --</option>
-                                    <option value="Durango">Durango</option>
-                                    <option value="Fresnillo">Fresnillo</option>
-                                    <option value="Mazatlan">Mazatlán</option>
-                                    <option value="Zacatecas">Zacatecas</option>
-                                </select>
-                            </div>
+                            {/* Sucursal ya no va aquí */}
 
                             <div className="form-group">
                                 <label className='titulos-label' htmlFor="almacenInput">Almacén:</label>
@@ -582,7 +585,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
                                 </div>
                             )}
 
-                            {/* Mostrar la vista preliminar solo si sucursal, almacen y al menos una ubicacion/linea están capturados */}
+                            {/* Mostrar la vista preliminar solo si sucursal (ahora en step 1), almacen y al menos una ubicacion/linea están capturados */}
                             {previewDataGeneral && sucursalSeleccionada && almacenInput && (
                                 (tipoSeleccionGeneral === 'ubicaciones' && ubicacionesInput) ||
                                 (tipoSeleccionGeneral === 'lineas' && lineasSeleccionadas.length > 0)
@@ -608,7 +611,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
                                 <button
                                     className="submit-button"
                                     onClick={handleGuardarInventarioGeneral}
-                                    disabled={isSubmitting || loadingLineas || !sucursalSeleccionada || !almacenInput || (tipoSeleccionGeneral === 'ubicaciones' && !ubicacionesInput) || (tipoSeleccionGeneral === 'lineas' && lineasSeleccionadas.length === 0)}
+                                    disabled={isSubmitting || loadingLineas || !almacenInput || (tipoSeleccionGeneral === 'ubicaciones' && !ubicacionesInput) || (tipoSeleccionGeneral === 'lineas' && lineasSeleccionadas.length === 0)}
                                 >
                                     {isSubmitting ? 'Guardando...' : 'Guardar Inventario General'}
                                 </button>
