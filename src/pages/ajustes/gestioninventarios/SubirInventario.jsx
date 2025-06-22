@@ -324,7 +324,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
                 <div className="form-view-step"> {/* Nueva clase para el scroll de la vista */}
                     <h3>Configuración General</h3>
                     <div className="form-group">
-                        <label>Tipo de Inventario:</label>
+                        <label className='titulos-label'>Tipo de Inventario:</label>
                         <div className="radio-group">
                             <label>
                                 <input
@@ -348,8 +348,9 @@ const SubirInventario = ({ onUploadSuccess }) => {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="nombreInventario">Nombre del Inventario:</label>
+                        <label className='titulos-label' htmlFor="nombreInventario">Nombre del Inventario:</label>
                         <input
+                            className='titulos-text'
                             type="text"
                             id="nombreInventario"
                             value={nombreInventario}
@@ -365,7 +366,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
 
                     {/* Campo de selección de Auditor con Dropdown */}
                     <div className="form-group">
-                        <label htmlFor="auditorDropdown">Auditor(es) Asignado(s):</label>
+                        <label className='titulos-label' htmlFor="auditorDropdown">Auditor(es) Asignado(s):</label>
                         <select
                             id="auditorDropdown"
                             value={auditorSeleccionadoDropdown}
@@ -418,7 +419,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
                         // --- Contenido para Inventario General ---
                         <>
                             <div className="form-group">
-                                <label htmlFor="sucursal">Sucursal:</label>
+                                <label className='titulos-label' htmlFor="sucursal">Sucursal:</label>
                                 <select
                                     id="sucursal"
                                     value={sucursalSeleccionada}
@@ -433,7 +434,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
                             </div>
 
                             <div className="form-group">
-                                <label htmlFor="lineasInput">Seleccionar Líneas de Productos:</label>
+                                <label className='titulos-label' htmlFor="lineasInput">Seleccionar Líneas de Productos:</label>
                                 <input
                                     type="text"
                                     id="lineasInput"
@@ -480,7 +481,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
                         // --- Contenido para Inventario Cíclico ---
                         <>
                             <div className="form-group">
-                                <label>Cargar Archivo Excel:</label>
+                                <label className='titulos-label'>Cargar Archivo Excel:</label>
                                 <div {...getRootProps({ className: `dropzone ${isDragActive ? 'active' : ''}` })}>
                                     <input {...getInputProps()} />
                                     {file ? (

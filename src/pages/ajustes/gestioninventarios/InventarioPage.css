@@ -7,8 +7,8 @@
   max-height: 82vh;
   min-height: 82vh;
   margin: 0 auto; /* Centra el contenedor en la página */
-  margin-top: 20px;
-  padding: 20px; /* Añade algo de espacio alrededor del contenido */
+  margin-top: 5px;
+  padding: 0 20px 0 20px; /* Añade algo de espacio alrededor del contenido */
   background-color: #ffffff; /* Fondo blanco para el contenedor */
   /*border-radius: 8px;  Bordes ligeramente redondeados */
   /*box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  Sombra sutil para darle profundidad */

@@ -1,23 +1,38 @@
 /* SubirInventario.css */
 
+/* Contenedor principal del formulario */
 .subir-inventario-container {
     max-width: 800px; /* Ancho máximo para el formulario */
-    margin: 40px auto;
-    padding: 30px;
-    background-color: #ffffff;
+    margin: 15px auto;
+    padding: 15px 30px 0 30px;
+    background-color: #ffff;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     align-items: center;
+    max-height: 80%;
+    min-height: 80%;
 }
-
+.titulos-label{
+  font-size: 0.8em;
+}
+.titulos-text{
+  font-size: 0.8em;
+  padding: 3px;
+}
 h5 {
     color: #333;
     margin-bottom: 20px;
-    font-size: 1.8em;
+    font-size: 1.3em;
+}
+h3 {
+    color: #087dff;
+    margin-bottom: 10px;
+    font-size: 1.2em;
 }
 
+/* Mensaje de error general */
 .error-message {
     color: #dc3545;
     background-color: #f8d7da;
@@ -29,22 +44,25 @@ h5 {
     text-align: center;
 }
 
-/* Estilos para cada vista/paso del formulario */
+/* --- Estilos para cada vista/paso del formulario (que contendrá su propio scroll) --- */
 .form-view-step {
     width: 100%; /* Ocupa el ancho completo del contenedor principal */
-    max-height: 500px; /* Altura máxima para la vista. AJUSTA ESTO SEGÚN NECESIDAD */
+    max-height: 62vh; /* Altura máxima para la vista. AJUSTA ESTO SEGÚN NECESIDAD */
+    min-height: 62vh; /* Altura máxima para la vista. AJUSTA ESTO SEGÚN NECESIDAD */
     overflow-y: auto; /* Habilita el scroll vertical cuando el contenido excede max-height */
     padding-right: 15px; /* Espacio para el scrollbar */
     box-sizing: border-box; /* Incluye padding en el ancho/alto */
     padding-bottom: 20px; /* Espacio extra al final para que no se pegue el contenido al borde del scroll */
 }
 
+/* Secciones individuales dentro de cada vista */
 .form-section {
     margin-bottom: 20px;
 }
 
+/* Grupo de un label y su input/select */
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 5px;
     width: 100%;
 }
 
@@ -58,11 +76,11 @@ h5 {
 .form-group input[type="text"],
 .form-group select {
     width: 100%;
-    padding: 10px;
+    padding: 5px;
     border: 1px solid #ced4da;
     border-radius: 5px;
-    font-size: 1em;
-    box-sizing: border-box; /* Ensures padding doesn't add to the width */
+    font-size: 0.8em;
+    box-sizing: border-box; /* Asegura que el padding no aumente el ancho total */
 }
 
 .form-group input[type="text"]:focus,
@@ -72,17 +90,25 @@ h5 {
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
+/* Grupos de radio buttons */
+.radio-group {
+    display: flex;
+    gap: 20px; /* Espacio entre los radio buttons */
+    margin-bottom: 15px;
+}
+
 .radio-group label {
     display: inline-flex;
     align-items: center;
-    margin-right: 20px;
-    font-weight: normal;
+    font-weight: normal; /* Sobrescribe el bold de form-group label */
+    font-size: 0.8rem;
 }
 
 .radio-group input[type="radio"] {
     margin-right: 8px;
 }
 
+/* Textos de carga y advertencia */
 .loading-inline {
     margin-left: 10px;
     font-style: italic;
@@ -95,7 +121,7 @@ h5 {
     margin-top: 5px;
 }
 
-/* Estilos para el contenedor de tags seleccionados (auditores y líneas) */
+/* --- Contenedor de Tags Seleccionados (Auditores y Líneas) --- */
 .selected-tags-container {
     display: flex;
     flex-wrap: wrap;
@@ -106,7 +132,7 @@ h5 {
     padding: 10px;
     background-color: #f8f9fa;
     max-height: 120px; /* Altura máxima para el contenedor de tags. AJUSTA SEGÚN NECESIDAD */
-    overflow-y: auto; /* Scroll dentro del contenedor de tags */
+    overflow-y: auto; /* Scroll vertical dentro del contenedor de tags */
     box-sizing: border-box;
 }
 
@@ -130,12 +156,13 @@ h5 {
     cursor: pointer;
     padding: 0 3px;
     font-size: 0.8em;
-    opacity: 0.7;
+    opacity: 0.7; /* Opacidad normal */
     line-height: 1; /* Asegura que la 'x' esté centrada verticalmente */
+    transition: opacity 0.2s ease; /* Transición para el hover */
 }
 
 .selected-tag button:hover {
-    opacity: 1;
+    opacity: 1; /* Opacidad al pasar el ratón */
 }
 
 .no-data-message-small {
@@ -145,7 +172,7 @@ h5 {
     padding-left: 5px;
 }
 
-/* Estilos para el Dropzone */
+/* --- Estilos para el Dropzone de Carga de Archivos --- */
 .dropzone {
     border: 2px dashed #007bff;
     border-radius: 5px;
@@ -155,11 +182,15 @@ h5 {
     color: #007bff;
     transition: background-color 0.3s ease, border-color 0.3s ease;
     margin-top: 10px;
+    min-height: 60%;
+    max-height: 60%;
 }
 
-.dropzone.active {
+.dropzone.active { /* Clase para cuando el archivo está siendo arrastrado sobre el área */
     background-color: #e6f7ff;
     border-color: #0056b3;
+    min-height: 60%;
+    max-height: 60%;
 }
 
 .dropzone p {
@@ -174,6 +205,7 @@ h5 {
     text-align: center;
 }
 
+/* Tarjeta de previsualización de datos del archivo */
 .preview-card {
     background-color: #e9f5ff;
     border: 1px solid #b3d9ff;
@@ -194,7 +226,7 @@ h5 {
     color: #333;
 }
 
-/* Estilos para la lista de sugerencias de líneas */
+/* --- Estilos para la lista de sugerencias de líneas (cuando se teclea) --- */
 .suggestions-list {
     list-style: none;
     padding: 0;
@@ -211,6 +243,7 @@ h5 {
     padding: 10px;
     cursor: pointer;
     border-bottom: 1px solid #eee;
+    transition: background-color 0.2s ease;
 }
 
 .suggestions-list li:last-child {
@@ -221,14 +254,13 @@ h5 {
     background-color: #f0f0f0;
 }
 
-
-/* Botones de acción */
+/* --- Botones de Acción (Siguiente, Atrás, Guardar) --- */
 .form-actions {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Alinea los botones a los extremos */
     margin-top: 20px;
     padding-top: 15px;
-    border-top: 1px solid #eee;
+    border-top: 1px solid #eee; /* Separador visual */
 }
 
 .submit-button,
@@ -243,6 +275,7 @@ h5 {
     text-align: center;
 }
 
+/* Estilos para el botón "Siguiente" y "Guardar" */
 .submit-button {
     background-color: #007bff;
     color: white;
@@ -258,6 +291,7 @@ h5 {
     opacity: 0.7;
 }
 
+/* Estilos para el botón "Atrás" */
 .back-button {
     background-color: #6c757d;
     color: white;
