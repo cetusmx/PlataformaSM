@@ -13,7 +13,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
     const [nombreInventario, setNombreInventario] = useState('');
     const [auditorSeleccionadoDropdown, setAuditorSeleccionadoDropdown] = useState('');
     const [auditoresSeleccionados, setAuditoresSeleccionados] = useState([]); // Array para los tags
-    const [sucursalSeleccionada, setSucursalSeleccionada] = useState(''); // Estado de Sucursal, ahora en Step 1
+    const [sucursalSeleccionada, setSucursalSeleccionada] = useState('');
     const [almacenInput, setAlmacenInput] = useState('');
     const [tipoSeleccionGeneral, setTipoSeleccionGeneral] = useState('lineas'); // 'lineas' o 'ubicaciones'
     const [ubicacionesInput, setUbicacionesInput] = useState('');
@@ -28,7 +28,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
 
     // --- Estados de carga y error ---
     const [loadingNombres, setLoadingNombres] = useState(true);
-    const [loadingAuditores, setLoadingAuditores] = true;
+    const [loadingAuditores, setLoadingAuditores] = useState(true); // <-- CORRECCIÓN AQUÍ
     const [loadingLineas, setLoadingLineas] = useState(true);
     const [errorApi, setErrorApi] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -254,7 +254,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
     // --- Navegación entre vistas ---
     const handleNextStep = () => {
         // Validación para la primera vista antes de avanzar
-        if (!nombreInventario || auditoresSeleccionados.length === 0 || !sucursalSeleccionada) { // Validar sucursal
+        if (!nombreInventario || auditoresSeleccionados.length === 0 || !sucursalSeleccionada) {
             alert('Por favor, completa el Nombre del Inventario, asigna al menos un Auditor y selecciona una Sucursal antes de continuar.');
             return;
         }
@@ -271,7 +271,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
 
     // --- Funciones para guardar inventario ---
     const handleGuardarInventarioGeneral = async () => {
-        if (!almacenInput) { // Sucursal ya se valida en el paso anterior
+        if (!almacenInput) {
             alert('Por favor, ingresa un Almacén.');
             return;
         }
@@ -381,7 +381,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
                                     checked={tipoInventario === 'ciclico'}
                                     onChange={() => {
                                         setTipoInventario('ciclico');
-                                        setPreviewDataGeneral(null); // Limpiar preview general si cambia a cíclico
+                                        setPreviewDataGeneral(null);
                                     }}
                                 />
                                 Inventario Cíclico
@@ -393,7 +393,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
                                     checked={tipoInventario === 'general'}
                                     onChange={() => {
                                         setTipoInventario('general');
-                                        setPreviewDataCiclico(null); // Limpiar preview cíclico si cambia a general
+                                        setPreviewDataCiclico(null);
                                         setFile(null);
                                         setDataExcel([]);
                                     }}
@@ -420,7 +420,6 @@ const SubirInventario = ({ onUploadSuccess }) => {
                         )}
                     </div>
 
-                    {/* Campo de selección de Sucursal - MOVIDO AQUÍ */}
                     <div className="form-group">
                         <label className='titulos-label' htmlFor="sucursal">Sucursal:</label>
                         <select
@@ -436,7 +435,6 @@ const SubirInventario = ({ onUploadSuccess }) => {
                         </select>
                     </div>
 
-                    {/* Campo de selección de Auditor con Dropdown */}
                     <div className="form-group">
                         <label className='titulos-label' htmlFor="auditorDropdown">Auditor(es) Asignado(s):</label>
                         <select
@@ -488,10 +486,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
                 <div className="form-view-step">
                     <h3>Detalles del Inventario {tipoInventario === 'general' ? 'General' : 'Cíclico'}</h3>
                     {tipoInventario === 'general' ? (
-                        // --- Contenido para Inventario General ---
                         <>
-                            {/* Sucursal ya no va aquí */}
-
                             <div className="form-group">
                                 <label className='titulos-label' htmlFor="almacenInput">Almacén:</label>
                                 <input
@@ -513,7 +508,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
                                             checked={tipoSeleccionGeneral === 'ubicaciones'}
                                             onChange={() => {
                                                 setTipoSeleccionGeneral('ubicaciones');
-                                                setLineasSeleccionadas([]); // Limpiar líneas if changes to ubicaciones
+                                                setLineasSeleccionadas([]);
                                                 setLineasInput('');
                                             }}
                                         />
@@ -526,7 +521,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
                                             checked={tipoSeleccionGeneral === 'lineas'}
                                             onChange={() => {
                                                 setTipoSeleccionGeneral('lineas');
-                                                setUbicacionesInput(''); // Limpiar ubicaciones if changes to líneas
+                                                setUbicacionesInput('');
                                             }}
                                         />
                                         Líneas de Productos
@@ -585,7 +580,6 @@ const SubirInventario = ({ onUploadSuccess }) => {
                                 </div>
                             )}
 
-                            {/* Mostrar la vista preliminar solo si sucursal (ahora en step 1), almacen y al menos una ubicacion/linea están capturados */}
                             {previewDataGeneral && sucursalSeleccionada && almacenInput && (
                                 (tipoSeleccionGeneral === 'ubicaciones' && ubicacionesInput) ||
                                 (tipoSeleccionGeneral === 'lineas' && lineasSeleccionadas.length > 0)
@@ -605,7 +599,6 @@ const SubirInventario = ({ onUploadSuccess }) => {
                                 </div>
                             )}
 
-
                             <div className="form-actions">
                                 <button className="back-button" onClick={handlePrevStep}>Atrás</button>
                                 <button
@@ -618,7 +611,6 @@ const SubirInventario = ({ onUploadSuccess }) => {
                             </div>
                         </>
                     ) : (
-                        // --- Contenido para Inventario Cíclico ---
                         <>
                             {!previewDataCiclico && (
                                 <div className="form-group">
