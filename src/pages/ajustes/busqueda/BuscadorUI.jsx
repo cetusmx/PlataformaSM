@@ -5,7 +5,7 @@ import Axios from "axios";
 import Table from "./table/Table";
 
 const BuscadorUI = () => {
-  const urlServidorAPI3 = "http://18.224.118.226:3002";
+  const urlServidorAPI3 = "http://75.119.150.222:3002";
   const [searchList, setSearchList] = useState([]);
   const [di, setDi] = useState("");
   const [de, setDe] = useState("");

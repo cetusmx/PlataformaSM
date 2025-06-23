@@ -283,35 +283,59 @@ const SubirInventario = ({ onUploadSuccess }) => {
             alert('Por favor, selecciona al menos una Línea de Producto.');
             return;
         }
+        // Asegurarse de que al menos un auditor esté seleccionado antes de generar los datos
+        if (auditoresSeleccionados.length === 0) {
+            alert('Por favor, asigna al menos un Auditor.');
+            return;
+        }
 
         setIsSubmitting(true);
         try {
-            const inventarioData = {
-                InventarioID: nombreInventario,
-                Fecha: new Date().toISOString(),
-                Ciudad: sucursalSeleccionada,
-                Almacen: almacenInput,
-                Auditores: auditoresSeleccionados.map(auditor => auditor.Nombre),
-                TipoSeleccion: tipoSeleccionGeneral,
-                Ubicaciones: tipoSeleccionGeneral === 'ubicaciones' ? ubicacionesInput.split(',').map(u => u.trim()) : [],
-                LineasSeleccionadas: tipoSeleccionGeneral === 'lineas' ? lineasSeleccionadas.map(linea => linea.id) : []
-            };
+            // Generar un objeto inventarioData para cada auditor seleccionado
+            const inventariosPorAuditor = auditoresSeleccionados.map(auditor => {
+                return {
+                    InventarioID: nombreInventario,
+                    Fecha: new Date().toISOString(),
+                    Ciudad: sucursalSeleccionada,
+                    Almacen: almacenInput,
+                    AuditorID: auditor.id, // Usar la propiedad 'id' del auditor
+                    TipoSeleccion: tipoSeleccionGeneral,
+                    Ubicaciones: tipoSeleccionGeneral === 'ubicaciones' ? ubicacionesInput.split(',').map(u => u.trim()) : [],
+                    LineasSeleccionadas: tipoSeleccionGeneral === 'lineas' ? lineasSeleccionadas.map(linea => linea.id) : []
+                };
+            });
 
-            console.log('Objeto a enviar (Inventario General):', inventarioData);
+            console.log('Objetos a enviar (Inventario General por Auditor):', inventariosPorAuditor);
 
             // --- PENDIENTE: Aquí iría la llamada a la API para Inventario General ---
-            // const response = await fetch('YOUR_API_ENDPOINT_GENERAL', {
+            // Si tu API espera un array de objetos o necesitas hacer múltiples llamadas:
+            // for (const inventario of inventariosPorAuditor) {
+            //   const response = await fetch('YOUR_API_ENDPOINT_GENERAL', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify(inventario), // Envía un inventario por vez
+            //   });
+            //   if (!response.ok) {
+            //     throw new Error(`Error al guardar Inventario General para auditor ${inventario.AuditorID}: ${response.statusText}`);
+            //   }
+            //   const result = await response.json();
+            //   console.log('Inventario General guardado con éxito:', result);
+            // }
+
+            // Si tu API puede recibir un array de objetos en una sola llamada:
+            // const response = await fetch('YOUR_API_ENDPOINT_GENERAL_BULK', {
             //   method: 'POST',
             //   headers: { 'Content-Type': 'application/json' },
-            //   body: JSON.stringify(inventarioData),
+            //   body: JSON.stringify(inventariosPorAuditor), // Envía todo el array
             // });
             // if (!response.ok) {
-            //   throw new Error(`Error al guardar Inventario General: ${response.statusText}`);
+            //   throw new Error(`Error al guardar Inventario General (bulk): ${response.statusText}`);
             // }
             // const result = await response.json();
-            // console.log('Inventario General guardado con éxito:', result);
+            // console.log('Inventario General (bulk) guardado con éxito:', result);
 
-            alert('Inventario General guardado con éxito (simulado)!');
+
+            alert('Inventarios Generales guardados con éxito (simulado)!');
             onUploadSuccess();
         } catch (error) {
             console.error('Error al guardar Inventario General:', error);
@@ -642,7 +666,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
                                         className="cancel-upload-button"
                                         onClick={handleCancelFileUpload}
                                     >
-                                        Cancelar / Subir Nuevo Archivo
+                                        Cancelar
                                     </button>
                                 </div>
                             )}

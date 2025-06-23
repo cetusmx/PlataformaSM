@@ -42,8 +42,7 @@ const AjustesPrecios = () => {
   const porcentaje = 75;
 
   const urlServidorAPI = "http://18.224.118.226:3001";
-  const urlServidorAPI3 = "http://18.224.118.226:3002";
-  /* const urlServidorAPI3 = "http://localhost:3002"; */
+  const urlServidorAPI3 = "http://75.119.150.222:3002";
 
   useEffect(() => {
     //console.log(sucursalPropietaria);
@@ -204,13 +203,7 @@ const AjustesPrecios = () => {
                 `respuesta en post más de una sucursal ${tipo} - ${sucursalLocal}`
               );
               console.log(response.data.message);
-              /* if (tipo === 200) {
-          show_alerta("Subido exitósamente", "success");
-        } else {
-          show_alerta("Hubo un problema", "error");
-        } */
-
-              //console.log(response.status);
+              
             })
             .catch(function (error) {
               JSON.parse(JSON.stringify(error));

@@ -11,7 +11,7 @@ const TablaProductosResumida = () => {
   const [searchList, setSearchList] = useState("");
   const [claveModal, setClaveModal] = useState("");
   const [resultado, setResultado] = useState([]);
-  const urlServidorAPI = "http://18.224.118.226:3002";
+  const urlServidorAPI = "http://75.119.150.222:3002";
 
   useEffect(() => {
     getProductos();

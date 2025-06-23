@@ -16,7 +16,7 @@ const BuscadorSellos = () => {
   const [showSpinner2, setShowSpinner2] = useState(true);
   /* const [lineaBuscada, setLineaBuscada] = useState(""); */
   const cardsPerRow = 2;
-  const urlServidorAPI3 = "http://18.224.118.226:3002";
+  const urlServidorAPI3 = "http://75.119.150.222:3002";
   const urlServidorAPI4 = "http://localhost:5071";
 
   useEffect(() => {
