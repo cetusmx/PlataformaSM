@@ -153,40 +153,7 @@ const BuscadorSellos = () => {
     setMuestraFileUpload(true);
     setClaveBuscada("");
   };
-  const subirdata2 = async () => {
-    setShowSpinner(true);
-    /* await Axios({
-      method: "DELETE",
-      url: urlServidorAPI4 + `/api/Producto/eliminarProductos`,
-    })
-      .then((response) => {
-        //console.log(response);
-      })
-      .catch(function (error) {
-        JSON.parse(JSON.stringify(error));
-      }); */
-    //Insertar nueva lista
-    await Axios({
-      method: "POST",
-      url: urlServidorAPI4 + `/api/Producto/insertProductos`,
-      data: dataExcel,
-    })
-      .then((response) => {
-        if (response.status === 200) {
-          show_alerta("Subido exitósamente", "success");
-        } else {
-          show_alerta("Hubo un problema", "error");
-        }
-        setShowSpinner(false);
-        console.log(response.data.message);
-      })
-      .catch(function (error) {
-        JSON.parse(JSON.stringify(error));
-      });
-    setMuestraFileUpload(true);
-    setClaveBuscada("");
-  };
-
+  
   return (
     <>
       <div className="wrapper-ajus-busqueda">
@@ -346,7 +313,7 @@ const BuscadorSellos = () => {
               </button>
               <button
                 id="btnAplicar"
-                onClick={subirdata2}
+                onClick={subirdata}
                 type="button"
                 className="btn btn-primary"
                 data-bs-dismiss="modal"
