@@ -461,7 +461,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
           Auditor: auditorNombre, // Assign the current auditor to all rows
           Ciudad: sucursalSeleccionada, // Assign the selected city
           Almacen: almacenInput, // Assign the entered warehouse
-          // You can add more fields here if needed and not coming from Excel
+          Fecha: new Date().toISOString(), // You can add more fields here if needed and not coming from Excel
         }));
         // Add the data for this auditor to the main array.
         // This effectively duplicates the Excel data for each auditor.
