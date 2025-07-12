@@ -6,7 +6,7 @@ import { BiEraser, BiPrinter, BiTrash } from "react-icons/bi";
 import { useReactToPrint } from "react-to-print";
 
 const Remision = () => {
-  const url = "http://18.224.118.226:3001";
+  const url = "http://75.119.150.222:3001";
   const printRef = useRef();
 
   useEffect(() => {

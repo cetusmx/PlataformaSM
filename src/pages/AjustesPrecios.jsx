@@ -41,7 +41,7 @@ const AjustesPrecios = () => {
   const { contextAdminNav, setContextAdminNav } = valor3; */
   const porcentaje = 75;
 
-  const urlServidorAPI = "http://18.224.118.226:3001";
+  const urlServidorAPI = "http://75.119.150.222:3001";
   const urlServidorAPI3 = "http://75.119.150.222:3002";
 
   useEffect(() => {

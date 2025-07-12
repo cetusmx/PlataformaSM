@@ -15,8 +15,8 @@ const Editamars = () => {
   const [search, setSearch] = useState("");
   const [dataExcel, setDataExcel] = useState([]);
 
-  const url = "http://18.224.118.226:3001/actualiza";
-  const urlServidorAPI = "http://18.224.118.226:3001";
+  const url = "http://75.119.150.222:3001/actualiza";
+  const urlServidorAPI = "http://75.119.150.222:3001";
   const [family, setFamily] = useState("");
   const [margenes, setMargenes] = useState([]);
   const [margenesPivote, setMargenesPivote] = useState([]);

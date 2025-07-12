@@ -9,7 +9,7 @@ import TablaFaltantes from "../../TablaFaltantes";
 const FaltantesTabla = () => {
 
   const [data, setData] = useState([]);
-  const urlServidorAPI = "http://18.224.118.226:3001";
+  const urlServidorAPI = "http://75.119.150.222:3001";
 
   useEffect(() => {
     // Agrega opciones al Select cuando carga la página por primera vez

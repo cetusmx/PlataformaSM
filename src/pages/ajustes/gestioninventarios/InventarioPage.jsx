@@ -4,6 +4,7 @@ import InventarioNavBar from './InventarioNavBar';
 import InventariosActivos from './InventariosActivos'; // Importa el nuevo componente
 import "./InventarioPage.css";
 import SubirInventario from './SubirInventario';
+import InventariosCiclicos from './InventariosCiclicos ';
 // import InventariosEnConteo from '../components/InventariosEnConteo';
 // import SubirInventario from '../components/SubirInventario';
 // import DetalleInventario from '../components/DetalleInventario';
@@ -28,7 +29,7 @@ const InventariosPage = () => {
         return <InventariosActivos onViewDetails={handleViewDetails} />; // Pasa la función onViewDetails
       case 'en-conteo':
         // return <InventariosEnConteo onViewDetails={handleViewDetails} />;
-        return <div>Contenido de Inventarios en Conteo</div>; // Placeholder
+        return <InventariosCiclicos />
       case 'subir':
         // return <SubirInventario />;
         return <SubirInventario onUploadSuccess={() => setCurrentView('activos')} />; // Placeholder

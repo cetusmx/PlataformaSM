@@ -9,7 +9,7 @@ import { DataContext } from "../contexts/dataContext";
 
 const Cotizador = () => {
 
-  const url ="http://18.224.118.226:3001";
+  const url ="http://75.119.150.222:3001";
 
   const { valor, valor2 } = useContext(DataContext);
   const { contextData, setContextData } = valor;

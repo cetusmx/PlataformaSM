@@ -1,20 +1,22 @@
-// src/components/InventariosActivos.js
+// src/components/InventariosCiclicos.js
 import React, { useState, useEffect } from "react";
-import { BiBox } from "react-icons/bi"; // Importa el icono
-import "./InventariosActivos.css"; // Estilos específicos para esta sección
+import { BiBox } from "react-icons/bi"; // Import the icon
+import "./InventariosActivos.css"; // Specific styles for this section
 
 const InventarioCard = ({ inventario, onViewDetails }) => {
   const {
     InventarioID,
     Fecha,
-    qtyProductos,
+    // Removed 'qtyProductos' as it's not needed for cyclic inventories in this context
     qtyLineas,
-    Almacen,
+    Almacen, // This will now represent 'Ubicación' from the new API
+    Ubicacion,
     Ciudad,
-    ProgressPorcentage,
+    // Assuming the API for cyclic inventories might return an 'Ubicacion' field
+    // If not, 'Almacen' will be used as the 'Ubicación' value as per your existing data structure.
   } = inventario;
 
-  // Formatear la fecha
+  // Format the date
   const formattedDate = Fecha ? new Date(Fecha).toLocaleDateString() : "N/A";
 
   return (
@@ -30,20 +32,21 @@ const InventarioCard = ({ inventario, onViewDetails }) => {
         <p>
           <strong>Fecha de Alta:</strong> {formattedDate}
         </p>
+        {/* Changed from 'Productos a Contar' to 'Ubicación(es)' */}
         <p>
-          <strong>Productos a Contar:</strong> {qtyProductos}
+          <strong>Almacén:</strong> {Almacen}
+        </p>
+        <p>
+          <strong>Ubicación(es):</strong> {Ubicacion}
         </p>
         <p>
           <strong>Líneas a Contar:</strong> {qtyLineas}
         </p>
         <p>
-          <strong>Almacén:</strong> {Almacen}
-        </p>
-        <p>
           <strong>Ciudad:</strong> {Ciudad}
         </p>
       </div>
-      <div className="card-progress">
+      {/* <div className="card-progress">
         <div className="progress-bar-container">
           <div
             className="progress-bar-fill"
@@ -51,12 +54,12 @@ const InventarioCard = ({ inventario, onViewDetails }) => {
           ></div>
         </div>
         <span className="progress-text">{ProgressPorcentage}% Completado</span>
-      </div>
+      </div> */}
     </button>
   );
 };
 
-const InventariosActivos = ({ onViewDetails }) => {
+const InventariosCiclicos = ({ onViewDetails }) => {
   const [inventarios, setInventarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -65,17 +68,17 @@ const InventariosActivos = ({ onViewDetails }) => {
     const fetchInventarios = async () => {
       try {
         const response = await fetch(
-          "http://75.119.150.222:3001/getresumeninventarios"
-        );
+          "http://75.119.150.222:3001/getresumeninventariosgenerales"
+        ); // Changed API endpoint
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
         setInventarios(data);
       } catch (e) {
-        console.error("Error fetching inventarios:", e);
+        console.error("Error fetching inventarios cíclicos:", e);
         setError(
-          "No se pudieron cargar los inventarios. Inténtalo de nuevo más tarde."
+          "No se pudieron cargar los inventarios cíclicos. Inténtalo de nuevo más tarde."
         );
       } finally {
         setLoading(false);
@@ -83,10 +86,10 @@ const InventariosActivos = ({ onViewDetails }) => {
     };
 
     fetchInventarios();
-  }, []); // El array vacío asegura que se ejecute solo una vez al montar
+  }, []); // The empty array ensures this runs only once on mount
 
   if (loading) {
-    return <div className="loading-message">Cargando inventarios...</div>;
+    return <div className="loading-message">Cargando inventarios cíclicos...</div>;
   }
 
   if (error) {
@@ -96,7 +99,7 @@ const InventariosActivos = ({ onViewDetails }) => {
   if (inventarios.length === 0) {
     return (
       <div className="no-data-message">
-        No hay inventarios activos disponibles en este momento.
+        No hay inventarios cíclicos activos disponibles en este momento.
       </div>
     );
   }
@@ -107,7 +110,7 @@ const InventariosActivos = ({ onViewDetails }) => {
         <div className="inventario-cards-grid">
           {inventarios.map((inventario) => (
             <InventarioCard
-              key={inventario.InventarioID} // Asegúrate de que el 'id' es único
+              key={inventario.InventarioID} // Ensure 'InventarioID' is unique
               inventario={inventario}
               onViewDetails={onViewDetails}
             />
@@ -118,4 +121,4 @@ const InventariosActivos = ({ onViewDetails }) => {
   );
 };
 
-export default InventariosActivos;
+export default InventariosCiclicos;

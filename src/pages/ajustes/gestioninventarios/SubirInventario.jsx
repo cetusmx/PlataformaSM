@@ -49,7 +49,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
       try {
         setLoadingNombres(true);
         const nombresRes = await fetch(
-          "http://18.224.118.226:3001/getnombresinv"
+          "http://75.119.150.222:3001/getnombresinv"
         );
         const nombresData = await nombresRes.json();
         setNombresInventarioExistentes(
@@ -59,14 +59,14 @@ const SubirInventario = ({ onUploadSuccess }) => {
 
         setLoadingAuditores(true);
         const auditoresRes = await fetch(
-          "http://18.224.118.226:3001/getauditores"
+          "http://75.119.150.222:3001/getauditores"
         );
         const auditoresData = await auditoresRes.json();
         setAuditores(auditoresData);
         setLoadingAuditores(false);
 
         setLoadingLineas(true);
-        const lineasRes = await fetch("http://18.224.118.226:3001/getlineas");
+        const lineasRes = await fetch("http://75.119.150.222:3001/getlineas");
         const lineasData = await lineasRes.json();
         setLineasTotales(lineasData);
         setLoadingLineas(false);

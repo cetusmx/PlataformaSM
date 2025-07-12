@@ -22,7 +22,7 @@ const CodigoBarras = () => {
   const fecha = Date.now();
   const hoy = new Date(fecha).toJSON().slice(0, 10);
 
-  const urlServidorAPI = "http://18.224.118.226:3001";
+  const urlServidorAPI = "http://75.119.150.222:3001";
   const [xmlContent, setXmlContent] = useState("");
   const [error, setError] = useState("");
   const [listaProductos, setListaProductos] = useState([]);
@@ -383,7 +383,6 @@ const CodigoBarras = () => {
     };
 
     metodo = "POST";
-    //const url = "http://18.224.118.226:3001/insertClaveManualNoRegistrada";
 
     enviarSolicitud(metodo, parametros);
 
@@ -445,7 +444,6 @@ const CodigoBarras = () => {
 
   const enviarSolicitud = async (metodo, parametros) => {
     console.log(parametros);
-    /* const url = "http://18.224.118.226:3001/insertClaveManualNoRegistrada"; */
     const url = "http://75.119.150.222:3002/api/v1/products";
 
     await Axios({ method: metodo, url: url, data: parametros })

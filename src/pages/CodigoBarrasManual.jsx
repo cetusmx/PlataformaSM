@@ -16,7 +16,7 @@ const CodigoBarrasManual = () => {
     console.log("Dentro UseEffect Precios");
   }, []);
 
-  const url = "http://18.224.118.226:3001";
+  const url = "http://75.119.150.222:3001";
   const [preciosList, setPreciosList] = useState([]);
   const [partidas, setPartidas] = useState([]);
   const [partidasPrint, setPartidasPrint] = useState([]);
