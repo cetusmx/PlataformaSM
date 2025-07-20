@@ -23,6 +23,7 @@ const CodigoBarras = () => {
   const hoy = new Date(fecha).toJSON().slice(0, 10);
 
   const urlServidorAPI = "http://75.119.150.222:3001";
+  const urlServidorAPI2 = "http://75.119.150.222:3002";
   const [xmlContent, setXmlContent] = useState("");
   const [error, setError] = useState("");
   const [listaProductos, setListaProductos] = useState([]);
@@ -48,6 +49,9 @@ const CodigoBarras = () => {
   const ref = useRef();
   const componentRef = useRef();
 
+  const [value, setValue] = useState("");
+  const [catalogoProductos, setCatalogoProductos] = useState([]);
+
   const renderTooltip = (props) => (
     <Tooltip {...props}>Da clic para generar código de barras</Tooltip>
   );
@@ -59,6 +63,7 @@ const CodigoBarras = () => {
   useEffect(() => {
     //console.log("Useeffect rfc, getClaves()");
     getClaves();
+    getProductosCatalogo();
   }, [rfc]);
 
   useEffect(() => {
@@ -91,7 +96,7 @@ const CodigoBarras = () => {
     //console.log("dentro de unifica claves");
     let temp = [];
     let encontrado = false;
-    //console.log(listaProductos);
+    //console.log(catalogoProductos);
     //console.log(clavesProveedor);
 
     listaProductos.forEach((e, i) => {
@@ -143,8 +148,17 @@ const CodigoBarras = () => {
     }
   };
 
+  let getProductosCatalogo = () => {
+    if (catalogoProductos.length === 0) {
+      Axios.get(urlServidorAPI2 + `/api/v1/productos`, {
+      }).then((response) => {
+        setCatalogoProductos(response.data.body);
+      });
+    }
+  };
+
   const handleFileUpload = (e) => {
-    console.log("inside handle");
+    //console.log("inside handle");
     //setIsFileUploaded(false);
     const file = e.target.files[0];
 
@@ -443,13 +457,13 @@ const CodigoBarras = () => {
   };
 
   const enviarSolicitud = async (metodo, parametros) => {
-    console.log(parametros);
+    //console.log(parametros);
     const url = "http://75.119.150.222:3002/api/v1/products";
 
     await Axios({ method: metodo, url: url, data: parametros })
       .then(function (respuesta) {
         var tipo = respuesta.status;
-        console.log(tipo);
+        //console.log(tipo);
         if (tipo === 201) {
           moverProductoaRecepcionados();
           show_alerta("Registrado exitósamente", "success");
@@ -459,7 +473,7 @@ const CodigoBarras = () => {
 
         if (tipo === 201) {
           document.getElementById("btnCerrar").click();
-          console.log("despues de getMargenes");
+          //console.log("despues de getMargenes");
         }
       })
       .catch(function (error) {
@@ -472,18 +486,77 @@ const CodigoBarras = () => {
     let temporal = clavesunificadas.filter(
       (claveProv) => claveProv.producto !== claveProveedorIngManualmente //Solo quedan prods que no son el ing manualmente
     );
-    /* console.log(temporal); */
+    //console.log(clavesunificadas);
     setClavesunificadas(temporal);
+    
+    if (productosRecepcionados.length === 0) {
+      let temp = clavesunificadas.map((item)=>{
+        if(item.producto === claveProveedorIngManualmente){
+          return {...item, clave: productoIngresadoManualmente}
+        }
+        return item;
+      }).find(
+        (claveProv) => claveProv.producto === claveProveedorIngManualmente
+      )
+      console.log(temp)
+      /* let temp = clavesunificadas.find(
+        (claveProv) => claveProv.producto === claveProveedorIngManualmente
+      ); */
+      const recep = [];
+      recep.push(temp);
+      setProductosRecepcionados(recep);
+      //console.log(claveProveedorIngManualmente);
+    } else {
+      let copyRecepcionados = structuredClone(productosRecepcionados);
+      let temp = clavesunificadas.find(
+        (claveProv) => claveProv.clave === claveProveedorIngManualmente
+      );
+      copyRecepcionados.push(temp);
+      setProductosRecepcionados(copyRecepcionados);
+      //console.log(copyRecepcionados);
+    }
 
+    /************ 
     let temp = [...productosRecepcionados];
+    //console.log("qty man ", qtyManualmente," Prod ", claveProveedorIngManualmente," Prod SM ", productoIngresadoManualmente);
 
     let partida = {
       Cantidad: qtyManualmente,
       Producto: claveProveedorIngManualmente,
       Clave: productoIngresadoManualmente,
     };
+    console.log("partida ",partida);
+
     temp.push(partida);
     setProductosRecepcionados(temp);
+    *****/
+  };
+
+  const onSearch = (searchTerm) => {
+    //console.log("DENTRO ONSEARCH ",searchTerm,"CLAVE PROV ",claveProveedorIngManualmente, "qty ",   qtyManualmente);
+    setProductoIngresadoManualmente(searchTerm);
+    setValue(searchTerm); //Se coloca el valor en el input "Clave prod"
+    const filtrado = catalogoProductos.find((item) =>
+      item.clave.toUpperCase().includes(searchTerm.toUpperCase())
+    );
+    /* const filtrado = preciosList.filter((item) =>
+      item.clave.toUpperCase().includes(searchTerm.toUpperCase())
+    ); */
+    //console.log(filtrado);
+    const precio_ = filtrado.precio;
+    /* const precio_ = filtrado.map((item) => item.precio); */
+    //const totalInp = qty * precio_;
+
+    //setTotalCab(totalInp);
+    //setPrice(precio_);
+  };
+
+  const onChange = (event) => {
+    setValue(event.target.value); //Se coloca el valor en el input "Clave prod"
+    setProductoIngresadoManualmente(event.target.value);
+    //console.log(event.target.value);
+
+    /* Aquí puedo implementar la búsqueda en el arreglo general */
   };
 
   return (
@@ -766,13 +839,35 @@ const CodigoBarras = () => {
                     Clave
                   </label>
                   <input
+                  value={value}
                     type="text"
                     class="form-control"
                     id="exampleFormControlInput12"
-                    onChange={(e) =>
-                      setProductoIngresadoManualmente(e.target.value)
-                    }
+                    onChange={onChange}
                   />
+                  <div className="dropdown">
+                    {catalogoProductos
+                      .filter((item) => {
+                        const searchTerm = value.toLowerCase();
+                        const clave = item.clave.toLowerCase();
+
+                        return (
+                          searchTerm &&
+                          clave.startsWith(searchTerm) &&
+                          clave !== searchTerm
+                        );
+                      })
+                      .slice(0, 10)
+                      .map((item) => (
+                        <div
+                          onClick={() => onSearch(item.clave)}
+                          className="dropdown-row"
+                          key={item.clave}
+                        >
+                          {item.clave}
+                        </div>
+                      ))}
+                  </div>
                 </div>
                 <div className="item-scan">
                   <i style={{ fontSize: "2.2rem", textAlign: "center" }}>
