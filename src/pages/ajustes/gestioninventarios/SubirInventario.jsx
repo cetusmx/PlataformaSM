@@ -42,19 +42,31 @@ const SubirInventario = ({ onUploadSuccess }) => {
   const [previewDataCiclico, setPreviewDataCiclico] = useState(null);
   const [previewDataGeneral, setPreviewDataGeneral] = useState(null);
 
+  const inventariosExistentes =
+    tipoInventario === "ciclico"
+      ? nombresInventariosCiclicosExistentes
+      : nombresInventariosGeneralesExistentes;
+
   // --- Efectos para cargar datos de APIs al inicio ---
   useEffect(() => {
     const fetchData = async () => {
       setErrorApi(null);
       try {
         setLoadingNombres(true);
-        const nombresRes = await fetch(
-          "http://75.119.150.222:3001/getnombresinv"
+        const generalesRes = await fetch(
+          "http://75.119.150.222:3001/getresumeninventariosgenerales"
         );
-        const nombresData = await nombresRes.json();
-        
+        const generalesData = await generalesRes.json();
         setNombresInventariosGeneralesExistentes(
-          nombresData.map((item) => item.InventarioID)
+          generalesData.map((item) => item.InventarioID)
+        );
+
+        const ciclicosRes = await fetch(
+          "http://75.119.150.222:3001/getresumeninventariosweb"
+        );
+        const ciclicosData = await ciclicosRes.json();
+        setNombresInventariosCiclicosExistentes(
+          ciclicosData.map((item) => item.InventarioID)
         );
         setLoadingNombres(false);
 
@@ -95,13 +107,18 @@ const SubirInventario = ({ onUploadSuccess }) => {
       let consecutive = 1;
       let suggestedName = `${prefix}${consecutive}`;
 
-      while (nombresInventarioExistentes.includes(suggestedName)) {
+      while (inventariosExistentes.includes(suggestedName)) {
         consecutive++;
         suggestedName = `${prefix}${consecutive}`;
       }
       setNombreInventario(suggestedName);
     }
-  }, [loadingNombres, nombresInventarioExistentes]);
+  }, [
+    loadingNombres,
+    tipoInventario,
+    nombresInventariosGeneralesExistentes,
+    nombresInventariosCiclicosExistentes,
+  ]);
 
   // --- Manejo de la carga de archivos (para Inventario Cíclico) ---
   const onDrop = async (acceptedFiles) => {
@@ -320,7 +337,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
       );
       return;
     }
-    if (nombresInventarioExistentes.includes(nombreInventario)) {
+    if (inventariosExistentes.includes(nombreInventario)) {
       alert(
         "El nombre de inventario ya existe. Por favor, elige uno diferente o ajusta el consecutivo."
       );
@@ -441,7 +458,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
         alert('Por favor, selecciona al menos un auditor, the branch, and the warehouse.');
         return;
     }
-    if (nombresInventarioExistentes.includes(nombreInventario)) {
+    if (inventariosExistentes.includes(nombreInventario)) {
         alert('El nombre de inventario ya existe. Por favor, elige uno diferente o ajusta el consecutivo.');
         return;
     }
@@ -563,7 +580,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
             {loadingNombres && (
               <span className="loading-inline">Cargando sugerencia...</span>
             )}
-            {nombresInventarioExistentes.includes(nombreInventario) && (
+            {inventariosExistentes.includes(nombreInventario) && (
               <p className="warning-text">
                 Este nombre ya existe. Por favor, ajústalo.
               </p>
@@ -645,7 +662,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
               isSubmitting ||
               !nombreInventario ||
               auditoresSeleccionados.length === 0 ||
-              nombresInventarioExistentes.includes(nombreInventario) ||
+              inventariosExistentes.includes(nombreInventario) ||
               !sucursalSeleccionada
             }
           >
