@@ -24,8 +24,8 @@ const SubirInventario = ({ onUploadSuccess }) => {
   const [sugerenciasLineas, setSugerenciasLineas] = useState([]);
 
   // --- Estados de datos de API ---
-  const [nombresInventarioExistentes, setNombresInventarioExistentes] =
-    useState([]);
+  const [nombresInventariosGeneralesExistentes, setNombresInventariosGeneralesExistentes] = useState([]);
+  const [nombresInventariosCiclicosExistentes, setNombresInventariosCiclicosExistentes] = useState([]);
   const [auditores, setAuditores] = useState([]); // Lista completa de auditores
   const [lineasTotales, setLineasTotales] = useState([]);
 
@@ -52,7 +52,8 @@ const SubirInventario = ({ onUploadSuccess }) => {
           "http://75.119.150.222:3001/getnombresinv"
         );
         const nombresData = await nombresRes.json();
-        setNombresInventarioExistentes(
+        
+        setNombresInventariosGeneralesExistentes(
           nombresData.map((item) => item.InventarioID)
         );
         setLoadingNombres(false);

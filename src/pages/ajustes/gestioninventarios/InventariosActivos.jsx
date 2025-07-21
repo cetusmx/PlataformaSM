@@ -12,8 +12,9 @@ const InventarioCard = ({ inventario, onViewDetails }) => {
     Almacen,
     Ciudad,
     ProgressPorcentage,
+    Auditor,
   } = inventario;
-
+  console.log(inventario);
   // Formatear la fecha
   const formattedDate = Fecha ? new Date(Fecha).toLocaleDateString() : "N/A";
 
@@ -42,6 +43,9 @@ const InventarioCard = ({ inventario, onViewDetails }) => {
         <p>
           <strong>Ciudad:</strong> {Ciudad}
         </p>
+        <p>
+          <strong>Auditor:</strong> {Auditor}
+        </p>
       </div>
       <div className="card-progress">
         <div className="progress-bar-container">
@@ -56,6 +60,7 @@ const InventarioCard = ({ inventario, onViewDetails }) => {
   );
 };
 
+//Inventarios Cíclicos
 const InventariosActivos = ({ onViewDetails }) => {
   const [inventarios, setInventarios] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -65,7 +70,7 @@ const InventariosActivos = ({ onViewDetails }) => {
     const fetchInventarios = async () => {
       try {
         const response = await fetch(
-          "http://75.119.150.222:3001/getresumeninventarios"
+          "http://75.119.150.222:3001/getresumeninventariosweb"
         );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -96,7 +101,7 @@ const InventariosActivos = ({ onViewDetails }) => {
   if (inventarios.length === 0) {
     return (
       <div className="no-data-message">
-        No hay inventarios activos disponibles en este momento.
+        No hay inventarios cíclicos disponibles en este momento.
       </div>
     );
   }

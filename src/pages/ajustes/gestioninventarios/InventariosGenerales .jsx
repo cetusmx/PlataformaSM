@@ -59,7 +59,7 @@ const InventarioCard = ({ inventario, onViewDetails }) => {
   );
 };
 
-const InventariosCiclicos = ({ onViewDetails }) => {
+const InventariosGenerales = ({ onViewDetails }) => {
   const [inventarios, setInventarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -99,7 +99,7 @@ const InventariosCiclicos = ({ onViewDetails }) => {
   if (inventarios.length === 0) {
     return (
       <div className="no-data-message">
-        No hay inventarios cíclicos activos disponibles en este momento.
+        No hay inventarios generales activos disponibles en este momento.
       </div>
     );
   }
@@ -121,4 +121,4 @@ const InventariosCiclicos = ({ onViewDetails }) => {
   );
 };
 
-export default InventariosCiclicos;
+export default InventariosGenerales;
