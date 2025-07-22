@@ -508,28 +508,21 @@ const CodigoBarras = () => {
       //console.log(claveProveedorIngManualmente);
     } else {
       let copyRecepcionados = structuredClone(productosRecepcionados);
-      let temp = clavesunificadas.find(
-        (claveProv) => claveProv.clave === claveProveedorIngManualmente
-      );
+      let temp = clavesunificadas.map((item)=>{
+        if(item.producto === claveProveedorIngManualmente){
+          return {...item, clave: productoIngresadoManualmente}
+        }
+        return item;
+      }).find(
+        (claveProv) => claveProv.producto === claveProveedorIngManualmente
+      )
       copyRecepcionados.push(temp);
       setProductosRecepcionados(copyRecepcionados);
       //console.log(copyRecepcionados);
     }
 
-    /************ 
-    let temp = [...productosRecepcionados];
-    //console.log("qty man ", qtyManualmente," Prod ", claveProveedorIngManualmente," Prod SM ", productoIngresadoManualmente);
-
-    let partida = {
-      Cantidad: qtyManualmente,
-      Producto: claveProveedorIngManualmente,
-      Clave: productoIngresadoManualmente,
-    };
-    console.log("partida ",partida);
-
-    temp.push(partida);
-    setProductosRecepcionados(temp);
-    *****/
+    setValue(""); //Se coloca el valor en el input "Clave prod"
+    setProductoIngresadoManualmente("");
   };
 
   const onSearch = (searchTerm) => {
