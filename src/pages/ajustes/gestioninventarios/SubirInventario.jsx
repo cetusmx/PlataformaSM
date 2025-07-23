@@ -465,17 +465,13 @@ const SubirInventario = ({ onUploadSuccess }) => {
           Ciudad: sucursalSeleccionada, // Assign the selected city
           Almacen: almacenInput, // Assign the entered warehouse
           Fecha: new Date().toISOString(), // You can add more fields here if needed and not coming from Excel
+          isCounted: false,
         }));
         // Add the data for this auditor to the main array.
         // This effectively duplicates the Excel data for each auditor.
         allDataToSend.push(...dataForThisAuditor);
       }
-
-      /* console.log(
-        "Final array of objects to send (Cyclic Inventory):",
-        allDataToSend
-      ); */
-      console.log(allDataToSend)
+      console.log("AllDataSend: ",allDataToSend)
       if (allDataToSend.length > 1) {
         await Axios({
           method: "POST",
