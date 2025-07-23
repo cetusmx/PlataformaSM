@@ -51,16 +51,19 @@ const SubirInventario = ({ onUploadSuccess }) => {
         const nombresRes = await fetch(
           "http://75.119.150.222:3001/getnombresinv"
         );
+        console.log(nombresRes);
         const nombresData = await nombresRes.json();
         setNombresInventarioExistentes(
           nombresData.map((item) => item.InventarioID)
         );
+        console.log(nombresData);
         setLoadingNombres(false);
 
         setLoadingAuditores(true);
         const auditoresRes = await fetch(
           "http://75.119.150.222:3001/getauditores"
         );
+        console.log(auditoresRes);
         const auditoresData = await auditoresRes.json();
         setAuditores(auditoresData);
         setLoadingAuditores(false);
