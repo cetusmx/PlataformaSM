@@ -24,8 +24,8 @@ const SubirInventario = ({ onUploadSuccess }) => {
   const [sugerenciasLineas, setSugerenciasLineas] = useState([]);
 
   // --- Estados de datos de API ---
-  const [nombresInventariosGeneralesExistentes, setNombresInventariosGeneralesExistentes] = useState([]);
-  const [nombresInventariosCiclicosExistentes, setNombresInventariosCiclicosExistentes] = useState([]);
+  const [nombresInventarioExistentes, setNombresInventarioExistentes] =
+    useState([]);
   const [auditores, setAuditores] = useState([]); // Lista completa de auditores
   const [lineasTotales, setLineasTotales] = useState([]);
 
@@ -42,87 +42,45 @@ const SubirInventario = ({ onUploadSuccess }) => {
   const [previewDataCiclico, setPreviewDataCiclico] = useState(null);
   const [previewDataGeneral, setPreviewDataGeneral] = useState(null);
 
-  const inventariosExistentes =
-    tipoInventario === "ciclico"
-      ? nombresInventariosCiclicosExistentes
-      : nombresInventariosGeneralesExistentes;
-
   // --- Efectos para cargar datos de APIs al inicio ---
   useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
-
-    const timeoutId = setTimeout(() => {
-      controller.abort();
-      setErrorApi("La solicitud de datos iniciales ha tardado demasiado.");
-      setLoadingNombres(false);
-      setLoadingAuditores(false);
-      setLoadingLineas(false);
-    }, 8000); // 8 segundos de tiempo de espera
-
     const fetchData = async () => {
       setErrorApi(null);
-      // Iniciar todos los estados de carga
-      setLoadingNombres(true);
-      setLoadingAuditores(true);
-      setLoadingLineas(true);
-
       try {
-        // Realizar todas las peticiones en paralelo
-        const [generalesRes, ciclicosRes, auditoresRes, lineasRes] =
-          await Promise.all([
-            fetch("http://75.119.150.222:3001/getresumeninventariosgenerales", { signal }),
-            fetch("http://75.119.150.222:3001/getresumeninventariosweb", { signal }),
-            fetch("http://75.119.150.222:3001/getauditores", { signal }),
-            fetch("http://75.119.150.222:3001/getlineas", { signal }),
-          ]);
-
-        clearTimeout(timeoutId); // Limpiar el timeout si todas las respuestas llegan
-
-        // Procesar respuestas
-        const generalesData = await generalesRes.json();
-        setNombresInventariosGeneralesExistentes(
-          Array.isArray(generalesData)
-            ? generalesData.map((item) => item.InventarioID)
-            : []
+        setLoadingNombres(true);
+        const nombresRes = await fetch(
+          "http://75.119.150.222:3001/getnombresinv"
         );
-
-        const ciclicosData = await ciclicosRes.json();
-        setNombresInventariosCiclicosExistentes(
-          Array.isArray(ciclicosData)
-            ? ciclicosData.map((item) => item.InventarioID)
-            : []
+        const nombresData = await nombresRes.json();
+        setNombresInventarioExistentes(
+          nombresData.map((item) => item.InventarioID)
         );
+        setLoadingNombres(false);
 
+        setLoadingAuditores(true);
+        const auditoresRes = await fetch(
+          "http://75.119.150.222:3001/getauditores"
+        );
         const auditoresData = await auditoresRes.json();
-        setAuditores(Array.isArray(auditoresData) ? auditoresData : []);
+        setAuditores(auditoresData);
+        setLoadingAuditores(false);
 
+        setLoadingLineas(true);
+        const lineasRes = await fetch("http://75.119.150.222:3001/getlineas");
         const lineasData = await lineasRes.json();
-        setLineasTotales(Array.isArray(lineasData) ? lineasData : []);
-
+        setLineasTotales(lineasData);
+        setLoadingLineas(false);
       } catch (error) {
-        if (error.name !== 'AbortError') {
-          console.error("Error al cargar datos iniciales:", error);
-          setErrorApi(
-            "No se pudieron cargar algunos datos iniciales (nombres de inventario, auditores o líneas)."
-          );
-        }
-      } finally {
-        // Asegurarse de que todos los estados de carga se desactiven
-        if (!signal.aborted) {
-          setLoadingNombres(false);
-          setLoadingAuditores(false);
-          setLoadingLineas(false);
-        }
+        console.error("Error al cargar datos iniciales:", error);
+        setErrorApi(
+          "No se pudieron cargar algunos datos iniciales (nombres de inventario, auditores o líneas)."
+        );
+        setLoadingNombres(false);
+        setLoadingAuditores(false);
+        setLoadingLineas(false);
       }
     };
-
     fetchData();
-
-    return () => {
-      clearTimeout(timeoutId);
-      controller.abort();
-    };
   }, []);
 
   // --- Lógica para sugerir nombre de inventario ---
@@ -136,18 +94,13 @@ const SubirInventario = ({ onUploadSuccess }) => {
       let consecutive = 1;
       let suggestedName = `${prefix}${consecutive}`;
 
-      while (inventariosExistentes.includes(suggestedName)) {
+      while (nombresInventarioExistentes.includes(suggestedName)) {
         consecutive++;
         suggestedName = `${prefix}${consecutive}`;
       }
       setNombreInventario(suggestedName);
     }
-  }, [
-    loadingNombres,
-    tipoInventario,
-    nombresInventariosGeneralesExistentes,
-    nombresInventariosCiclicosExistentes,
-  ]);
+  }, [loadingNombres, nombresInventarioExistentes]);
 
   // --- Manejo de la carga de archivos (para Inventario Cíclico) ---
   const onDrop = async (acceptedFiles) => {
@@ -239,15 +192,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
     reader.readAsArrayBuffer(uploadedFile);
   };
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      "application/vnd.ms-excel": [".xls"],
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
-        ".xlsx",
-      ],
-    },
-  });
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   // Función para cancelar la carga de archivo en inventario cíclico
   const handleCancelFileUpload = () => {
@@ -374,7 +319,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
       );
       return;
     }
-    if (inventariosExistentes.includes(nombreInventario)) {
+    if (nombresInventarioExistentes.includes(nombreInventario)) {
       alert(
         "El nombre de inventario ya existe. Por favor, elige uno diferente o ajusta el consecutivo."
       );
@@ -495,7 +440,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
         alert('Por favor, selecciona al menos un auditor, the branch, and the warehouse.');
         return;
     }
-    if (inventariosExistentes.includes(nombreInventario)) {
+    if (nombresInventarioExistentes.includes(nombreInventario)) {
         alert('El nombre de inventario ya existe. Por favor, elige uno diferente o ajusta el consecutivo.');
         return;
     }
@@ -617,7 +562,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
             {loadingNombres && (
               <span className="loading-inline">Cargando sugerencia...</span>
             )}
-            {inventariosExistentes.includes(nombreInventario) && (
+            {nombresInventarioExistentes.includes(nombreInventario) && (
               <p className="warning-text">
                 Este nombre ya existe. Por favor, ajústalo.
               </p>
@@ -699,7 +644,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
               isSubmitting ||
               !nombreInventario ||
               auditoresSeleccionados.length === 0 ||
-              inventariosExistentes.includes(nombreInventario) ||
+              nombresInventarioExistentes.includes(nombreInventario) ||
               !sucursalSeleccionada
             }
           >
