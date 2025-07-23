@@ -49,51 +49,80 @@ const SubirInventario = ({ onUploadSuccess }) => {
 
   // --- Efectos para cargar datos de APIs al inicio ---
   useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    const timeoutId = setTimeout(() => {
+      controller.abort();
+      setErrorApi("La solicitud de datos iniciales ha tardado demasiado.");
+      setLoadingNombres(false);
+      setLoadingAuditores(false);
+      setLoadingLineas(false);
+    }, 8000); // 8 segundos de tiempo de espera
+
     const fetchData = async () => {
       setErrorApi(null);
+      // Iniciar todos los estados de carga
+      setLoadingNombres(true);
+      setLoadingAuditores(true);
+      setLoadingLineas(true);
+
       try {
-        setLoadingNombres(true);
-        const generalesRes = await fetch(
-          "http://75.119.150.222:3001/getresumeninventariosgenerales"
-        );
+        // Realizar todas las peticiones en paralelo
+        const [generalesRes, ciclicosRes, auditoresRes, lineasRes] =
+          await Promise.all([
+            fetch("http://75.119.150.222:3001/getresumeninventariosgenerales", { signal }),
+            fetch("http://75.119.150.222:3001/getresumeninventariosweb", { signal }),
+            fetch("http://75.119.150.222:3001/getauditores", { signal }),
+            fetch("http://75.119.150.222:3001/getlineas", { signal }),
+          ]);
+
+        clearTimeout(timeoutId); // Limpiar el timeout si todas las respuestas llegan
+
+        // Procesar respuestas
         const generalesData = await generalesRes.json();
         setNombresInventariosGeneralesExistentes(
-          generalesData.map((item) => item.InventarioID)
+          Array.isArray(generalesData)
+            ? generalesData.map((item) => item.InventarioID)
+            : []
         );
 
-        const ciclicosRes = await fetch(
-          "http://75.119.150.222:3001/getresumeninventariosweb"
-        );
         const ciclicosData = await ciclicosRes.json();
         setNombresInventariosCiclicosExistentes(
-          ciclicosData.map((item) => item.InventarioID)
+          Array.isArray(ciclicosData)
+            ? ciclicosData.map((item) => item.InventarioID)
+            : []
         );
-        setLoadingNombres(false);
 
-        setLoadingAuditores(true);
-        const auditoresRes = await fetch(
-          "http://75.119.150.222:3001/getauditores"
-        );
         const auditoresData = await auditoresRes.json();
-        setAuditores(auditoresData);
-        setLoadingAuditores(false);
+        setAuditores(Array.isArray(auditoresData) ? auditoresData : []);
 
-        setLoadingLineas(true);
-        const lineasRes = await fetch("http://75.119.150.222:3001/getlineas");
         const lineasData = await lineasRes.json();
-        setLineasTotales(lineasData);
-        setLoadingLineas(false);
+        setLineasTotales(Array.isArray(lineasData) ? lineasData : []);
+
       } catch (error) {
-        console.error("Error al cargar datos iniciales:", error);
-        setErrorApi(
-          "No se pudieron cargar algunos datos iniciales (nombres de inventario, auditores o líneas)."
-        );
-        setLoadingNombres(false);
-        setLoadingAuditores(false);
-        setLoadingLineas(false);
+        if (error.name !== 'AbortError') {
+          console.error("Error al cargar datos iniciales:", error);
+          setErrorApi(
+            "No se pudieron cargar algunos datos iniciales (nombres de inventario, auditores o líneas)."
+          );
+        }
+      } finally {
+        // Asegurarse de que todos los estados de carga se desactiven
+        if (!signal.aborted) {
+          setLoadingNombres(false);
+          setLoadingAuditores(false);
+          setLoadingLineas(false);
+        }
       }
     };
+
     fetchData();
+
+    return () => {
+      clearTimeout(timeoutId);
+      controller.abort();
+    };
   }, []);
 
   // --- Lógica para sugerir nombre de inventario ---
@@ -210,7 +239,15 @@ const SubirInventario = ({ onUploadSuccess }) => {
     reader.readAsArrayBuffer(uploadedFile);
   };
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      "application/vnd.ms-excel": [".xls"],
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+        ".xlsx",
+      ],
+    },
+  });
 
   // Función para cancelar la carga de archivo en inventario cíclico
   const handleCancelFileUpload = () => {

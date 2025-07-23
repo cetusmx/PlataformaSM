@@ -67,27 +67,53 @@ const InventariosActivos = ({ onViewDetails }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+      controller.abort();
+      setError("La solicitud ha tardado demasiado y ha sido cancelada.");
+      setLoading(false);
+    }, 8000); // 8 segundos de tiempo de espera
+
     const fetchInventarios = async () => {
       try {
         const response = await fetch(
-          "http://75.119.150.222:3001/getresumeninventariosweb"
+          "http://75.119.150.222:3001/getresumeninventariosweb",
+          { signal: controller.signal }
         );
+
+        clearTimeout(timeoutId); // Cancelar el temporizador si la respuesta llega a tiempo
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        setInventarios(data);
+        if (Array.isArray(data)) {
+          setInventarios(data);
+        } else {
+          setInventarios([]);
+        }
       } catch (e) {
-        console.error("Error fetching inventarios:", e);
-        setError(
-          "No se pudieron cargar los inventarios. Inténtalo de nuevo más tarde."
-        );
+        if (e.name === 'AbortError') {
+          console.log('Fetch abortado');
+        } else {
+          console.error("Error fetching inventarios:", e);
+          setError(
+            "No se pudieron cargar los inventarios. Inténtalo de nuevo más tarde."
+          );
+        }
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchInventarios();
+
+    return () => {
+      clearTimeout(timeoutId);
+      controller.abort(); // Abortar la solicitud si el componente se desmonta
+    };
   }, []); // El array vacío asegura que se ejecute solo una vez al montar
 
   if (loading) {
@@ -101,7 +127,7 @@ const InventariosActivos = ({ onViewDetails }) => {
   if (inventarios.length === 0) {
     return (
       <div className="no-data-message">
-        No hay inventarios cíclicos disponibles en este momento.
+        No hay inventarios registrados
       </div>
     );
   }
