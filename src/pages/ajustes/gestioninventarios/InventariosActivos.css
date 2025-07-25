@@ -1,115 +1,281 @@
-/* src/components/InventariosActivos.css */
-@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");
+/* Estilos para InventariosActivos.css */
 .inventarios-activos-container {
-  padding: 20px 0;
-}
-
-h2 {
-  text-align: center;
-  margin-bottom: 30px;
-  color: #333;
+  padding: 20px;
 }
 
 .inventario-scroll-container {
-  overflow-x: auto; /* Permite el scroll horizontal si las tarjetas no caben */
-  overflow-y: hidden; /* Oculta la barra de scroll vertical (aunque no debería aparecer) */
-  white-space: nowrap; /* Evita que las tarjetas se envuelvan a la siguiente línea si el ancho es limitado */
-  padding-bottom: 10px; /* Espacio para que la barra de scroll invisible no tape el contenido */
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
-}
-
-.inventario-scroll-container::-webkit-scrollbar {
-  display: none;
+  max-height: 80vh; /* ajusta la altura máxima según sea necesario */
+  overflow-y: auto; /* permite el desplazamiento vertical */
 }
 
 .inventario-cards-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(250px, 1fr)); /* Columnas responsivas */
-  gap: 25px; /* Espacio entre las tarjetas */
-  /*justify-content: center; /* Centra las tarjetas si no llenan la fila completa */
-  padding: 0 15px; /* Padding horizontal para el grid */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
 }
 
 .inventario-card {
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  padding: 20px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  cursor: pointer; /* Indica que es clickable */
-  text-align: left; /* Alinea el texto a la izquierda */
-  font-family: Arial, sans-serif; /* Consistencia de fuente */
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
 }
 
 .inventario-card:hover {
-  transform: translateY(-5px); /* Pequeño efecto al pasar el ratón */
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .card-icon {
   margin-bottom: 10px;
-  text-align: center; /* Centra el icono */
 }
 
 .card-info h3 {
-  margin-top: 0;
-  margin-bottom: 10px;
-  color: #007bff;
-  font-size: 1.1em;
+  margin: 0 0 10px;
+  font-size: 1.2em;
+  color: #333;
 }
 
 .card-info p {
   margin: 5px 0;
+  font-size: 0.9em;
   color: #666;
-  font-size: 0.95em;
-}
-
-.card-info p strong {
-  color: #333;
 }
 
 .card-progress {
-  margin-top: 15px;
+  margin-top: auto; /* empuja la barra de progreso hacia abajo */
 }
 
 .progress-bar-container {
-  width: 100%;
-  background-color: #e9ecef;
-  border-radius: 5px;
-  overflow: hidden;
-  height: 10px; /* Altura de la barra de progreso */
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  height: 10px;
+  overflow: hidden; /* asegura que el relleno no se desborde */
 }
 
 .progress-bar-fill {
+  background-color: #007bff;
   height: 100%;
-  background-color: #28a745; /* Color verde para el progreso */
-  border-radius: 5px;
-  transition: width 0.4s ease-in-out; /* Transición suave para el cambio de progreso */
 }
 
 .progress-text {
-  margin-top: 8px;
-  font-size: 0.85em;
+  display: block;
+  text-align: center;
+  margin-top: 5px;
+  font-size: 0.8em;
   color: #555;
-  text-align: right; /* Alinea el texto del porcentaje a la derecha */
-  display: block; /* Para que ocupe su propia línea */
 }
 
-/* Mensajes de estado */
 .loading-message,
 .error-message,
 .no-data-message {
   text-align: center;
-  padding: 40px;
+  padding: 20px;
+  font-size: 1.2em;
+  color: #888;
+}
+
+/* Estilos para los detalles del inventario */
+.inventario-details-container {
+  padding: 10px 0px;
+  height: 78vh; /* Reducido para no sobrepasar el campo visual */
+  display: flex;
+  flex-direction: column;
+  font-size: 0.9em;
+}
+
+.inventario-header {
+  background-color: #f9f9f9; /* Mismo color que las tarjetas de línea */
+  border: 1px solid #eee; /* Borde sutil */
+  border-radius: 8px; /* Bordes redondeados */
+  padding: 10px 15px;
+  margin-bottom: 15px; /* Espacio antes de la lista de líneas */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Alinea el contenido a la izquierda */
+}
+
+.inventario-header h3 {
+  margin: 0 0 10px 0;
   font-size: 1.1em;
+  color: #333;
+}
+
+.inventario-header-details {
+  display: flex;
+  justify-content: space-between; /* Distribuye el espacio uniformemente */
+  width: 100%; /* Asegura que el contenedor ocupe todo el ancho */
+  font-size: 0.9em;
+}
+
+.inventario-header-details p {
+    margin: 0;
+}
+
+.lineas-scroll-container {
+  flex-grow: 1; /* El contenedor de las tarjetas crecerá para llenar el espacio disponible */
+  overflow-y: auto; /* Habilita el scroll vertical si es necesario */
+  scrollbar-width: none; /* Oculta la barra de desplazamiento en Firefox */
+  -ms-overflow-style: none; /* Oculta la barra de desplazamiento en IE y Edge */
+}
+
+.lineas-scroll-container::-webkit-scrollbar {
+  display: none; /* Oculta la barra de desplazamiento en Chrome, Safari y Opera */
+}
+
+.lineas-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.linea-card {
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 5px;
+  padding: 5px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer; /* Añadido para indicar que es clickeable */
+}
+
+.linea-card.counted {
+  background-color: #e8f5e9; /* verde claro */
+  border-left: 5px solid #4caf50; /* borde verde */
+}
+
+.linea-info h4 {
+  margin: 0 0 3px;
+  font-size: 1em; /* Tamaño de letra más pequeño para Linea */
+  color: #333;
+}
+
+.linea-info p {
+  margin: 0;
+  font-size: 0.7em; /* Tamaño de letra más grande para NombreLinea y qtyProductosLinea */
   color: #777;
 }
 
-.error-message {
-  color: #dc3545; /* Rojo para errores */
+/* .linea-status .icon-check {
+  color: #4caf50;
+} */
+.linea-card.counted .icon-check {
+  color: #347F38;
+}
+
+.inventario-details-container .back-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  margin-top: 20px;
+  background-color: #6b757d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 20%;
+  font-size: 0.9em;
+}
+
+.inventario-details-container .back-button:hover {
+  background-color: #5a6268;
+}
+
+.back-button svg {
+  margin-right: 8px;
+}
+
+/* Estilos para los botones de navegación */
+.navigation-buttons {
+  margin-bottom: 10px;
+}
+
+.nav-button {
+  padding: 5px 15px;
+  background-color: #007bff; /* #6c757d; */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.nav-button:hover {
+  background-color: #0065D1;  /* #5a6268; */
+}
+
+/* Estilos para la tabla de productos */
+.product-table-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Asegura que el contenedor ocupe el espacio */
+  font-size: 0.8em;
+}
+
+.product-table-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-shrink: 0; /* Evita que el header se encoja */
+}
+
+.product-table-header h3 {
+  margin: 0 0 0 15px;
+  font-size: 1.2em;
+  color: #333;
+}
+
+/* Nuevo: Contenedor para la tabla con scroll */
+.table-scroll-wrapper {
+  flex-grow: 1; /* Ocupa el espacio restante */
+  overflow-y: auto; /* Habilita el scroll vertical */
+  scrollbar-width: none; /* Oculta la barra de desplazamiento en Firefox */
+  -ms-overflow-style: none; /* Oculta la barra de desplazamiento en IE y Edge */
+   height: 45vh; /* Reducido para no sobrepasar el campo visual */
+}
+
+.table-scroll-wrapper::-webkit-scrollbar {
+  display: none; /* Oculta la barra de desplazamiento en Chrome, Safari y Opera */
+}
+
+.product-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.product-table th,
+.product-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.product-table th {
+  position: sticky; /* Encabezados fijos */
+  top: 0; /* Se pegan en la parte superior */
+  background-color: #f2f2f2; /* Fondo para que no se vea el contenido de abajo */
+  font-weight: bold;
+  z-index: 1; /* Asegura que esté por encima del cuerpo de la tabla */
+}
+
+.back-button-table {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.back-button-table:hover {
+  background-color: #5a6268;
 }
