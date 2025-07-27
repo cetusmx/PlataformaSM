@@ -279,3 +279,192 @@
 .back-button-table:hover {
   background-color: #5a6268;
 }
+
+/* InventariosActivos.css */
+
+/* ... (tus estilos existentes) ... */
+
+.product-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 20px;
+  /* Asegúrate de que el ancho sea apropiado, por ejemplo: width: 100%; */
+}
+
+.product-table-header .header-left,
+.product-table-header .header-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.product-table-header .header-left {
+  justify-content: flex-start;
+}
+
+.product-table-header .header-center {
+  flex: 2;
+  text-align: center;
+  margin: 0 10px;
+}
+
+.product-table-header .header-center h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.5em;
+}
+
+.product-table-header .header-right {
+  justify-content: flex-end;
+}
+
+/* Estilos base para los botones de navegación y tabla */
+/* Aplicamos estilos comunes a nav-button, back-button-table y adjust-line-table-button */
+.nav-button,
+.back-button-table,
+.adjust-line-table-button {
+  padding: 10px 15px;
+  border: 1px solid #007bff; /* Borde similar al nav-button */
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: bold; /* Generalmente los botones de acción son un poco más bold */
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+/* Estilo para el botón "Ver Todos los Productos Contados" (nav-button) */
+.nav-button {
+  background-color: #007bff; /* Azul primario */
+  color: white;
+}
+
+.nav-button:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+/* Estilo para el botón "Volver" en la tabla */
+.back-button-table {
+  background-color: transparent; /* Fondo transparente */
+  color: #007bff; /* Color de texto azul */
+  border: 1px solid #007bff; /* Borde azul */
+}
+
+.back-button-table:hover {
+  background-color: #007bff; /* Fondo azul al pasar el ratón */
+  color: white; /* Texto blanco al pasar el ratón */
+}
+
+/* Estilo para el botón "Línea Ajustada" en la tabla */
+.adjust-line-table-button {
+  background-color: #007bff; /* Azul primario, igual que nav-button */
+  color: white;
+  border: 1px solid #007bff; /* Borde azul */
+}
+
+.adjust-line-table-button:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+/* Asegúrate de que los íconos dentro de los botones se vean bien */
+.back-button-table svg,
+.adjust-line-table-button svg,
+.nav-button svg {
+  font-size: 1.1em;
+}
+
+/* ... el resto de tus estilos ... */
+/* Estilos para el modal de confirmación */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6); /* Fondo semi-transparente oscuro */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Asegura que esté por encima de otros elementos */
+}
+
+.modal-content {
+  background-color: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 90%;
+  max-width: 400px; /* Ancho máximo para el modal */
+}
+
+.modal-content h4 {
+  margin-top: 0;
+  color: #333;
+  font-size: 1.5em;
+  margin-bottom: 15px;
+}
+
+.modal-content p {
+  color: #555;
+  font-size: 1.1em;
+  line-height: 1.5;
+  margin-bottom: 30px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px; /* Espacio entre los botones */
+}
+
+.modal-button {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: bold;
+  transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+}
+
+.modal-button.cancel-button {
+  background-color: #6c757d; /* Gris para cancelar */
+  color: white;
+}
+
+.modal-button.cancel-button:hover {
+  background-color: #5a6268;
+  transform: translateY(-1px);
+}
+
+.modal-button.confirm-button {
+  background-color: #007bff; /* Azul para aceptar */
+  color: white;
+}
+
+.modal-button.confirm-button:hover {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+}
+
+.linea-card.adjusted {
+  background-color: #fff8e9; /* Naranja claro */
+  border-left: 5px solid #f54900; /* Naranja oscuro */
+   cursor: not-allowed;
+}
+.linea-card.adjusted .icon-check {
+  color: #f54900;
+}
+.linea-card.counted {
+  background-color: #e6ffe6; /* Verde muy claro */
+  border-left: 5px solid #28a745; /* Verde */
+}
