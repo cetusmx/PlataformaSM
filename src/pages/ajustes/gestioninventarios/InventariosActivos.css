@@ -152,11 +152,6 @@
   cursor: pointer; /* Añadido para indicar que es clickeable */
 }
 
-.linea-card.counted {
-  background-color: #e8f5e9; /* verde claro */
-  border-left: 5px solid #4caf50; /* borde verde */
-}
-
 .linea-info h4 {
   margin: 0 0 3px;
   font-size: 1em; /* Tamaño de letra más pequeño para Linea */
@@ -172,8 +167,32 @@
 /* .linea-status .icon-check {
   color: #4caf50;
 } */
+/* .linea-card.counted {
+  background-color: #e8f5e9; 
+  border-left: 5px solid #4caf50; 
+} */
+
 .linea-card.counted .icon-check {
+  /* color: #347F38; */
+  color: #f54900;
+}
+.linea-card.adjusted .icon-check {
+  /* color: #f54900; */
   color: #347F38;
+}
+.linea-card.adjusted {
+  /* background-color: #fff8e9; 
+  border-left: 5px solid #f54900; */ 
+  background-color: #e6ffe6; /* Verde muy claro */
+  border-left: 5px solid #28a745; /* Verde */
+   cursor: not-allowed;
+}
+
+.linea-card.counted {
+   background-color: #fff8e9; 
+  border-left: 5px solid #f54900;
+  /* background-color: #e6ffe6; 
+  border-left: 5px solid #28a745; */ 
 }
 
 .inventario-details-container .back-button {
@@ -516,17 +535,4 @@
 .modal-button.confirm-button:hover {
   background-color: #0056b3;
   transform: translateY(-1px);
-}
-
-.linea-card.adjusted {
-  background-color: #fff8e9; /* Naranja claro */
-  border-left: 5px solid #f54900; /* Naranja oscuro */
-   cursor: not-allowed;
-}
-.linea-card.adjusted .icon-check {
-  color: #f54900;
-}
-.linea-card.counted {
-  background-color: #e6ffe6; /* Verde muy claro */
-  border-left: 5px solid #28a745; /* Verde */
 }
