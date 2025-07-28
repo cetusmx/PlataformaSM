@@ -397,65 +397,92 @@ const InventarioDetails = ({ inventario, onBack }) => {
       <div className="inventario-header">
         <h3>Inventario ID: {inventario.InventarioID}</h3>
         <div className="inventario-header-details">
-          <p><strong>Ciudad:</strong> {inventario.Ciudad}</p>
-          <p><strong>Auditor:</strong> {inventario.Auditor}</p>
-          <p><strong>No. de Líneas:</strong> {lineas.length}</p>
-          <p><strong>Productos:</strong> {inventario.qtyProductos}</p>
+          <p>
+            <strong>Ciudad:</strong> {inventario.Ciudad}
+          </p>
+          <p>
+            <strong>Auditor:</strong> {inventario.Auditor}
+          </p>
+          <p>
+            <strong>No. de Líneas:</strong> {lineas.length}
+          </p>
+          <p>
+            <strong>Productos:</strong> {inventario.qtyProductos}
+          </p>
         </div>
       </div>
-      
-      {viewMode === 'lines' && (
+
+      {viewMode === "lines" && (
         <div className="navigation-buttons">
           <button className="nav-button" onClick={handleViewAllProducts}>
-            Ver Todos los Productos Contados
+            Ver Todos Productos Contados
+          </button>
+          <button style={{width: "100%"}} onClick={onBack} className="back-button">
+            <BiArrowBack /> Regresar a Inventarios
           </button>
         </div>
       )}
 
-      {viewMode === 'lineProducts' ? (
-        <div style={{ display: 'flex', width: '100%' }}>
-          <div className="lineas-scroll-container" style={{ width: '70%' }}>
+      {viewMode === "lineProducts" ? (
+        <div style={{ display: "flex", width: "100%" }}>
+          <div className="lineas-scroll-container" style={{ width: "70%" }}>
             {renderContent()}
           </div>
-          <div style={{ width: '30%', padding: '20px', boxSizing: 'border-box', display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}>
+          <div
+            style={{
+              width: "30%",
+              padding: "20px",
+              boxSizing: "border-box",
+              display: "flex",
+              alignItems: "flex-start",
+              justifyContent: "center",
+            }}
+          >
             {selectedLinea && (
               <img
                 src={`${process.env.PUBLIC_URL}/Perfiles/${selectedLinea.Linea}.jpg`}
                 alt={`Imagen de la línea ${selectedLinea.Linea}`}
                 style={{
-                  width: '80%',
-                  maxHeight: '300px',
-                  height: 'auto',
-                  border: '1px solid #ddd',
-                  borderRadius: '4px',
-                  padding: '5px',
+                  width: "80%",
+                  maxHeight: "300px",
+                  height: "auto",
+                  border: "1px solid #ddd",
+                  borderRadius: "4px",
+                  padding: "5px",
                 }}
                 onError={(e) => {
-                  e.target.style.display = 'none';
+                  e.target.style.display = "none";
                 }}
               />
             )}
           </div>
         </div>
       ) : (
-        <div className="lineas-scroll-container">
-          {renderContent()}
-        </div>
+        <div className="lineas-scroll-container">{renderContent()}</div>
       )}
-
-      <button onClick={onBack} className="back-button">
-        <BiArrowBack /> Regresar a Inventarios
-      </button>
 
       {/* Confirmation Modal */}
       {showConfirmModal && (
         <div className="modal-overlay">
           <div className="modal-content">
             <h4>Confirmación de Ajuste de Línea</h4>
-            <p>Estás seguro de que deseas ajustar el estatus de esta línea y descargar sus datos?</p>
+            <p>
+              Estás seguro de que deseas ajustar el estatus de esta línea y
+              descargar sus datos?
+            </p>
             <div className="modal-actions">
-              <button onClick={handleCancelAdjustment} className="modal-button cancel-button">Cancelar</button>
-              <button onClick={handleConfirmAdjustment} className="modal-button confirm-button">Aceptar</button>
+              <button
+                onClick={handleCancelAdjustment}
+                className="modal-button cancel-button"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleConfirmAdjustment}
+                className="modal-button confirm-button"
+              >
+                Aceptar
+              </button>
             </div>
           </div>
         </div>
@@ -484,7 +511,7 @@ const InventarioCard = ({ inventario, onViewDetails }) => {
       onClick={() => onViewDetails(inventario)}
     >
       <div className="card-icon">
-        <BiBox size={40} color="#007bff" />
+        <BiBox size={24} color="#007bff" />
       </div>
       <div className="card-info">
         <h3>Inventario ID: {InventarioID}</h3>

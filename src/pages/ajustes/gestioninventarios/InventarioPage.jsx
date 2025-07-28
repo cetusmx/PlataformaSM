@@ -49,7 +49,7 @@ const InventariosPage = () => {
 
   return (
     <div className="inventarios-management-container">
-      <InventarioNavBar onSelectTab={handleTabChange} />
+      <InventarioNavBar onSelectTab={handleTabChange} activeTab={currentView} />
       <div className="inventarios-content-area">
         {renderContent()}
       </div>

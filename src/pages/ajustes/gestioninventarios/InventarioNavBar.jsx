@@ -1,12 +1,10 @@
 // src/components/InventarioNavBar.js
-import React, { useState } from 'react';
+import React from 'react';
 import './InventarioNavBar.css'; // Archivo CSS para los estilos
 
-const InventarioNavBar = ({ onSelectTab }) => {
-  const [activeTab, setActiveTab] = useState('activos'); // Estado para la pestaña activa
+const InventarioNavBar = ({ onSelectTab, activeTab }) => {
 
   const handleTabClick = (tabName) => {
-    setActiveTab(tabName);
     onSelectTab(tabName); // Llama a la función prop para comunicar el cambio al componente padre
   };
 
