@@ -371,8 +371,7 @@
 /* Estilos base para los botones de navegación y tabla */
 /* Aplicamos estilos comunes a nav-button, back-button-table y adjust-line-table-button */
 .nav-button,
-.back-button-table,
-.adjust-line-table-button {
+.back-button-table {
   border: 1px solid #007bff; /* Borde similar al nav-button */
   border-radius: 5px;
   cursor: pointer;
@@ -410,9 +409,26 @@
 
 /* Estilo para el botón "Línea Ajustada" en la tabla */
 .adjust-line-table-button {
-  background-color: #007bff; /* Azul primario, igual que nav-button */
+  background-color: #007bff; 
   color: white;
-  border: 1px solid #007bff; /* Borde azul */
+  border: 1px solid #007bff; 
+  padding: 7px 10px;
+  gap: 5px;
+  border-radius: 5px;
+}
+
+.header-right .download-button {
+  background-color: #007bff; 
+  color: white;
+  border: 1px solid #007bff; 
+  padding: 7px 10px;
+  border-radius: 5px;
+  margin-left: 10px; /* Añadir margen a la izquierda */
+}
+
+.header-right .download-button:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
 }
 
 .adjust-line-table-button:hover {

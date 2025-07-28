@@ -1,11 +1,19 @@
 // src/components/InventariosActivos.js
 import React, { useState, useEffect } from "react";
 // Importa BiCheckDouble junto con los otros íconos
-import { BiBox, BiCheck, BiArrowBack, BiCheckDouble } from "react-icons/bi"; 
+import { BiBox, BiCheck, BiArrowBack, BiCheckDouble, BiDownload } from "react-icons/bi"; 
 import "./InventariosActivos.css";
 
 // Componente mejorado para mostrar productos en una tabla
-const ProductTable = ({ products, onBack, viewTitle, columns, onAdjustLineClick, showAdjustButton }) => (
+const ProductTable = ({
+  products,
+  onBack,
+  viewTitle,
+  columns,
+  onAdjustLineClick,
+  showAdjustButton,
+  onDownload, // Nueva prop
+}) => (
   <div className="product-table-container">
     <div className="product-table-header">
       <div className="header-left">
@@ -26,10 +34,15 @@ const ProductTable = ({ products, onBack, viewTitle, columns, onAdjustLineClick,
             Línea Ajustada
           </button>
         )}
+        {viewTitle === "Todos los Productos Contados" ? (
+          <button onClick={onDownload} className="download-button" title="Descargar"> <BiDownload style={{fontSize: "1.3em"}}/> Descargar</button>
+        ) : null}
       </div>
     </div>
     {products.length > 0 ? (
-      <div className="table-scroll-wrapper"> {/* Contenedor para el scroll */}
+      <div className="table-scroll-wrapper">
+        {" "}
+        {/* Contenedor para el scroll */}
         <table className="product-table">
           <thead>
             <tr>
@@ -378,6 +391,7 @@ const InventarioDetails = ({ inventario, onBack }) => {
             columns={ALL_COUNTED_PRODUCTS_COLUMNS}
             onAdjustLineClick={handleLineaAjustada}
             showAdjustButton={false}
+            onDownload={exportTableDataToCsv} // Pasar la función de descarga
           />
         );
       case 'lines':
