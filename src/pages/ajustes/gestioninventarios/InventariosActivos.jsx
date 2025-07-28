@@ -431,6 +431,7 @@ const InventarioDetails = ({ inventario, onBack }) => {
           <button className="nav-button" onClick={handleViewAllProducts}>
             Ver Todos Productos Contados
           </button>
+          <h4>Líneas</h4>
           <button style={{width: "100%"}} onClick={onBack} className="back-button">
             <BiArrowBack /> Regresar a Inventarios
           </button>

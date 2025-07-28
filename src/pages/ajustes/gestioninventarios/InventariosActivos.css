@@ -222,8 +222,9 @@
 /* Estilos para los botones de navegación */
 .navigation-buttons {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* Define 4 columnas iguales */
-  gap: 10px; /* Espacio entre las columnas */
+  /* grid-template-columns: repeat(4, 1fr); */ /* Define 4 columnas iguales */
+  grid-template-columns: 1fr 2fr 1fr; /* Define 4 columnas iguales */
+  gap: 15px; /* Espacio entre las columnas */
   width: 100%;
   margin-bottom: 10px;
   align-items: center; /* Centra verticalmente los elementos de la cuadrícula (los botones) */
@@ -238,6 +239,16 @@
   transition: background-color 0.3s ease;
   width: 100%; /* Añadido: Los botones ocuparán el 100% del ancho de su columna */
   height: 42px; /* Nuevo: Altura fija para ambos botones */
+}
+
+.navigation-buttons h4 {
+   grid-column: 2; /* Ubica en la primera columna */
+  display: flex;
+  /* align-items: center; */
+  justify-content: center;
+  font-size: 1.3em;
+  padding-top: 13px;
+  margin-bottom: -3px;
 }
 
 /* Estilo para el botón "Ver Todos Prods Contados" (nav-button) */
@@ -265,7 +276,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  grid-column: 4; /* Ubica en la cuarta columna */
+  grid-column: 3; /* Ubica en la cuarta columna */
   margin-top: -2px; /* Ajuste para compensar el padding superior y alinear */
 }
 
