@@ -282,7 +282,7 @@ const InventarioDetails = ({ inventario, onBack }) => {
       };
 
       try {
-        const response = await fetch('http://75.119.150.222:3002/lineaajustada', {
+        const response = await fetch('http://75.119.150.222:3002/api/v1/lineaajustada', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
