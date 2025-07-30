@@ -1,7 +1,7 @@
 // src/components/InventariosActivos.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 // Importa BiCheckDouble junto con los otros íconos
-import { BiBox, BiCheck, BiArrowBack, BiCheckDouble, BiDownload } from "react-icons/bi"; 
+import { BiBox, BiCheck, BiArrowBack, BiCheckDouble, BiDownload } from "react-icons/bi";
 import "./InventariosActivos.css";
 
 // Componente mejorado para mostrar productos en una tabla
@@ -91,13 +91,13 @@ const ALL_COUNTED_PRODUCTS_COLUMNS = [
 ];
 
 const LineaCard = ({ linea, onClick }) => {
-  const { Linea, NombreLinea, qtyProductosLinea, isCounted, isAdjusted } = linea; 
-  
+  const { Linea, NombreLinea, qtyProductosLinea, isCounted, isAdjusted } = linea;
+
   // Lógica para aplicar la clase CSS correctamente
   let cardClassName = "linea-card";
   if (isAdjusted) {
       cardClassName += " adjusted"; // Si está ajustada, solo aplica la clase 'adjusted'
-  } else if (isCounted) { 
+  } else if (isCounted) {
       cardClassName += " counted"; // Si no está ajustada pero sí contada, aplica la clase 'counted'
   }
 
@@ -113,8 +113,8 @@ const LineaCard = ({ linea, onClick }) => {
 
   return (
     // Condicionamos el onClick: si isAdjusted es true, no se asigna la función onClick.
-    <div 
-      className={cardClassName} 
+    <div
+      className={cardClassName}
       onClick={isAdjusted ? null : () => onClick(linea)} // La tarjeta no es clickeable si está ajustada
       title={tooltipText} // Añadimos el tooltip
     >
@@ -142,38 +142,40 @@ const InventarioDetails = ({ inventario, onBack }) => {
   const [error, setError] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false); // State for modal visibility
 
-  // Fetch inicial para las líneas del inventario
-  useEffect(() => {
-    const fetchLineas = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(
-          `http://75.119.150.222:3001/getlineasinvresumen?InventarioID=${inventario.InventarioID}&auditor=${inventario.Auditor}`
-        );
-        if (!response.ok) throw new Error('Error al cargar líneas');
-        let data = await response.json();
-        
-        // Ensure data is an array and sort it alphabetically by NombreLinea
-        if (Array.isArray(data)) {
-          data.sort((a, b) => {
-            const nameA = a.NombreLinea ? a.NombreLinea.toUpperCase() : '';
-            const nameB = b.NombreLinea ? b.NombreLinea.toUpperCase() : '';
-            if (nameA < nameB) return -1;
-            if (nameA > nameB) return 1;
-            return 0;
-          });
-          setLineas(data);
-        } else {
-          setLineas([]);
-        }
-      } catch (e) {
-        setError("No se pudieron cargar las líneas.");
-      } finally {
-        setLoading(false);
+  // Función para cargar las líneas del inventario
+  const refreshLineas = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `http://75.119.150.222:3001/getlineasinvresumen?InventarioID=${inventario.InventarioID}&auditor=${inventario.Auditor}`
+      );
+      if (!response.ok) throw new Error('Error al cargar líneas');
+      let data = await response.json();
+
+      if (Array.isArray(data)) {
+        data.sort((a, b) => {
+          const nameA = a.NombreLinea ? a.NombreLinea.toUpperCase() : '';
+          const nameB = b.NombreLinea ? b.NombreLinea.toUpperCase() : '';
+          if (nameA < nameB) return -1;
+          if (nameA > nameB) return 1;
+          return 0;
+        });
+        setLineas(data);
+      } else {
+        setLineas([]);
       }
-    };
-    fetchLineas();
-  }, [inventario.InventarioID, inventario.Auditor]);
+    } catch (e) {
+      setError("No se pudieron cargar las líneas.");
+    } finally {
+      setLoading(false);
+    }
+  }, [inventario.InventarioID, inventario.Auditor]); // Dependencies for useCallback
+
+  // Fetch inicial para las líneas del inventario al montar o cambiar inventario
+  useEffect(() => {
+    refreshLineas();
+  }, [refreshLineas]); // Depend on refreshLineas to re-run when its dependencies change
 
   // Handler para ver todos los productos
   const handleViewAllProducts = async () => {
@@ -245,12 +247,13 @@ const InventarioDetails = ({ inventario, onBack }) => {
       setLoading(false);
     }
   };
-  
+
   const resetView = () => {
     setViewMode('lines');
     setSelectedLinea(null);
     setProducts([]);
     setError(null);
+    refreshLineas(); // Call to refresh the lines data
   };
 
   // Handler para mostrar el modal de confirmación
@@ -267,7 +270,7 @@ const InventarioDetails = ({ inventario, onBack }) => {
   // Handler para aceptar en el modal y descargar la tabla + llamar a la API
   const handleConfirmAdjustment = async () => {
     setShowConfirmModal(false); // Close the modal
-    
+
     // 1. Descargar el contenido de la tabla
     exportTableDataToCsv();
 
@@ -296,7 +299,7 @@ const InventarioDetails = ({ inventario, onBack }) => {
 
         const result = await response.json();
         console.log('Línea ajustada con éxito en el sistema:', result);
-        
+
         // Actualizar el estado de la línea localmente, incluyendo isAdjusted
         setLineas(prevLineas => prevLineas.map(line =>
           line.Linea === selectedLinea.Linea ? { ...line, isCounted: true, isAdjusted: true } : line
@@ -311,7 +314,7 @@ const InventarioDetails = ({ inventario, onBack }) => {
       console.warn("No hay línea seleccionada para ajustar.");
     }
     console.log(`Línea ${selectedLinea?.Linea} marcada para ajuste y datos descargados.`);
-    
+
     resetView(); // Navigate back to the previous view after actions
   };
 
@@ -337,14 +340,17 @@ const InventarioDetails = ({ inventario, onBack }) => {
       exportColumns.map(col => {
         const value = row[col.accessor];
         // Enclose values with commas or newlines in quotes
+        // Also, convert value to string to ensure replace method works
         return typeof value === 'string' && (value.includes(',') || value.includes('\n') || value.includes('"'))
           ? `"${value.replace(/"/g, '""')}"` // Escape double quotes
-          : value;
+          : String(value); // Convert to string for consistent output
       }).join(',')
     );
 
     const csvContent = [header, ...rows].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    // Prepend the BOM to the CSV content to ensure correct UTF-8 interpretation by Excel
+    const BOM = "\ufeff"; // UTF-8 Byte Order Mark
+    const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
     const fileName = `Linea_${selectedLinea?.Linea || 'TodosProductos'}_${inventario.InventarioID}.csv`;
 
     // Create a temporary link element to trigger the download
@@ -568,62 +574,67 @@ const InventariosActivos = () => {
   const [error, setError] = useState(null);
   const [selectedInventario, setSelectedInventario] = useState(null);
 
-  useEffect(() => {
+  // Función para cargar los inventarios activos, ahora como useCallback
+  const fetchInventarios = useCallback(async () => {
+    setLoading(true);
+    setError(null);
     const controller = new AbortController();
     const timeoutId = setTimeout(() => {
       controller.abort();
       setError("La solicitud ha tardado demasiado y ha sido cancelada.");
       setLoading(false);
-    }, 8000);
+    }, 8000); // 8 seconds timeout
 
-    const fetchInventarios = async () => {
-      try {
-        const response = await fetch(
-          "http://75.119.150.222:3001/getresumeninventariosweb",
-          { signal: controller.signal }
-        );
+    try {
+      const response = await fetch(
+        "http://75.119.150.222:3001/getresumeninventariosweb",
+        { signal: controller.signal }
+      );
 
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        if (Array.isArray(data)) {
-          setInventarios(data);
-        } else {
-          setInventarios([]);
-        }
-      } catch (e) {
-        if (e.name === "AbortError") {
-          console.log("Fetch abortado");
-        } else {
-          console.error("Error fetching inventarios:", e);
-          setError(
-            "No se pudieron cargar los inventarios. Inténtalo de nuevo más tarde."
-          );
-        }
-      } finally {
-        if (!controller.signal.aborted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchInventarios();
-
-    return () => {
       clearTimeout(timeoutId);
-      controller.abort();
-    };
-  }, []);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        setInventarios(data);
+      } else {
+        setInventarios([]);
+      }
+    } catch (e) {
+      if (e.name === "AbortError") {
+        console.log("Fetch abortado");
+      } else {
+        console.error("Error fetching inventarios:", e);
+        setError(
+          "No se pudieron cargar los inventarios. Inténtalo de nuevo más tarde."
+        );
+      }
+    } finally {
+      // Solo establecemos loading a false si la solicitud no fue abortada por timeout
+      // La lógica del timeout ya maneja el loading a false si se aborta.
+      if (!controller.signal.aborted) {
+        setLoading(false);
+      }
+    }
+  }, []); // No dependencies for the fetch logic itself, as it manages its own AbortController
+
+  // Carga inicial de inventarios al montar el componente
+  useEffect(() => {
+    fetchInventarios();
+    // No necesitamos una función de limpieza específica aquí para AbortController
+    // porque fetchInventarios() ya gestiona su propio controller y timeout por llamada.
+  }, [fetchInventarios]); // Depend on fetchInventarios to re-run when its dependencies change
 
   const handleViewDetails = (inventario) => {
     setSelectedInventario(inventario);
   };
 
+  // Modificado para refrescar las tarjetas de inventarios
   const handleBack = () => {
-    setSelectedInventario(null);
+    setSelectedInventario(null); // Vuelve a la vista de tarjetas de inventarios
+    fetchInventarios(); // Refresca los datos de los inventarios
   };
 
   if (loading) {
