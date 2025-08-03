@@ -7,6 +7,7 @@ import TablaNoRegistradas from "./admon/siembra/TablaNoRegistradas";
 
 const ClavesNoRegistradas = () => {
   const urlServidorAPI = "http://75.119.150.222:3001";
+  const urlServidorAPI2 = "http://75.119.150.222:3002/api/v1";
   const [clavesNoRegistradas, setClavesNoRegistradas] = useState([]);
 
   useEffect(() => {
@@ -38,8 +39,8 @@ const ClavesNoRegistradas = () => {
     const confirmacion = window.confirm(`¿Estás seguro de que deseas actualizar la clave ${clave}?`);
     if (confirmacion) {
       try {
-        await Axios.post(urlServidorAPI + `/actualizanoregistrados`, {
-          clave: clave,
+        await Axios.put(urlServidorAPI2 + `/products/${clave}`, {
+          estatus: "Actualizado",
         });
         setClavesNoRegistradas((prevClaves) =>
           prevClaves.filter((row) => row.clave !== clave)
