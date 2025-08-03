@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Axios from "axios";
-import Table from "../components/table";
 import * as XLSX from "xlsx";
 import "../styles/clavesnoregistradas.css";
 import { BiDownload } from "react-icons/bi";
@@ -15,10 +14,42 @@ const ClavesNoRegistradas = () => {
   }, []);
 
   const getClavesNoRegistradas = async () => {
-    await Axios.get(urlServidorAPI + `/getclavesnoreg`).then((response) => {
-      setClavesNoRegistradas(response.data);
-      console.log(response.data);
-    });
+    try {
+      const response = await Axios.get(urlServidorAPI + `/getclavesnoreg`);
+      // Ordena los datos por la fecha de manera descendente (más reciente primero)
+      const sortedData = response.data.sort((a, b) => {
+        // Corrección: parsea la fecha manualmente para el formato dd-mm-yyyy
+        const [dayA, monthA, yearA] = a.fecha.split('-');
+        const dateA = new Date(`${yearA}-${monthA}-${dayA}`);
+        
+        const [dayB, monthB, yearB] = b.fecha.split('-');
+        const dateB = new Date(`${yearB}-${monthB}-${dayB}`);
+
+        return dateB - dateA;
+      });
+      setClavesNoRegistradas(sortedData);
+      console.log(sortedData);
+    } catch (error) {
+      console.error("Error al obtener las claves no registradas:", error);
+    }
+  };
+
+  const handleActualizar = async (clave) => {
+    const confirmacion = window.confirm(`¿Estás seguro de que deseas actualizar la clave ${clave}?`);
+    if (confirmacion) {
+      try {
+        await Axios.post(urlServidorAPI + `/actualizanoregistrados`, {
+          clave: clave,
+        });
+        setClavesNoRegistradas((prevClaves) =>
+          prevClaves.filter((row) => row.clave !== clave)
+        );
+        alert(`Clave ${clave} actualizada correctamente.`);
+      } catch (error) {
+        console.error("Error al actualizar el estatus:", error);
+        alert("Hubo un error al actualizar el estatus.");
+      }
+    }
   };
 
   const descargar = () => {
@@ -34,15 +65,18 @@ const ClavesNoRegistradas = () => {
         <div className="control-botones-clavesnoreg">
           <div className="borrar">
             <BiDownload className="icon2" onClick={() => descargar()} />
-              <h7 id="descargarF" onClick={()=>descargar()} >Descargar</h7>
+            <h7 id="descargarF" onClick={() => descargar()}>
+              Descargar
+            </h7>
           </div>
         </div>
-        
       </div>
-      {/* <div className="encabezado-noregistradas"><h5>Tabla de datos</h5></div> */}
       <div className="tabla-noregistrada">
-        <p>La columna Clave fue capturada manualmente durante la recepción de mercancía.</p>
-        <TablaNoRegistradas rows={clavesNoRegistradas} />
+        <p>
+          La columna Clave fue capturada manualmente durante la recepción de
+          mercancía.
+        </p>
+        <TablaNoRegistradas rows={clavesNoRegistradas} onActualizar={handleActualizar} />
       </div>
     </div>
   );
