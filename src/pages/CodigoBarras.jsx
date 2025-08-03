@@ -202,11 +202,11 @@ const CodigoBarras = () => {
         const canti = producto[j].getAttribute("Cantidad");
         const noId = producto[j].getAttribute("NoIdentificacion");
         let partida = { cantidad: canti, producto: noId, clave: "" };
-        //console.log(partida);
+        console.log("Partida ",partida);
         productos.push(partida);
       }
-      setListaProductos(productos);
-      //console.log(productos);
+      setListaProductos(productos.filter(p => p.producto !== "F-01"));
+      console.log("Después de setListaProductos ",productos);
 
       for (let i = 0; i < emisor.length; i++) {
         setRfc(emisor[i].getAttribute("Rfc"));
@@ -631,13 +631,12 @@ const CodigoBarras = () => {
                     <table className="table table-striped">
                       <thead>
                         <tr>
-                          <th style={{ textAlign: "center" }} scope="col">
+                          <th style={{  width: "20%", textAlign: "center" }} scope="col">
                             Cantidad
                           </th>
                           <th scope="col">Clave Proveedor</th>
                           <th scope="col">Clave</th>
-                          <th scope="col"></th>
-                          <th scope="col"></th>
+                          <th style={{ width: "20%" }} scope="col"></th>
                         </tr>
                       </thead>
                       <tbody>
@@ -652,7 +651,7 @@ const CodigoBarras = () => {
                               </td>
                               <td className="td-table-cb">{val.producto}</td>
                               <td className="td-table-cb">{val.clave}</td>
-                              <td className="td-table-cb">
+                              <td style={{ textAlign: "center"}} >
                                 {val.clave !== "No-registrada" ? (
                                   <OverlayTrigger
                                     placement="top"
