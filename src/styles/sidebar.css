@@ -6,12 +6,16 @@
 }
 .logo{
     text-align: center;
-    padding: 20px;
+    padding: 10px;
     color: #27374d;
-    /*justify-content: center;
-    align-items: center;*/
+    /* justify-content: center; */
+    align-items: center;
     display: flex;
-    gap: 20px;
+    gap: 10px;
+}
+
+.logo h4 {
+    margin: 0;
 }
 .logo-icon{
     font-size: 1.8rem;
@@ -38,4 +42,8 @@
 .menu--list .item:hover{
     background: #27374d;
     color: #dde6ed;
+}
+.logo-image {
+  width: 50px; /* Adjust the width as needed */
+  height: 50px; /* Maintain aspect ratio */
 }

@@ -103,3 +103,7 @@
   display: inline-block;
   width: 1.7em;
 }
+.logo-image {
+  width: 50px; /* Adjust the width as needed */
+  height: 50px; /* Maintain aspect ratio */
+}

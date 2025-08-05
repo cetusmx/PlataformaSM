@@ -10,6 +10,7 @@ import "../styles/sidebar.css";
 import { getAuth, signOut } from "firebase/auth";
 import { DataContext } from "../contexts/dataContext";
 import { Link } from "react-router-dom";
+import logoImage from "../assets/Logo3tr.png";
 
 const SidebarSop = () => {
   
@@ -31,7 +32,8 @@ const SidebarSop = () => {
   return (
     <div className="menu">
       <div className="logo">
-        <BiBookAlt className="logo-icon" />
+        <img src={logoImage} alt="Logo" className="logo-image" />
+        {/* <BiBookAlt className="logo-icon" /> */}
         <h4 style={{padding:0}}>Seal Market</h4>
       </div>
 
