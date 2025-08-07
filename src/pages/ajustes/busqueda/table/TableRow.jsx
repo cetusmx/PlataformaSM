@@ -2,7 +2,7 @@ import React from "react";
 
 const TableRow = ({ producto }) => {
   return (
-    <tr>
+    <tr style={{border:"none", background: "#27769eff", padding:"10px"}}>
       <td colSpan={10}>
         <div
           className="div-appears"
@@ -16,35 +16,35 @@ const TableRow = ({ producto }) => {
             borderRadius: "10px",
           }} */
         >
-          <table className="table table-striped">
+          <table style={{borderRadius:"5px", border:"none"}} className="table">
             <thead style={{ fontWeight: "400" }}>
               <th
                 className="td-center-buscadorUI"
-                style={{ fontSize: "0.9rem", fontWeight: "500" }}
+                style={{ fontSize: "0.8rem", fontWeight: "500" }}
               >
                 Perfil
               </th>
               <th
                 className="td-center-buscadorUI"
-                style={{ fontSize: "0.9rem", fontWeight: "500" }}
+                style={{ fontSize: "0.8rem", fontWeight: "500" }}
               >
                 Clave fabricante
               </th>
               <th
                 className="td-center-buscadorUI"
-                style={{ fontSize: "0.9rem", fontWeight: "500" }}
+                style={{ fontSize: "0.8rem", fontWeight: "500" }}
               >
                 Clave SYR
               </th>
               <th
                 className="td-center-buscadorUI"
-                style={{ fontSize: "0.9rem", fontWeight: "500" }}
+                style={{ fontSize: "0.8rem", fontWeight: "500" }}
               >
                 Clave LC
               </th>
               <th
                 className="td-center-buscadorUI"
-                style={{ fontSize: "0.9rem", fontWeight: "500" }}
+                style={{ fontSize: "0.8rem", fontWeight: "500" }}
               >
                 Clave anterior
               </th>

@@ -34,7 +34,7 @@ const SidebarSop = () => {
       <div className="logo">
         <img src={logoImage} alt="Logo" className="logo-image" />
         {/* <BiBookAlt className="logo-icon" /> */}
-        <h4 style={{padding:0, margin: 0}}>Seal Market</h4>
+        <h4 style={{padding:0}}>Seal Market</h4>
       </div>
 
       <div className="menu--list">

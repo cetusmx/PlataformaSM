@@ -2,12 +2,13 @@ import React from "react";
 import TableRow from "./TableRow";
 import ExpendableButton from "./ExpendableButton";
 import useOpenController from "./hooks/useOpenController";
+import "../../.././ajustes/busqueda/buscadorUI.css";
 
 const TableSection = ({ producto, index }) => {
   const { isOpenNew, toggle } = useOpenController(false);
   return (
     <tbody style={{ paddingTop: "20px" }}>
-      <tr>
+      <tr style={{borderBottom: "1px solid #dedede"}}>
         <td className="td-center-buscadorUI">
           <ExpendableButton isOpenNew={isOpenNew} toggle={toggle} />
         </td>

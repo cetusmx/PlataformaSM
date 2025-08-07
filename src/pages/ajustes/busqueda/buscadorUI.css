@@ -44,8 +44,8 @@
   width: 100px;
 }
 .imagen-busqueda-ui {
-  height: 60px;
-  width: 60px;
+  height: 50px;
+  width: 50px;
 }
 .datos-vista-previa {
   display: flex;
@@ -100,6 +100,8 @@
 .td-center-buscadorUI {
   text-align: center;
   vertical-align: middle;
+  padding: 10px 0;
+  border: none;
 }
 .centrando-contenido {
   /* display: table; */

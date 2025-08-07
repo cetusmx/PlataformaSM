@@ -53,11 +53,6 @@ const TablaResultadosBusqueda = ({ datos }) => {
                   onClick={() => handleClick(index)}
                 >
                   <td>
-                    {/* <img
-                      src={`${process.env.PUBLIC_URL}/${row.linea}.jpg`}
-                      alt="logo"
-                      className="img-fluid rounded-start imagen-busqueda"
-                    /> */}
                   </td>
                   <td>{row.clave}</td>
                   <td>{row.diametrointerior}</td>
@@ -198,69 +193,6 @@ const TablaResultadosBusqueda = ({ datos }) => {
           </tbody>
         </table>
       </div>
-      {/* <div
-        className="card mb-2"
-        style={{
-          width: "100%",
-          fontSize: "0.8rem",
-          paddingRight: "1%",
-        }}
-      >
-        <div className="row g-0">
-          <div className="col-md-12">
-            <div>
-              {/* <div className="datos-vista-previa">
-                <div className="campos-vista-previa col-md-1">
-                  <img
-                    src={`${process.env.PUBLIC_URL}/${linea}.jpg`}
-                    alt="logo"
-                    className="img-fluid rounded-start imagen-busqueda"
-                  />
-                </div>
-                <div className="campos-vista-previa col-md-2">
-                  <h7>Clave</h7>
-                  <h7 className="titulo-tabla-resultados">{clave}</h7>
-                </div>
-                <div className="campos-vista-previa col-md-1">
-                  <h7>Diám. int.</h7>
-                  <h7 className="titulo-tabla-resultados">{di}</h7>
-                </div>
-                <div className="campos-vista-previa col-md-1">
-                  <h7>Diám. ext.</h7>
-                  <h7 className="titulo-tabla-resultados">{de}</h7>
-                </div>
-                <div className="campos-vista-previa col-md-1">
-                  <h7>Altura</h7>
-                  <h7 className="titulo-tabla-resultados">{al}</h7>
-                </div>
-                <div className="campos-vista-previa col-md-2">
-                  <h7>Clave LC</h7>
-                  <h7 className="titulo-tabla-resultados">{syr}</h7>
-                </div>
-                <div className="campos-vista-previa col-md-2">
-                  <h7>Clave SYR</h7>
-                  <h7 className="titulo-tabla-resultados">{lc}</h7>
-                </div>
-                <div className="campos-vista-previa col-md-1">
-                  <button
-                    id="boton-print"
-                    type="button"
-                    className="btn btn-outline-secondary"
-                    style={{
-                      fontSize: "0.6rem",
-                    }}
-                    data-bs-toggle="modal"
-                    data-bs-target="#modalMostrarMas"
-                    onChange={guardaClave}
-                  >
-                    Ver más
-                  </button>
-                </div>
-              </div> */}
-      {/*</div>
-          </div>
-        </div>
-      </div> */}
     </>
   );
 };

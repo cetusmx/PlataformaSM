@@ -4,17 +4,17 @@ import "../buscadorUI.css";
 
 const Table = ({ productos }) => {
   return (
-    <table className="table" style={{ fontSize: "0.9rem" }}>
+    <table className="table" style={{ fontSize: "0.8rem" }}>
       <thead className="table-light">
-        <td></td>
-        <td></td>
-        <th className="td-center-buscadorUI">Clave</th>
-        <th className="td-center-buscadorUI">Línea</th>
-        <th className="td-center-buscadorUI">Diám. interior</th>
-        <th className="td-center-buscadorUI">Diám. exterior</th>
-        <th className="td-center-buscadorUI">Altura</th>
-        <th className="td-center-buscadorUI">Marca</th>
-        <th className="td-center-buscadorUI">Perfil</th>
+        <td style={{width:"5%", backgroundColor: "#eef1f3"}}  className="td-center-buscadorUI" ></td>
+        <td style={{width:"8%", backgroundColor: "#eef1f3"}}  className="td-center-buscadorUI" ></td>
+        <th style={{width:"19%"}}  className="td-center-buscadorUI">Clave</th>
+        <th style={{width:"8%"}}  className="td-center-buscadorUI">Línea</th>
+        <th style={{width:"12%"}}  className="td-center-buscadorUI">Diám. interior</th>
+        <th style={{width:"12%"}}  className="td-center-buscadorUI">Diám. exterior</th>
+        <th style={{width:"12%"}}  className="td-center-buscadorUI">Altura</th>
+        <th style={{width:"12%"}}  className="td-center-buscadorUI">Marca</th>
+        <th style={{width:"12%"}}  className="td-center-buscadorUI">Perfil</th>
       </thead>
       {productos
         .map((producto, index) => (
