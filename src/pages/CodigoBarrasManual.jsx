@@ -225,19 +225,19 @@ const CodigoBarrasManual = () => {
               <table className="table table-striped">
                 <thead>
                   <tr>
-                    <th scope="col">Cant</th>
-                    <th scope="col">Clave</th>
-                    {/* <th scope="col">Código de barras</th> */}
+                    <th style={{borderBottom: "1px solid #dedede", borderLeft: "none", borderTop:"none", width: "25%"}} scope="col">Cant</th>
+                    <th style={{borderBottom: "1px solid #dedede", borderLeft: "none", borderTop:"none", width: "40%"}} scope="col">Clave</th>
+                    <th style={{borderBottom: "1px solid #dedede", borderLeft: "none", borderTop:"none", width: "25%"}} scope="col"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {partidas.map((val) => {
                     return (
                       <tr>
-                        <td>{val.cantidad}</td>
-                        <td>{val.clave}</td>
+                        <td style={{border: "none", textAlign: "center"}}>{val.cantidad}</td>
+                        <td style={{border: "none", textAlign: "center"}}>{val.clave}</td>
                         {/* <td>{val.barcode}</td> */}
-                        <td>
+                        <td style={{border: "none", textAlign: "center"}}>
                           <div
                             className="btn-group"
                             role="group"
