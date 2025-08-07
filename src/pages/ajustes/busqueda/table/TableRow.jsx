@@ -2,7 +2,7 @@ import React from "react";
 
 const TableRow = ({ producto }) => {
   return (
-    <tr style={{border:"none", background: "#27769eff", padding:"10px"}}>
+    <tr style={{border:"none", background: "#27769eff", padding:"10px", borderRadius: "10px"}}>
       <td colSpan={10}>
         <div
           className="div-appears"
