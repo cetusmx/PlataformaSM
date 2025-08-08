@@ -32,7 +32,7 @@
     "web-vitals": "^2.1.4",
     "xlsx": "^0.18.5"
   },
-  "homepage": "https://cotizador.sealmarket.mx",
+  "homepage": "https://sealmarket.net",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
