@@ -16,7 +16,7 @@ const CodigoBarrasManual = () => {
     console.log("Dentro UseEffect Precios");
   }, []);
 
-  const url = "http://75.119.150.222:3001";
+  const url = "https://sealmarket.net/api1";
   const [preciosList, setPreciosList] = useState([]);
   const [partidas, setPartidas] = useState([]);
   const [partidasPrint, setPartidasPrint] = useState([]);

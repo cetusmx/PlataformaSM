@@ -68,7 +68,7 @@ const InventariosGenerales = ({ onViewDetails }) => {
     const fetchInventarios = async () => {
       try {
         const response = await fetch(
-          "http://75.119.150.222:3001/getresumeninventariosgenerales"
+          "https://sealmarket.net/api1/getresumeninventariosgenerales"
         ); // Changed API endpoint
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

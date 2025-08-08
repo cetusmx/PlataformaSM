@@ -34,7 +34,7 @@ let sucursales = [
 ];
 
 const CotizadorAdmin = () => {
-  const url = "http://75.119.150.222:3001";
+  const url = "https://sealmarket.net/api1";
 
   useEffect(() => {
     // Agrega opciones al Select cuando carga la página por primera vez

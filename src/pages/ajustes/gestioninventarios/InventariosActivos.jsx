@@ -148,7 +148,7 @@ const InventarioDetails = ({ inventario, onBack }) => {
     setError(null);
     try {
       const response = await fetch(
-        `http://75.119.150.222:3001/getlineasinvresumen?InventarioID=${inventario.InventarioID}&auditor=${inventario.Auditor}`
+        `https://sealmarket.net/api1/getlineasinvresumen?InventarioID=${inventario.InventarioID}&auditor=${inventario.Auditor}`
       );
       if (!response.ok) throw new Error('Error al cargar líneas');
       let data = await response.json();
@@ -185,7 +185,7 @@ const InventarioDetails = ({ inventario, onBack }) => {
     try {
       //Obtiene todo el universo de productos contados de un inventario
       const response = await fetch(
-        `http://75.119.150.222:3001/getproductoscontadosporauditoreinv?InventarioID=${inventario.InventarioID}&Auditor=${inventario.Auditor}`
+        `https://sealmarket.net/api1/getproductoscontadosporauditoreinv?InventarioID=${inventario.InventarioID}&Auditor=${inventario.Auditor}`
       );
       if (!response.ok) throw new Error('Error al cargar productos');
       const data = await response.json();
@@ -216,8 +216,8 @@ const InventarioDetails = ({ inventario, onBack }) => {
       let url;
       let mappedProducts;
       if (linea.isCounted) {
-        //url = `http://75.119.150.222:3001/getproductoscontadosporauditoreinv?InventarioID=${inventario.InventarioID}&Auditor=${inventario.Auditor}`;
-        url = `http://75.119.150.222:3001/getproductoscontadosporauditorporlineaeinv?InventarioID=${inventario.InventarioID}&Auditor=${inventario.Auditor}&Linea=${linea.Linea}`;
+        
+        url = `https://sealmarket.net/api1/getproductoscontadosporauditorporlineaeinv?InventarioID=${inventario.InventarioID}&Auditor=${inventario.Auditor}&Linea=${linea.Linea}`;
         const response = await fetch(url);
         if (!response.ok) throw new Error('Error al cargar productos de la línea');
         const data = await response.json();
@@ -228,7 +228,7 @@ const InventarioDetails = ({ inventario, onBack }) => {
           Unidad: p.Unidad,
         })) : [];
       } else {
-        url = `http://75.119.150.222:3001/getproductosporlineaeinv?InventarioID=${inventario.InventarioID}&Linea=${linea.Linea}&Auditor=${inventario.Auditor}`;
+        url = `https://sealmarket.net/api1/getproductosporlineaeinv?InventarioID=${inventario.InventarioID}&Linea=${linea.Linea}&Auditor=${inventario.Auditor}`;
         const response = await fetch(url);
         if (!response.ok) throw new Error('Error al cargar productos de la línea');
         const data = await response.json();
@@ -285,7 +285,7 @@ const InventarioDetails = ({ inventario, onBack }) => {
       };
 
       try {
-        const response = await fetch('http://75.119.150.222:3002/api/v1/lineaajustada', {
+        const response = await fetch('https://sealmarket.net/api2/api/v1/lineaajustada', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -587,7 +587,7 @@ const InventariosActivos = () => {
 
     try {
       const response = await fetch(
-        "http://75.119.150.222:3001/getresumeninventariosweb",
+        "https://sealmarket.net/api1/getresumeninventariosweb",
         { signal: controller.signal }
       );
 

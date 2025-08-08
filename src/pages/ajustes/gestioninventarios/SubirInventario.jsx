@@ -49,7 +49,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
       try {
         setLoadingNombres(true);
         const nombresRes = await fetch(
-          "http://75.119.150.222:3001/getnombresinv"
+          "https://sealmarket.net/api1/getnombresinv"
         );
         console.log(nombresRes);
         const nombresData = await nombresRes.json();
@@ -61,7 +61,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
 
         setLoadingAuditores(true);
         const auditoresRes = await fetch(
-          "http://75.119.150.222:3001/getauditores"
+          "https://sealmarket.net/api1/getauditores"
         );
         console.log(auditoresRes);
         const auditoresData = await auditoresRes.json();
@@ -69,7 +69,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
         setLoadingAuditores(false);
 
         setLoadingLineas(true);
-        const lineasRes = await fetch("http://75.119.150.222:3001/getlineas");
+        const lineasRes = await fetch("https://sealmarket.net/api1/getlineas");
         const lineasData = await lineasRes.json();
         setLineasTotales(lineasData);
         setLoadingLineas(false);
@@ -386,7 +386,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
       if (inventariosPorAuditor.length > 1) {
         await Axios({
           method: "POST",
-          url: `http://75.119.150.222:3002/api/v1/inventariosgenerales/`,
+          url: `https://sealmarket.net/api2/api/v1/inventariosgenerales/`,
           data: inventariosPorAuditor,
         })
           .then((response) => {
@@ -404,7 +404,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
       }else{
         await Axios({
           method: "POST",
-          url: `http://75.119.150.222:3002/api/v1/inventariogeneral/`,
+          url: `https://sealmarket.net/api2/api/v1/inventariogeneral/`,
           data: inventariosPorAuditor[0],
         })
           .then((response) => {
@@ -475,7 +475,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
       if (allDataToSend.length > 1) {
         await Axios({
           method: "POST",
-          url: `http://75.119.150.222:3002/api/v1/inventario`,
+          url: `https://sealmarket.net/api2/api/v1/inventario`,
           data: allDataToSend,
         })
           .then((response) => {

@@ -6,8 +6,8 @@ const Table = ({ productos }) => {
   return (
     <table className="table" style={{ fontSize: "0.8rem" }}>
       <thead className="table-light">
-        <td style={{width:"5%", backgroundColor: "#eef1f3"}}  className="td-center-buscadorUI" ></td>
-        <td style={{width:"8%", backgroundColor: "#eef1f3"}}  className="td-center-buscadorUI" ></td>
+        <th style={{width:"5%"}}  className="td-center-buscadorUI" ></th>
+        <th style={{width:"8%"}}  className="td-center-buscadorUI" ></th>
         <th style={{width:"19%"}}  className="td-center-buscadorUI">Clave</th>
         <th style={{width:"8%"}}  className="td-center-buscadorUI">Línea</th>
         <th style={{width:"12%"}}  className="td-center-buscadorUI">Diám. interior</th>

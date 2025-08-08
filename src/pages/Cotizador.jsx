@@ -9,7 +9,7 @@ import { DataContext } from "../contexts/dataContext";
 
 const Cotizador = () => {
 
-  const url ="http://75.119.150.222:3001";
+  const url ="https://sealmarket.net/api1";
 
   const { valor, valor2 } = useContext(DataContext);
   const { contextData, setContextData } = valor;

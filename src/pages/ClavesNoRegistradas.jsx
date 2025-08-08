@@ -6,8 +6,8 @@ import { BiDownload } from "react-icons/bi";
 import TablaNoRegistradas from "./admon/siembra/TablaNoRegistradas";
 
 const ClavesNoRegistradas = () => {
-  const urlServidorAPI = "http://75.119.150.222:3001";
-  const urlServidorAPI2 = "http://75.119.150.222:3002/api/v1";
+  const urlServidorAPI = "https://sealmarket.net/api1";
+  const urlServidorAPI2 = "https://sealmarket.net/api2/api/v1";
   const [clavesNoRegistradas, setClavesNoRegistradas] = useState([]);
 
   useEffect(() => {
