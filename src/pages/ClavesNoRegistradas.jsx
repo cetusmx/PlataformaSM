@@ -39,8 +39,10 @@ const ClavesNoRegistradas = () => {
     const confirmacion = window.confirm(`¿Estás seguro de que deseas actualizar la clave ${clave}?`);
     if (confirmacion) {
       try {
-        await Axios.put(urlServidorAPI2 + `/products/${clave}`, {
+        /* await Axios.put(urlServidorAPI2 + `/products/${encodeURIComponent(clave)}`, { */
+        await Axios.put(urlServidorAPI2 + `/products`, {
           estatus: "Actualizado",
+          clave: clave,
         });
         setClavesNoRegistradas((prevClaves) =>
           prevClaves.filter((row) => row.clave !== clave)
