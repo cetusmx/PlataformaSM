@@ -46,6 +46,7 @@ const CodigoBarras = () => {
     useState("");
   const [qtyManualmente, setQtyManualmente] = useState("");
   const [partidasPrint, setPartidasPrint] = useState([]);
+  const isInitialMount = useRef(true);
 
 
   useEffect(() => {
@@ -83,18 +84,22 @@ const CodigoBarras = () => {
   }, []);
 
   useEffect(() => {
-    console.log("--- GUARDANDO DATOS EN LOCALSTORAGE ---");
-    console.log("Recepcionados:", productosRecepcionados);
-    console.log("Unificadas:", clavesunificadas);
-    console.log("Archivo:", nombreArchivo);
-    localStorage.setItem('productosRecepcionados', JSON.stringify(productosRecepcionados));
-    localStorage.setItem('clavesunificadas', JSON.stringify(clavesunificadas));
-    if (nombreArchivo) {
-      localStorage.setItem('codigoBarrasFileName', JSON.stringify(nombreArchivo));
-      localStorage.setItem('codigoBarrasProveedor', JSON.stringify(nombreProveedor));
-      localStorage.setItem('codigoBarrasFolio', JSON.stringify(folioFactura));
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+    } else {
+      console.log("--- GUARDANDO DATOS EN LOCALSTORAGE ---");
+      console.log("Recepcionados:", productosRecepcionados);
+      console.log("Unificadas:", clavesunificadas);
+      console.log("Archivo:", nombreArchivo);
+      localStorage.setItem('productosRecepcionados', JSON.stringify(productosRecepcionados));
+      localStorage.setItem('clavesunificadas', JSON.stringify(clavesunificadas));
+      if (nombreArchivo) {
+        localStorage.setItem('codigoBarrasFileName', JSON.stringify(nombreArchivo));
+        localStorage.setItem('codigoBarrasProveedor', JSON.stringify(nombreProveedor));
+        localStorage.setItem('codigoBarrasFolio', JSON.stringify(folioFactura));
+      }
+      console.log("-------------------------------------");
     }
-    console.log("-------------------------------------");
   }, [productosRecepcionados, clavesunificadas, nombreArchivo, nombreProveedor, folioFactura]);
 
 
@@ -126,15 +131,15 @@ const CodigoBarras = () => {
 
   useEffect(() => {
     //console.log("Useeffect clavesProveedor, unificaClaves()");
-    unificaClaves();
+    if (listaProductos.length > 0) {
+      unificaClaves();
+    }
   }, [clavesProveedor]);
 
   useEffect(() => {
     //console.log("Cambió xmlContent");
     if (xmlContent.length > 0) {
       unificaClaves();
-    } else {
-      setClavesunificadas([]);
     }
   }, [xmlContent, folioFactura]);
 
