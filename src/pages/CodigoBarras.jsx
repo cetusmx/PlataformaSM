@@ -530,6 +530,11 @@ const CodigoBarras = () => {
     setProductosRecepcionados([]);
     setXmlContent([]);
     setListaProductos([]);
+
+    setNombreArchivo("");
+    setNombreProveedor("");
+    setFolioFactura("");
+
     console.log("--- LIMPIANDO LOCALSTORAGE (TERMINAR) ---");
     localStorage.removeItem('productosRecepcionados');
     localStorage.removeItem('clavesunificadas');
