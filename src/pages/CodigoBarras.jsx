@@ -60,6 +60,9 @@ const CodigoBarras = () => {
   useEffect(() => {
     localStorage.setItem('productosRecepcionados', JSON.stringify(productosRecepcionados));
     localStorage.setItem('clavesunificadas', JSON.stringify(clavesunificadas));
+    console.log(localStorage.getItem('productosRecepcionados'));
+    console.log(localStorage.getItem('clavesunificadas'));
+
   }, [productosRecepcionados, clavesunificadas]);
 
   const ref = useRef();
