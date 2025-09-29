@@ -1,7 +1,7 @@
 // src/components/InventariosActivos.js
 import React, { useState, useEffect, useCallback } from "react";
 // Importa BiCheckDouble junto con los otros íconos
-import { BiBox, BiCheck, BiArrowBack, BiCheckDouble, BiDownload } from "react-icons/bi";
+import { BiBox, BiCheck, BiArrowBack, BiCheckDouble, BiDownload , BiSearch} from "react-icons/bi";
 import "./InventariosActivos.css";
 
 // Componente mejorado para mostrar productos en una tabla
@@ -21,6 +21,17 @@ const ProductTable = ({
           <BiArrowBack /> Volver
         </button>
       </div>
+      {/*<div className="header-left-search">
+        <div className="search-box">
+          <input
+            //value={claveBuscada}
+            //onChange={onChange}
+            type="text"
+            placeholder="Buscar"
+          />
+          <BiSearch style={{ color: "#969393", fontSize: "1.4rem" }} />
+        </div>
+      </div>*/}
       <div className="header-center">
         <h3>{viewTitle}</h3>
       </div>
@@ -35,7 +46,14 @@ const ProductTable = ({
           </button>
         )}
         {viewTitle === "Todos los Productos Contados" ? (
-          <button onClick={onDownload} className="download-button" title="Descargar"> <BiDownload style={{fontSize: "1.3em"}}/> Descargar</button>
+          <button
+            onClick={onDownload}
+            className="download-button"
+            title="Descargar"
+          >
+            {" "}
+            <BiDownload style={{ fontSize: "1.3em" }} /> Descargar
+          </button>
         ) : null}
       </div>
     </div>
@@ -141,6 +159,7 @@ const InventarioDetails = ({ inventario, onBack }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false); // State for modal visibility
+  const [claveBuscada, setClaveBuscada] = useState("");
 
   // Función para cargar las líneas del inventario
   const refreshLineas = useCallback(async () => {

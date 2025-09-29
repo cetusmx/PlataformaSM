@@ -37,7 +37,7 @@ const Remision = () => {
   });
 
   let getPrecios = () => {
-    Axios.get(url + `/getprecios/`, {
+    Axios.get(url + `/precios/getprecios/`, {
       params: {
         sucursal: infoUsuario.sucursal,
       },

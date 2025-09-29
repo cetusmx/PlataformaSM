@@ -36,7 +36,7 @@ const CodigoBarrasManual = () => {
   const ref = useRef();
 
   let getPrecios = () => {
-    Axios.get(url + `/getprecios/`, {
+    Axios.get(url + `/precios/getprecios/`, {
       params: {
         sucursal: infoUsuario.sucursal,
       },

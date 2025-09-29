@@ -25,7 +25,7 @@ const Precios = () => {
   const infoUsuario = contextData;
 
   let getPrecios = () => {
-    Axios.get(`https://servcotiza.onrender.com/getprecios`, {
+    Axios.get(`https://sealmarket.net/api1/precios/getprecios`, {
       params: {
         sucursal: infoUsuario.sucursal,
       },

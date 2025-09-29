@@ -286,7 +286,7 @@
   border: none; /* El borde desaparece al hacer hover para que se vea como el original */
 }
 
-/* Estilos para la tabla de productos */
+
 .product-table-container {
   width: 100%;
   display: flex;
@@ -380,6 +380,11 @@
 
 .product-table-header .header-left {
   justify-content: flex-start;
+}
+
+.product-table-header .header-left-search {
+  justify-content: flex-start;
+  padding-left: 20px;
 }
 
 .product-table-header .header-center {
@@ -546,4 +551,27 @@
 .modal-button.confirm-button:hover {
   background-color: #0056b3;
   transform: translateY(-1px);
+}
+
+.search-box {
+    background: #dde6ed;
+    padding: 5px 10px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.search-box input{
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 5px;
+    outline: none;
+}
+
+.search-box .icon{
+    color: #969393;
+    font-size: 22px;
+    cursor: pointer;
+    transition: 0.5s ease-in-out;
 }

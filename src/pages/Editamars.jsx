@@ -218,7 +218,7 @@ const Editamars = () => {
     }
   };
 
-  const enviarSolicitud = async (metodo, parametros) => {
+  const enviarSolicitud = async (metodo, parametros) => { // endpoint /actualiza
     await Axios({ method: metodo, url: url, data: parametros })
       .then(function (respuesta) {
         var tipo = respuesta.status;

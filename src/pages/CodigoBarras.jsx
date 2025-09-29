@@ -46,6 +46,22 @@ const CodigoBarras = () => {
   const [qtyManualmente, setQtyManualmente] = useState("");
   const [partidasPrint, setPartidasPrint] = useState([]);
 
+  useEffect(() => {
+    const recepcionadosGuardados = localStorage.getItem('productosRecepcionados');
+    const unificadasGuardadas = localStorage.getItem('clavesunificadas');
+    if (recepcionadosGuardados) {
+      setProductosRecepcionados(JSON.parse(recepcionadosGuardados));
+    }
+    if (unificadasGuardadas) {
+      setClavesunificadas(JSON.parse(unificadasGuardadas));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('productosRecepcionados', JSON.stringify(productosRecepcionados));
+    localStorage.setItem('clavesunificadas', JSON.stringify(clavesunificadas));
+  }, [productosRecepcionados, clavesunificadas]);
+
   const ref = useRef();
   const componentRef = useRef();
 
@@ -454,6 +470,8 @@ const CodigoBarras = () => {
     setProductosRecepcionados([]);
     setXmlContent([]);
     setListaProductos([]);
+    localStorage.removeItem('productosRecepcionados');
+    localStorage.removeItem('clavesunificadas');
   };
 
   const enviarSolicitud = async (metodo, parametros) => {
@@ -484,7 +502,7 @@ const CodigoBarras = () => {
 
   const moverProductoaRecepcionados = () => {
     let temporal = clavesunificadas.filter(
-      (claveProv) => claveProv.producto !== claveProveedorIngManualmente //Solo quedan prods que no son el ing manualmente
+      (claveProv) => claveProv.producto !== claveProveedorIngManualmente //Solo quedan prods que no son el ing manually
     );
     //console.log(clavesunificadas);
     setClavesunificadas(temporal);
@@ -602,6 +620,8 @@ const CodigoBarras = () => {
                     setProductosRecepcionados([]);
                     setXmlContent([]);
                     setListaProductos([]);
+                    localStorage.removeItem('productosRecepcionados');
+                    localStorage.removeItem('clavesunificadas');
                     /* setClavesProveedor([]); */
                     /* setIsFileUploaded(true); */
                     /* cancelar(); */

@@ -27,7 +27,7 @@ const TablaPrecios = (props) => {
   }, [sucursalConsulta]);
 
   let getPrecios = () => {
-    Axios.get(url + `/getprecios`, {
+    Axios.get(url + `/precios/getprecios`, {
       params: {
         sucursal: props.sucursal,
       },
@@ -40,7 +40,7 @@ const TablaPrecios = (props) => {
   };
 
   let getPreciosTodos = () => {
-    Axios.get(url + `/getpreciosall`, {
+    Axios.get(url + `/precios/getpreciosall`, {
       params: {
         sucursal: props.sucursal,
       },
@@ -93,7 +93,7 @@ const TablaPrecios = (props) => {
           {listaPrecios?.length > 0 && !isFetching && (
             <table
               className="table table-striped"
-              style={{ padding: "3px", autoHeight: true, fontSize: "0.8rem" }}
+              style={{ padding: "3px", autoHeight: true, fontSize: "0.8rem", marginTop: "10px" }}
             >
               <thead>
                 <tr style={{ padding: "3px" }}>

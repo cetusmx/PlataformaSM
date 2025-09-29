@@ -29,7 +29,7 @@ const SiembraProds = () => {
   }, []);
 
   let getPrecios = () => {
-    Axios.get(urlServidorAPI + `/getprecios/`, {
+    Axios.get(urlServidorAPI + `/precios/getprecios/`, {
       params: {
         sucursal: infoUsuario.sucursal,
       },
