@@ -31,6 +31,7 @@ const CodigoBarras = () => {
   const [rfc, setRfc] = useState("");
   const [nombreProveedor, setNombreProveedor] = useState("");
   const [folioFactura, setFolioFactura] = useState("");
+  const [nombreArchivo, setNombreArchivo] = useState("");
   const [clavesProveedor, setClavesProveedor] = useState([]);
   const [clavesunificadas, setClavesunificadas] = useState([]);
   //const [isFileUploaded, setIsFileUploaded] = useState(true);
@@ -46,24 +47,56 @@ const CodigoBarras = () => {
   const [qtyManualmente, setQtyManualmente] = useState("");
   const [partidasPrint, setPartidasPrint] = useState([]);
 
+
   useEffect(() => {
+    console.log("--- CARGANDO DATOS DESDE LOCALSTORAGE ---");
     const recepcionadosGuardados = localStorage.getItem('productosRecepcionados');
     const unificadasGuardadas = localStorage.getItem('clavesunificadas');
-    if (recepcionadosGuardados) {
-      setProductosRecepcionados(JSON.parse(recepcionadosGuardados));
+    const archivoGuardado = localStorage.getItem('codigoBarrasFileName');
+    const proveedorGuardado = localStorage.getItem('codigoBarrasProveedor');
+    const folioGuardado = localStorage.getItem('codigoBarrasFolio');
+
+    console.log("Archivo guardado:", archivoGuardado);
+    console.log("Recepcionados guardados:", recepcionadosGuardados);
+
+    if (archivoGuardado) {
+      console.log("Sesión anterior encontrada. Restaurando...");
+      setNombreArchivo(JSON.parse(archivoGuardado));
+      setMostrarCargaArchivo(false);
+
+      if (recepcionadosGuardados) {
+        setProductosRecepcionados(JSON.parse(recepcionadosGuardados));
+      }
+      if (unificadasGuardadas) {
+        setClavesunificadas(JSON.parse(unificadasGuardadas));
+      }
+      if (proveedorGuardado) {
+        setNombreProveedor(JSON.parse(proveedorGuardado));
+      }
+      if (folioGuardado) {
+        setFolioFactura(JSON.parse(folioGuardado));
+      }
+    } else {
+      console.log("No se encontró sesión anterior.");
     }
-    if (unificadasGuardadas) {
-      setClavesunificadas(JSON.parse(unificadasGuardadas));
-    }
+    console.log("-----------------------------------------");
   }, []);
 
   useEffect(() => {
+    console.log("--- GUARDANDO DATOS EN LOCALSTORAGE ---");
+    console.log("Recepcionados:", productosRecepcionados);
+    console.log("Unificadas:", clavesunificadas);
+    console.log("Archivo:", nombreArchivo);
     localStorage.setItem('productosRecepcionados', JSON.stringify(productosRecepcionados));
     localStorage.setItem('clavesunificadas', JSON.stringify(clavesunificadas));
-    console.log(localStorage.getItem('productosRecepcionados'));
-    console.log(localStorage.getItem('clavesunificadas'));
+    if (nombreArchivo) {
+      localStorage.setItem('codigoBarrasFileName', JSON.stringify(nombreArchivo));
+      localStorage.setItem('codigoBarrasProveedor', JSON.stringify(nombreProveedor));
+      localStorage.setItem('codigoBarrasFolio', JSON.stringify(folioFactura));
+    }
+    console.log("-------------------------------------");
+  }, [productosRecepcionados, clavesunificadas, nombreArchivo, nombreProveedor, folioFactura]);
 
-  }, [productosRecepcionados, clavesunificadas]);
 
   const ref = useRef();
   const componentRef = useRef();
@@ -180,6 +213,7 @@ const CodigoBarras = () => {
     //console.log("inside handle");
     //setIsFileUploaded(false);
     const file = e.target.files[0];
+    setNombreArchivo(file.name);
 
     if (!file) {
       setError("No se seleccionó archivo.");
@@ -206,6 +240,23 @@ const CodigoBarras = () => {
   };
 
   const showDatos = () => {
+    console.log("--- VERIFICANDO ARCHIVO ---");
+    const savedFileName = JSON.parse(localStorage.getItem('codigoBarrasFileName'));
+    console.log("Archivo guardado en LS:", savedFileName);
+    console.log("Archivo actual:", nombreArchivo);
+
+    if (savedFileName && nombreArchivo !== savedFileName) {
+      console.log("--> ¡Nombres de archivo no coinciden! Limpiando localStorage.");
+      localStorage.removeItem('productosRecepcionados');
+      localStorage.removeItem('clavesunificadas');
+      localStorage.removeItem('codigoBarrasFileName');
+      localStorage.removeItem('codigoBarrasProveedor');
+      localStorage.removeItem('codigoBarrasFolio');
+      setProductosRecepcionados([]);
+      setClavesunificadas([]);
+    }
+    console.log("---------------------------");
+
     //xmlDocument
     if (xmlContent.length > 0) {
       //console.log("Dentro showDatos y xmlContent>0");
@@ -236,6 +287,7 @@ const CodigoBarras = () => {
         setFolioFactura(comprobante[i].getAttribute("Folio"));
       }
       setMostrarCargaArchivo(false);
+      localStorage.setItem('codigoBarrasFileName', JSON.stringify(nombreArchivo));
     } else {
       show_alerta("Elija un archivo .xml", "warning");
     }
@@ -473,8 +525,12 @@ const CodigoBarras = () => {
     setProductosRecepcionados([]);
     setXmlContent([]);
     setListaProductos([]);
+    console.log("--- LIMPIANDO LOCALSTORAGE (TERMINAR) ---");
     localStorage.removeItem('productosRecepcionados');
     localStorage.removeItem('clavesunificadas');
+    localStorage.removeItem('codigoBarrasFileName');
+    localStorage.removeItem('codigoBarrasProveedor');
+    localStorage.removeItem('codigoBarrasFolio');
   };
 
   const enviarSolicitud = async (metodo, parametros) => {
@@ -618,6 +674,7 @@ const CodigoBarras = () => {
               <div className="divRegresarCB">
                 <button
                   onClick={() => {
+                    console.log("--- LIMPIANDO LOCALSTORAGE (CANCELAR) ---");
                     setMostrarCargaArchivo(true);
                     setClavesunificadas([]);
                     setProductosRecepcionados([]);
@@ -625,6 +682,9 @@ const CodigoBarras = () => {
                     setListaProductos([]);
                     localStorage.removeItem('productosRecepcionados');
                     localStorage.removeItem('clavesunificadas');
+                    localStorage.removeItem('codigoBarrasFileName');
+                    localStorage.removeItem('codigoBarrasProveedor');
+                    localStorage.removeItem('codigoBarrasFolio');
                     /* setClavesProveedor([]); */
                     /* setIsFileUploaded(true); */
                     /* cancelar(); */
