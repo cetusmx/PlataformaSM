@@ -10,7 +10,7 @@ import { useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 
 const CodigoBarrasManual = () => {
-  
+
   useEffect(() => {
   const cerrarDropdown = () => setSugerencias([]);
   window.addEventListener('click', cerrarDropdown);
@@ -223,7 +223,7 @@ const CodigoBarrasManual = () => {
                       }}
                     >
                       <div className="suggestion-clave">{item.CLAVE}</div>
-                      <div className="suggestion-descr">{item.DESCRIPCION}</div>
+                      {/* <div className="suggestion-descr">{item.DESCRIPCION}</div> */}
                     </div>
                   ))}
                 </div>
