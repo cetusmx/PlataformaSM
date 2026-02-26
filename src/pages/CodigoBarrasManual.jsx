@@ -55,7 +55,7 @@ const CodigoBarrasManual = () => {
     const API_KEY = "sm_ecommerce_x2ve9yFf0aiDxh1HelezpVeyRAcngGwgEg3ZnSZwhGg2SaZrd2gQiysiVo86R3LcUZFFxZDSMADepof1jMLSumIbiqBRcbjyhvA78haaxnLrrbOuU3zqCi0kQXJf1gSc";
 
 
-    if (texto.length > 2) { // Solo busca si hay más de 2 letras
+    if (texto.length > 4) { // Solo busca si hay más de 2 letras
       try {
         const res = await Axios.get(API_URL, {
           params: { q: texto },
