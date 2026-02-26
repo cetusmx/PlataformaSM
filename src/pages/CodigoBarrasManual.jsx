@@ -10,11 +10,12 @@ import { useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 
 const CodigoBarrasManual = () => {
+  
   useEffect(() => {
-    // Agrega opciones al Select cuando carga la página por primera vez
-    //getPrecios();
-    console.log("Dentro UseEffect Precios");
-  }, []);
+  const cerrarDropdown = () => setSugerencias([]);
+  window.addEventListener('click', cerrarDropdown);
+  return () => window.removeEventListener('click', cerrarDropdown);
+}, []);
 
   const url = "http://75.119.150.222:3010";
   const [preciosList, setPreciosList] = useState([]);
