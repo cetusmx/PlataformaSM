@@ -26,6 +26,7 @@ const CodigoBarrasManual = () => {
 
   const [totalCab, setTotalCab] = useState("0");
   const [price, setPrice] = useState("0");
+  const [sugerencias, setSugerencias] = useState([]);
 
   const { valor, valor2 } = useContext(DataContext);
   const { contextData, setContextData } = valor;
@@ -44,6 +45,28 @@ const CodigoBarrasManual = () => {
       setPreciosList(response.data);
       console.log(response.data);
     });
+  };
+
+  const handleChange = async (e) => {
+    const texto = e.target.value;
+    setValue(texto);
+    const API_URL = "https://sistemahidraulico.mx/api-externa/clavesalternas/buscar";
+    const API_KEY = "sm_ecommerce_x2ve9yFf0aiDxh1HelezpVeyRAcngGwgEg3ZnSZwhGg2SaZrd2gQiysiVo86R3LcUZFFxZDSMADepof1jMLSumIbiqBRcbjyhvA78haaxnLrrbOuU3zqCi0kQXJf1gSc";
+
+
+    if (texto.length > 2) { // Solo busca si hay más de 2 letras
+      try {
+        const res = await axios.get(API_URL, {
+          params: { q: texto },
+          headers: { 'x-api-key': API_KEY }
+        });
+        setSugerencias(res.data);
+      } catch (err) {
+        console.error("Error buscando sugerencias", err);
+      }
+    } else {
+      setSugerencias([]);
+    }
   };
 
   const agregarPartida = () => {
@@ -186,7 +209,21 @@ const CodigoBarrasManual = () => {
                 placeholder="Ingrese clave producto"
               />
               <div className="dropdown">
-                {preciosList
+                {sugerencias.length > 0 && sugerencias.map((item) => (
+                  <div
+                    onClick={() => {
+                      onSearch(item.CLAVE); // Al hacer clic, ejecuta la búsqueda
+                      setSugerencias([]);    // Limpia las sugerencias al seleccionar
+                    }}
+                    className="dropdown-row"
+                    key={item.CLAVE}
+                    style={{ display: 'flex', flexDirection: 'column', padding: '8px' }}
+                  >
+                    <span style={{ fontWeight: 'bold', color: '#333' }}>{item.CLAVE}</span>
+                    <span style={{ fontSize: '0.85em', color: '#666' }}>{item.DESCRIPCION}</span>
+                  </div>
+                ))}
+                {/* {preciosList
                   .filter((item) => {
                     const searchTerm = value.toLowerCase();
                     const clave = item.clave.toLowerCase();
@@ -206,7 +243,7 @@ const CodigoBarrasManual = () => {
                     >
                       {item.clave}
                     </div>
-                  ))}
+                  ))} */}
               </div>
             </div>
             <div class="div-boton">
@@ -225,19 +262,19 @@ const CodigoBarrasManual = () => {
               <table className="table table-striped">
                 <thead>
                   <tr>
-                    <th style={{borderBottom: "1px solid #dedede", borderLeft: "none", borderTop:"none", width: "25%"}} scope="col">Cant</th>
-                    <th style={{borderBottom: "1px solid #dedede", borderLeft: "none", borderTop:"none", width: "40%"}} scope="col">Clave</th>
-                    <th style={{borderBottom: "1px solid #dedede", borderLeft: "none", borderTop:"none", width: "25%"}} scope="col"></th>
+                    <th style={{ borderBottom: "1px solid #dedede", borderLeft: "none", borderTop: "none", width: "25%" }} scope="col">Cant</th>
+                    <th style={{ borderBottom: "1px solid #dedede", borderLeft: "none", borderTop: "none", width: "40%" }} scope="col">Clave</th>
+                    <th style={{ borderBottom: "1px solid #dedede", borderLeft: "none", borderTop: "none", width: "25%" }} scope="col"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {partidas.map((val) => {
                     return (
                       <tr>
-                        <td style={{border: "none", textAlign: "center"}}>{val.cantidad}</td>
-                        <td style={{border: "none", textAlign: "center"}}>{val.clave}</td>
+                        <td style={{ border: "none", textAlign: "center" }}>{val.cantidad}</td>
+                        <td style={{ border: "none", textAlign: "center" }}>{val.clave}</td>
                         {/* <td>{val.barcode}</td> */}
-                        <td style={{border: "none", textAlign: "center"}}>
+                        <td style={{ border: "none", textAlign: "center" }}>
                           <div
                             className="btn-group"
                             role="group"
