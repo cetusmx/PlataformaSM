@@ -12,7 +12,7 @@ import { useReactToPrint } from "react-to-print";
 const CodigoBarrasManual = () => {
   useEffect(() => {
     // Agrega opciones al Select cuando carga la página por primera vez
-    getPrecios();
+    //getPrecios();
     console.log("Dentro UseEffect Precios");
   }, []);
 
