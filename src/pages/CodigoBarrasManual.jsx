@@ -56,7 +56,7 @@ const CodigoBarrasManual = () => {
 
     if (texto.length > 2) { // Solo busca si hay más de 2 letras
       try {
-        const res = await axios.get(API_URL, {
+        const res = await Axios.get(API_URL, {
           params: { q: texto },
           headers: { 'x-api-key': API_KEY }
         });
