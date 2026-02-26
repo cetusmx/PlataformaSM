@@ -202,49 +202,31 @@ const CodigoBarrasManual = () => {
               <label for="exampleFormControlInput1">Clave producto</label>
               <input
                 value={value}
-                onChange={onChange}
+                onChange={handleChange}
                 type="text"
                 class="form-control"
                 id="exampleFormControlInput1"
                 placeholder="Ingrese clave producto"
               />
-              <div className="dropdown">
-                {sugerencias.length > 0 && sugerencias.map((item) => (
-                  <div
-                    onClick={() => {
-                      onSearch(item.CLAVE); // Al hacer clic, ejecuta la búsqueda
-                      setSugerencias([]);    // Limpia las sugerencias al seleccionar
-                    }}
-                    className="dropdown-row"
-                    key={item.CLAVE}
-                    style={{ display: 'flex', flexDirection: 'column', padding: '8px' }}
-                  >
-                    <span style={{ fontWeight: 'bold', color: '#333' }}>{item.CLAVE}</span>
-                    <span style={{ fontSize: '0.85em', color: '#666' }}>{item.DESCRIPCION}</span>
-                  </div>
-                ))}
-                {/* {preciosList
-                  .filter((item) => {
-                    const searchTerm = value.toLowerCase();
-                    const clave = item.clave.toLowerCase();
-
-                    return (
-                      searchTerm &&
-                      clave.startsWith(searchTerm) &&
-                      clave !== searchTerm
-                    );
-                  })
-                  .slice(0, 10)
-                  .map((item) => (
+              {/* Solo mostramos el dropdown si hay sugerencias */}
+              {sugerencias.length > 0 && (
+                <div className="dropdown">
+                  {sugerencias.map((item) => (
                     <div
-                      onClick={() => onSearch(item.clave)}
+                      key={item.CLAVE}
                       className="dropdown-row"
-                      key={item.clave}
+                      onClick={() => {
+                        onSearch(item.CLAVE); // Tu función que carga los datos del producto
+                        setValue(item.CLAVE); // Opcional: pone la clave en el input
+                        setSugerencias([]);    // Cerramos el dropdown
+                      }}
                     >
-                      {item.clave}
+                      <div className="suggestion-clave">{item.CLAVE}</div>
+                      <div className="suggestion-descr">{item.DESCRIPCION}</div>
                     </div>
-                  ))} */}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
             <div class="div-boton">
               <button
