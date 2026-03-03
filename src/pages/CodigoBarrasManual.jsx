@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import "../styles/codigobarrasmanual.css";
-import { BiTrash } from "react-icons/bi";
+import { BiTrash, BiBarcode } from "react-icons/bi";
 import Barcode from "react-barcode";
 import CodeBarPrint from "./CodeBarPrint";
 import { DataContext } from "../contexts/dataContext";
@@ -28,6 +28,9 @@ const CodigoBarrasManual = () => {
   const [totalCab, setTotalCab] = useState("0");
   const [price, setPrice] = useState("0");
   const [sugerencias, setSugerencias] = useState([]);
+  const [descripcion, setDescripcion] = useState("");
+  const [soloTexto, setSoloTexto] = useState(false);
+  const [activeTab, setActiveTab] = useState("barcode");
 
   const { valor, valor2 } = useContext(DataContext);
   const { contextData, setContextData } = valor;
@@ -71,54 +74,41 @@ const CodigoBarrasManual = () => {
   };
 
   const agregarPartida = () => {
-    const partida = [
-      {
-        cantidad: qty,
-        clave: value,
-        barcode: <Barcode width={1} height={40} ref={ref} value={value} />,
-      },
-    ];
+    const modoSoloTexto = activeTab === "text";
+    const uniqueId = Date.now();
+    
+    const nuevaPartida = {
+      id: uniqueId,
+      cantidad: qty,
+      clave: value,
+      descripcion: descripcion,
+      soloTexto: modoSoloTexto,
+      barcode: !modoSoloTexto ? <Barcode width={1} height={40} ref={ref} value={value} /> : null,
+    };
 
-    const partidasImpresion = partidas.concat(partida);
+    setPartidas([...partidas, nuevaPartida]);
 
-    setPartidas(partidasImpresion);
-
-    setQty("1");
-    setValue("");
-
-    let partidasImpre = [];
-    if (partidasPrint.length > 0) {
-      partidasImpre = [...partidasPrint];
-    }
-
-    for (let j = 0; j < qty; j++) {
-      let partidaImp = {
-        id: j,
-        cantidad: qty,
-        clave: value,
-        barcode: (
+    let partidasImpre = [...partidasPrint];
+    for (let j = 0; j < parseInt(qty); j++) {
+      partidasImpre.push({
+        ...nuevaPartida,
+        id: `${uniqueId}-${j}`,
+        barcode: !modoSoloTexto ? (
           <Barcode width={1} height={35} ref={ref} value={value} />
-        ) /** height previo : 35 */,
-      };
-
-      partidasImpre.push(partidaImp);
-      console.log(j);
+        ) : null,
+      });
     }
     setPartidasPrint(partidasImpre);
-    //console.log(partidasImpre);
+
+    // Limpiar campos
+    setQty("1");
+    setValue("");
+    setDescripcion("");
   };
 
   const borrar = (item) => {
-    const resultado = partidas.filter(
-      (partida) => partida.clave !== item.clave
-    );
-    setPartidas(resultado);
-
-    const resultado2 = partidasPrint.filter(
-      (partida) => partida.clave !== item.clave
-    );
-    setPartidasPrint(resultado2);
-    //console.log(resultado);
+    setPartidas(partidas.filter((p) => p.id !== item.id));
+    setPartidasPrint(partidasPrint.filter((p) => p.id.toString().split('-')[0] !== item.id.toString()));
   };
 
   const handlePrint = useReactToPrint({
@@ -184,79 +174,164 @@ const CodigoBarrasManual = () => {
           </p>
         </div>
         <div className="captura">
-          <div className="formulario">
-            <div className="cantidad">
-              <label for="exampleFormControlInput1">Cantidad etiquetas</label>
-              <input
-                value={qty}
-                onChange={(event) => {
-                  setQty(event.target.value);
-                }}
-                type="text"
-                class="form-control"
-                id="exampleFormControlInput1"
-                placeholder="Ingrese cantidad"
-                style={{ width: "160px" }}
-              ></input>
-            </div>
-            <div className="claveProd">
-              <label for="exampleFormControlInput1">Clave producto</label>
-              <input
-                value={value}
-                onChange={handleChange}
-                type="text"
-                class="form-control"
-                id="exampleFormControlInput1"
-                placeholder="Ingrese clave producto"
-              />
-              {/* Solo mostramos el dropdown si hay sugerencias */}
-              {sugerencias.length > 0 && (
-                <div className="dropdown">
-                  {sugerencias.map((item) => (
-                    <div
-                      key={item.CLAVE}
-                      className="dropdown-row"
-                      onClick={() => {
-                        onSearch(item.CLAVE); // Tu función que carga los datos del producto
-                        setValue(item.CLAVE); // Opcional: pone la clave en el input
-                        setSugerencias([]);    // Cerramos el dropdown
-                      }}
-                    >
-                      <div className="suggestion-clave">{item.CLAVE}</div>
-                      {/* <div className="suggestion-descr">{item.DESCRIPCION}</div> */}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            <div class="div-boton">
-              <button
-                style={{ width: "100%" }}
-                type="button"
-                class="btn btn-primary"
-                onClick={agregarPartida}
-              >
-                Agregar
-              </button>
-            </div>
+          <div className="btn-group-custom mb-3" role="group">
+            <button
+              type="button"
+              className={`btn ${activeTab === "barcode" ? "btn-primary" : "btn-outline-primary"}`}
+              onClick={() => setActiveTab("barcode")}
+            >
+              Con Código
+            </button>
+            <button
+              type="button"
+              className={`btn ${activeTab === "text" ? "btn-primary" : "btn-outline-primary"}`}
+              onClick={() => setActiveTab("text")}
+            >
+              Solo Texto
+            </button>
           </div>
+
+          <div className="tab-content">
+            {activeTab === "barcode" && (
+              <div className="formulario">
+                <div className="cantidad">
+                  <label for="exampleFormControlInput1">Cantidad etiquetas</label>
+                  <input
+                    value={qty}
+                    onChange={(event) => {
+                      setQty(event.target.value);
+                    }}
+                    type="text"
+                    className="form-control"
+                    id="exampleFormControlInput1"
+                    placeholder="Ingrese cantidad"
+                    style={{ width: "160px" }}
+                  ></input>
+                </div>
+                <div className="claveProd">
+                  <label for="exampleFormControlInput1">Clave producto</label>
+                  <input
+                    value={value}
+                    onChange={handleChange}
+                    type="text"
+                    className="form-control"
+                    id="exampleFormControlInput1"
+                    placeholder="Ingrese clave producto"
+                  />
+                  {sugerencias.length > 0 && (
+                    <div className="dropdown">
+                      {sugerencias.map((item) => (
+                        <div
+                          key={item.CLAVE}
+                          className="dropdown-row"
+                          onClick={() => {
+                            onSearch(item.CLAVE);
+                            setValue(item.CLAVE);
+                            setDescripcion(item.DESCRIPCION || "");
+                            setSugerencias([]);
+                          }}
+                        >
+                          <div className="suggestion-clave">{item.CLAVE}</div>
+                          <div className="suggestion-descr">{item.DESCRIPCION}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="div-boton">
+                  <button
+                    style={{ width: "100%" }}
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={agregarPartida}
+                  >
+                    Agregar
+                  </button>
+                </div>
+              </div>
+            )}
+            {activeTab === "text" && (
+              <div className="formulario">
+                <div className="cantidad" style={{ marginRight: "10px" }}>
+                  <label style={{ fontSize: "1rem" }}># Etiq.</label>
+                  <input
+                    value={qty}
+                    onChange={(event) => setQty(event.target.value)}
+                    type="text"
+                    className="form-control"
+                    style={{ width: "60px" }}
+                  />
+                </div>
+                <div className="claveProd" style={{ marginRight: "10px", position: "relative" }}>
+                  <label style={{ fontSize: "1rem" }}>Clave</label>
+                  <input
+                    value={value}
+                    onChange={handleChange}
+                    type="text"
+                    className="form-control"
+                    style={{ width: "170px" }}
+                  />
+                  {sugerencias.length > 0 && (
+                    <div className="dropdown" style={{ width: "250px" }}>
+                      {sugerencias.map((item) => (
+                        <div
+                          key={item.CLAVE}
+                          className="dropdown-row"
+                          onClick={() => {
+                            onSearch(item.CLAVE);
+                            setValue(item.CLAVE);
+                            setDescripcion(item.DESCRIPCION || "");
+                            setSugerencias([]);
+                          }}
+                        >
+                          <div className="suggestion-clave">{item.CLAVE}</div>
+                          <div className="suggestion-descr">{item.DESCRIPCION}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="descripcion" style={{ marginRight: "10px" }}>
+                  <label style={{ fontSize: "0.8rem" }}>Descripción</label>
+                  <input
+                    value={descripcion}
+                    onChange={(e) => setDescripcion(e.target.value)}
+                    type="text"
+                    className="form-control"
+                    style={{ width: "220px" }}
+                  />
+                </div>
+                <div className="div-boton">
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={agregarPartida}
+                  >
+                    Agregar
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="tablaProds">
             {partidas?.length > 0 && (
               <table className="table table-striped">
                 <thead>
                   <tr>
-                    <th style={{ borderBottom: "1px solid #dedede", borderLeft: "none", borderTop: "none", width: "25%" }} scope="col">Cant</th>
-                    <th style={{ borderBottom: "1px solid #dedede", borderLeft: "none", borderTop: "none", width: "40%" }} scope="col">Clave</th>
-                    <th style={{ borderBottom: "1px solid #dedede", borderLeft: "none", borderTop: "none", width: "25%" }} scope="col"></th>
+                    <th style={{ borderBottom: "1px solid #dedede", borderLeft: "none", borderTop: "none", width: "15%" }} scope="col">Cant</th>
+                    <th style={{ borderBottom: "1px solid #dedede", borderLeft: "none", borderTop: "none", width: "35%" }} scope="col">Clave</th>
+                    <th style={{ borderBottom: "1px solid #dedede", borderLeft: "none", borderTop: "none", width: "35%" }} scope="col">Descripción</th>
+                    <th style={{ borderBottom: "1px solid #dedede", borderLeft: "none", borderTop: "none", width: "15%" }} scope="col"></th>
                   </tr>
                 </thead>
                 <tbody>
-                  {partidas.map((val) => {
+                  {partidas.map((val, index) => {
                     return (
-                      <tr>
+                      <tr key={index}>
                         <td style={{ border: "none", textAlign: "center" }}>{val.cantidad}</td>
                         <td style={{ border: "none", textAlign: "center" }}>{val.clave}</td>
-                        {/* <td>{val.barcode}</td> */}
+                        <td style={{ border: "none", textAlign: "left", fontSize: "0.7rem" }}>{val.descripcion}</td>
                         <td style={{ border: "none", textAlign: "center" }}>
                           <div
                             className="btn-group"
@@ -315,37 +390,34 @@ const CodigoBarrasManual = () => {
         )}
       </div>
 
-      <div class="modal" id="myModal">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            {/* <!-- Modal Header --> */}
-            <div class="modal-header">
-              <h4 class="modal-title">Agregar claves por lote</h4>
+      <div className="modal" id="myModal">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h4 className="modal-title">Agregar claves por lote</h4>
               <button
                 type="button"
-                class="btn-close"
+                className="btn-close"
                 data-bs-dismiss="modal"
               ></button>
             </div>
 
-            {/* <!-- Modal body --> */}
-            <div class="modal-body">
+            <div className="modal-body">
               <h6>Agregue las claves, una en cada fila</h6>
               <textarea
                 onChange={(e) => setClavesxLote(e.target.value)}
                 name="claves"
                 id="claves"
-                class="form-control"
+                className="form-control"
                 rows={10}
               ></textarea>
             </div>
 
-            {/* <!-- Modal footer --> */}
-            <div class="modal-footer">
+            <div className="modal-footer">
               <button
                 onClick={() => agregarLote()}
                 type="button"
-                class="btn btn-primary"
+                className="btn btn-primary"
                 data-bs-dismiss="modal"
               >
                 Agregar
