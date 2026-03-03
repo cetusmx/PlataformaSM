@@ -34,7 +34,7 @@ const CodeBarPrint = (props) => {
                   whiteSpace: "nowrap",
                   overflow: "hidden",
                   /* textOverflow: "ellipsis", */
-                  maxWidth: "180px",
+                  maxWidth: "200px",
                   display: "block"
                 }}>{val.descripcion}</span>
               </div>
