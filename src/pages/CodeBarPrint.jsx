@@ -16,9 +16,9 @@ const CodeBarPrint = (props) => {
               marginBottom: "2px", // Un pequeño margen para separar en vista previa
               minHeight: "75px",
               fontSize: "0.9rem",
-              border: "1px solid #dde6ed",
+              /* border: "1px solid #dde6ed",
               marginLeft: "-5px",
-              marginRight: "-5px"
+              marginRight: "-5px" */
             }}
           >
             <img src={Logo} alt="Logo SM" width={"45px"} style={{ marginRight: "10px" }} />
