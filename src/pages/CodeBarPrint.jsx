@@ -13,27 +13,34 @@ const CodeBarPrint = (props) => {
               display: "flex", 
               alignItems: "center", 
               pageBreakInside: "avoid",
-              marginBottom: "2px" // Un pequeño margen para separar en vista previa
+              marginBottom: "2px", // Un pequeño margen para separar en vista previa
+              minHeight: "75px",
+              fontSize: "0.9rem",
+              border: "1px solid #dde6ed"
             }}
           >
             <img src={Logo} alt="Logo SM" width={"45px"} style={{ marginRight: "10px" }} />
             {val.soloTexto ? (
               <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", textAlign: "left", overflow: "hidden" }}>
-                <span style={{ fontWeight: "500", fontSize: "11pt", lineHeight: "1.1", whiteSpace: "nowrap" }}>{val.clave}</span>
+                <span style={{ fontWeight: "600", fontSize: "12pt", lineHeight: "1.1", whiteSpace: "nowrap" }}>{val.clave}</span>
                 <span style={{ 
+                  fontWeight: "500",
                   fontSize: "7pt", 
                   lineHeight: "1.1", 
                   marginTop: "7px", 
                   textTransform: "uppercase",
                   whiteSpace: "nowrap",
                   overflow: "hidden",
-                  textOverflow: "ellipsis",
+                  /* textOverflow: "ellipsis", */
                   maxWidth: "180px",
                   display: "block"
                 }}>{val.descripcion}</span>
               </div>
             ) : (
-              val.barcode
+              <span style={{fontSize: "0.5rem"}}>
+                {val.barcode}
+              </span>
+              
             )}
           </div>
         );

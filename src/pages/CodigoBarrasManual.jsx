@@ -12,10 +12,10 @@ import { useReactToPrint } from "react-to-print";
 const CodigoBarrasManual = () => {
 
   useEffect(() => {
-  const cerrarDropdown = () => setSugerencias([]);
-  window.addEventListener('click', cerrarDropdown);
-  return () => window.removeEventListener('click', cerrarDropdown);
-}, []);
+    const cerrarDropdown = () => setSugerencias([]);
+    window.addEventListener('click', cerrarDropdown);
+    return () => window.removeEventListener('click', cerrarDropdown);
+  }, []);
 
   const url = "http://75.119.150.222:3010";
   const [preciosList, setPreciosList] = useState([]);
@@ -76,14 +76,20 @@ const CodigoBarrasManual = () => {
   const agregarPartida = () => {
     const modoSoloTexto = activeTab === "text";
     const uniqueId = Date.now();
-    
+
     const nuevaPartida = {
       id: uniqueId,
       cantidad: qty,
       clave: value,
       descripcion: descripcion,
       soloTexto: modoSoloTexto,
-      barcode: !modoSoloTexto ? <Barcode width={1} height={40} ref={ref} value={value} /> : null,
+      barcode: !modoSoloTexto ? <Barcode
+        options={{
+          fontSize: 10, // Set the text size in pixels
+          font: "monospace", // Define the font family
+          displayValue: true, // Ensure the text is displayed
+        }}
+        width={1} height={33} ref={ref} value={value} /> : null,
     };
 
     setPartidas([...partidas, nuevaPartida]);
@@ -94,7 +100,13 @@ const CodigoBarrasManual = () => {
         ...nuevaPartida,
         id: `${uniqueId}-${j}`,
         barcode: !modoSoloTexto ? (
-          <Barcode width={1} height={35} ref={ref} value={value} />
+          <Barcode
+            options={{
+              fontSize: 10, // Set the text size in pixels
+              font: "monospace", // Define the font family
+              displayValue: true, // Ensure the text is displayed
+            }}
+            width={1} height={33} ref={ref} value={value} />
         ) : null,
       });
     }
@@ -152,7 +164,7 @@ const CodigoBarrasManual = () => {
       const filtrado = preciosList.find((item) =>
         item.clave.toUpperCase().includes(searchTerm.toUpperCase())
       );
-      
+
       if (filtrado) {
         const precio_ = filtrado.precio;
         const totalInp = qty * precio_;
@@ -271,7 +283,7 @@ const CodigoBarrasManual = () => {
                     style={{ width: "170px" }}
                   />
                   {sugerencias.length > 0 && (
-                    <div className="dropdown" style={{ width: "400px" }}> 
+                    <div className="dropdown" style={{ width: "400px" }}>
                       {sugerencias.map((item) => (
                         <div
                           key={item.CLAVE}
