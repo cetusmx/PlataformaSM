@@ -43,21 +43,15 @@
 }
 .claveProd{
   margin-right: 10px;
-  position: relative;
 }
 .dropdown {
-  position: absolute;
-  top: 38px; /* Altura aproximada del input */
-  left: 0;
-  width: auto;
-  min-width: 100%;
-  max-height: 250px;
+  width: 100%;
+  max-height: 200px;
   overflow-y: auto;
-  background-color: #ffffff !important;
+  background-color: white;
   border: 1px solid #dde6ed;
   border-radius: 4px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-  z-index: 9999 !important;
+  margin-top: 5px;
 }
 .suggestion-clave {
   font-weight: bold;
