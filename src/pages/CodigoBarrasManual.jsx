@@ -227,7 +227,7 @@ const CodigoBarrasManual = () => {
                           onClick={() => {
                             onSearch(item.CLAVE);
                             setValue(item.CLAVE);
-                            setDescripcion(item.DESCRIPCION || "");
+                            setDescripcion(item.DESCRIPCION || ""); // Asigna la descripción
                             setSugerencias([]);
                           }}
                         >
@@ -272,7 +272,7 @@ const CodigoBarrasManual = () => {
                     style={{ width: "170px" }}
                   />
                   {sugerencias.length > 0 && (
-                    <div className="dropdown" style={{ width: "250px" }}>
+                    <div className="dropdown" style={{ width: "400px" }}> {/* Ancho mayor para ver descripción */}
                       {sugerencias.map((item) => (
                         <div
                           key={item.CLAVE}
@@ -280,7 +280,7 @@ const CodigoBarrasManual = () => {
                           onClick={() => {
                             onSearch(item.CLAVE);
                             setValue(item.CLAVE);
-                            setDescripcion(item.DESCRIPCION || "");
+                            setDescripcion(item.DESCRIPCION || ""); // Asigna la descripción
                             setSugerencias([]);
                           }}
                         >
