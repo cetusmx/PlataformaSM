@@ -147,20 +147,19 @@ const CodigoBarrasManual = () => {
   };
 
   const onSearch = (searchTerm) => {
-    //console.log(searchTerm);
-    setValue(searchTerm); //Se coloca el valor en el input "Clave prod"
-    const filtrado = preciosList.find((item) =>
-      item.clave.toUpperCase().includes(searchTerm.toUpperCase())
-    );
-    /* const filtrado = preciosList.filter((item) =>
-      item.clave.toUpperCase().includes(searchTerm.toUpperCase())
-    ); */
-    console.log(filtrado);
-    const precio_ = filtrado.precio;
-    /* const precio_ = filtrado.map((item) => item.precio); */
-    const totalInp = qty * precio_;
-    setTotalCab(totalInp);
-    setPrice(precio_);
+    // Buscamos el precio solo si existe la lista de precios
+    if (preciosList.length > 0) {
+      const filtrado = preciosList.find((item) =>
+        item.clave.toUpperCase().includes(searchTerm.toUpperCase())
+      );
+      
+      if (filtrado) {
+        const precio_ = filtrado.precio;
+        const totalInp = qty * precio_;
+        setTotalCab(totalInp);
+        setPrice(precio_);
+      }
+    }
   };
 
   return (
@@ -225,10 +224,10 @@ const CodigoBarrasManual = () => {
                           key={item.CLAVE}
                           className="dropdown-row"
                           onClick={() => {
-                            onSearch(item.CLAVE);
                             setValue(item.CLAVE);
-                            setDescripcion(item.DESCRIPCION || ""); // Asigna la descripción
+                            setDescripcion(item.DESCRIPCION || "");
                             setSugerencias([]);
+                            onSearch(item.CLAVE);
                           }}
                         >
                           <div className="suggestion-clave">{item.CLAVE}</div>
@@ -272,16 +271,16 @@ const CodigoBarrasManual = () => {
                     style={{ width: "170px" }}
                   />
                   {sugerencias.length > 0 && (
-                    <div className="dropdown" style={{ width: "400px" }}> {/* Ancho mayor para ver descripción */}
+                    <div className="dropdown" style={{ width: "400px" }}> 
                       {sugerencias.map((item) => (
                         <div
                           key={item.CLAVE}
                           className="dropdown-row"
                           onClick={() => {
-                            onSearch(item.CLAVE);
                             setValue(item.CLAVE);
-                            setDescripcion(item.DESCRIPCION || ""); // Asigna la descripción
+                            setDescripcion(item.DESCRIPCION || "");
                             setSugerencias([]);
+                            onSearch(item.CLAVE);
                           }}
                         >
                           <div className="suggestion-clave">{item.CLAVE}</div>
