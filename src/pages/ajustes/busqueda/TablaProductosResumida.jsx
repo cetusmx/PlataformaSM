@@ -11,7 +11,7 @@ const TablaProductosResumida = () => {
   const [searchList, setSearchList] = useState("");
   const [claveModal, setClaveModal] = useState("");
   const [resultado, setResultado] = useState([]);
-  const urlServidorAPI = "https://sealmarket.net/api2";
+  const urlServidorAPI = process.env.REACT_APP_URL_API2;
 
   useEffect(() => {
     getProductos();

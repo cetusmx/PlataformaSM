@@ -15,8 +15,8 @@ const Editamars = () => {
   const [search, setSearch] = useState("");
   const [dataExcel, setDataExcel] = useState([]);
 
-  const url = "https://sealmarket.net/api1/actualiza";
-  const urlServidorAPI = "https://sealmarket.net/api1";
+  const url = `${process.env.REACT_APP_URL_API1}/actualiza`;
+  const urlServidorAPI = process.env.REACT_APP_URL_API1;
   const [family, setFamily] = useState("");
   const [margenes, setMargenes] = useState([]);
   const [margenesPivote, setMargenesPivote] = useState([]);

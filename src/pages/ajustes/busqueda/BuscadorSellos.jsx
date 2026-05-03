@@ -16,7 +16,7 @@ const BuscadorSellos = () => {
   const [showSpinner2, setShowSpinner2] = useState(true);
   /* const [lineaBuscada, setLineaBuscada] = useState(""); */
   const cardsPerRow = 2;
-  const urlServidorAPI3 = "https://sealmarket.net/api2";
+  const urlServidorAPI3 = process.env.REACT_APP_URL_API2;
   const urlServidorAPI4 = "http://localhost:5071";
 
   useEffect(() => {

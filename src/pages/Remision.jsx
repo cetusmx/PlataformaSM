@@ -6,7 +6,7 @@ import { BiEraser, BiPrinter, BiTrash } from "react-icons/bi";
 import { useReactToPrint } from "react-to-print";
 
 const Remision = () => {
-  const url = "https://sealmarket.net/api1";
+  const url = process.env.REACT_APP_URL_API1;
   const printRef = useRef();
 
   useEffect(() => {

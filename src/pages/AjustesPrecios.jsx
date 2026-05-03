@@ -41,8 +41,8 @@ const AjustesPrecios = () => {
   const { contextAdminNav, setContextAdminNav } = valor3; */
   const porcentaje = 75;
 
-  const urlServidorAPI = "https://sealmarket.net/api1";
-  const urlServidorAPI3 = "https://sealmarket.net/api2";
+  const urlServidorAPI = process.env.REACT_APP_URL_API1;
+  const urlServidorAPI3 = process.env.REACT_APP_URL_API2;
 
   useEffect(() => {
     //console.log(sucursalPropietaria);

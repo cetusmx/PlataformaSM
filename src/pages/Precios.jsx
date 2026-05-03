@@ -25,7 +25,7 @@ const Precios = () => {
   const infoUsuario = contextData;
 
   let getPrecios = () => {
-    Axios.get(`https://sealmarket.net/api1/precios/getprecios`, {
+    Axios.get(`${process.env.REACT_APP_URL_API1}/precios/getprecios`, {
       params: {
         sucursal: infoUsuario.sucursal,
       },

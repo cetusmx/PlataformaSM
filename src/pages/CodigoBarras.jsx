@@ -22,8 +22,8 @@ const CodigoBarras = () => {
   const fecha = Date.now();
   const hoy = new Date(fecha).toJSON().slice(0, 10);
 
-  const urlServidorAPI = "https://sealmarket.net/api1";
-  const urlServidorAPI2 = "https://sealmarket.net/api2";
+  const urlServidorAPI = process.env.REACT_APP_URL_API1;
+  const urlServidorAPI2 = process.env.REACT_APP_URL_API2;
   const [xmlContent, setXmlContent] = useState("");
   const [error, setError] = useState("");
   const [listaProductos, setListaProductos] = useState([]);
@@ -495,7 +495,7 @@ const CodigoBarras = () => {
 
     console.log("Nuevo arreglo",newArray)
     if (newArray.length === 1) {
-      const url = "https://sealmarket.net/api2/api/v1/productorecepcionado";
+      const url = `${process.env.REACT_APP_URL_API2}/api/v1/productorecepcionado`;
       await Axios({ method: metodo, url: url, data: newArray[0] })
         .then(function (respuesta) {
           var tipo = respuesta.status;
@@ -510,7 +510,7 @@ const CodigoBarras = () => {
           show_alerta("Error en la solicitud de escritura", "error");
         });
     } else {
-      const url = "https://sealmarket.net/api2/api/v1/productosrecepcionados";
+      const url = `${process.env.REACT_APP_URL_API2}/api/v1/productosrecepcionados`;
       await Axios({ method: metodo, url: url, data: newArray })
         .then(function (respuesta) {
           var tipo = respuesta.status;
@@ -545,7 +545,7 @@ const CodigoBarras = () => {
 
   const enviarSolicitud = async (metodo, parametros) => {
     //console.log(parametros);
-    const url = "https://sealmarket.net/api2/api/v1/products";
+    const url = `${process.env.REACT_APP_URL_API2}/api/v1/products`;
 
     await Axios({ method: metodo, url: url, data: parametros })
       .then(function (respuesta) {

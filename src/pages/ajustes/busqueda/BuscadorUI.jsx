@@ -5,7 +5,7 @@ import Axios from "axios";
 import Table from "./table/Table";
 
 const BuscadorUI = () => {
-  const urlServidorAPI3 = "https://sealmarket.net/api2";
+  const urlServidorAPI3 = process.env.REACT_APP_URL_API2;
   const [searchList, setSearchList] = useState([]);
   const [di, setDi] = useState("");
   const [de, setDe] = useState("");

@@ -7,7 +7,7 @@ const Solicitudes = () => {
   const [state, setState] = useState(0);
   const [data, setData] = useState([]);
   const [estatus, setEstatus] = useState("");
-  const urlServidorAPI = "https://sealmarket.net/api1";
+  const urlServidorAPI = process.env.REACT_APP_URL_API1;
 
   useEffect(() => {
     // Agrega opciones al Select cuando carga la página por primera vez

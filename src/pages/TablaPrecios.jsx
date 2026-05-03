@@ -4,7 +4,7 @@ import Axios from "axios";
 import { Spinner } from "react-bootstrap";
 
 const TablaPrecios = (props) => {
-  const url = "https://sealmarket.net/api1";
+  const url = process.env.REACT_APP_URL_API1;
   const [searchList, setSearchList] = useState("");
   const [listaPrecios, setListaPrecios] = useState("");
 

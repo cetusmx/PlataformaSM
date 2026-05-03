@@ -40,5 +40,21 @@
                 "path": "/listaprecios"
             }
         ]
+    },
+    {
+        "title": "Compras",
+        "icon": "bi bi-cart",
+        "childrens": [
+            {
+                "title": "Pedidos especiales",
+                "icon": "bi bi-star",
+                "path": "/pedidosespeciales"
+            },
+            {
+                "title": "Reposiciones",
+                "icon": "bi bi-arrow-repeat",
+                "path": "/reposiciones"
+            }
+        ]
     }
 ]

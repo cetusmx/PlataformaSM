@@ -68,7 +68,7 @@ const InventariosGenerales = ({ onViewDetails }) => {
     const fetchInventarios = async () => {
       try {
         const response = await fetch(
-          "https://sealmarket.net/api1/getresumeninventariosgenerales"
+          `${process.env.REACT_APP_URL_API1}/getresumeninventariosgenerales`
         ); // Changed API endpoint
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

@@ -1,0 +1,238 @@
+.factura-reutilizable {
+    padding: 0px;
+    background-color: transparent;
+    border-radius: 0;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.upload-section {
+    border: 2px dashed #007bff;
+    padding: 20px;
+    text-align: center;
+    border-radius: 10px;
+    background-color: #fff;
+    margin-bottom: 15px;
+}
+
+.header-factura {
+    background-color: #fff;
+    padding: 10px 15px;
+    border-radius: 5px 5px 0 0;
+    border: 1px solid #dee2e6;
+    border-bottom: none;
+    margin-bottom: 0;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
+    position: relative;
+}
+
+.header-item {
+    margin-right: 30px;
+    border-right: 1px solid #eee;
+    padding-right: 15px;
+}
+
+.header-item:last-child {
+    border-right: none;
+}
+
+.header-item strong {
+    display: block;
+    font-size: 0.65rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.header-item span {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.btn-cancelar-top {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    border-radius: 4px;
+}
+
+.tabla-factura-container {
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    overflow-y: auto;
+    height: 62vh;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.tabla-factura-container::-webkit-scrollbar {
+    display: none;
+}
+
+.tabla-factura {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabla-factura thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #f8f9fa;
+    color: #526d82;
+    border-bottom: 2px solid #dee2e6;
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+.tabla-factura td {
+    padding: 3px 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.col-clave {
+    font-weight: 700;
+    color: #0056b3;
+    background-color: #e7f1ff;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.75rem;
+    display: inline-block;
+}
+
+.col-clave.no-registrada {
+    color: #721c24;
+    background-color: #f8d7da;
+}
+
+.btn-refresh-min {
+    background: none;
+    border: none;
+    color: #0056b3;
+    padding: 0 5px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    vertical-align: middle;
+}
+
+.btn-refresh-min:hover {
+    color: #003d80;
+    transform: rotate(180deg);
+}
+
+.desc-secundaria {
+    display: block;
+    font-size: 0.7rem;
+    color: #6c757d;
+    white-space: normal;
+    line-height: 1.1;
+    margin-top: 1px;
+}
+
+.origen-info {
+    display: block;
+    font-size: 0.65rem;
+    color: #000; /* Negro para mayor legibilidad */
+    font-style: italic;
+    margin-top: 0px;
+    line-height: 1;
+}
+
+.footer-acciones {
+    background-color: #f8f9fa;
+    padding: 10px 15px;
+    border: 1px solid #dee2e6;
+    border-top: none;
+    border-radius: 0 0 5px 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Rediseño del área de notificaciones */
+.msg-validacion {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-alerta {
+    color: #a0522d; /* Marrón siena para el texto */
+}
+
+.status-alerta i, .status-alerta .warning-icon {
+    color: #d97706; /* Naranja fuerte para el icono */
+    font-size: 1rem;
+}
+
+.status-ok {
+    color: #15803d; /* Verde oscuro */
+}
+
+.resumen-horizontal {
+    display: flex;
+    gap: 25px;
+    align-items: center;
+}
+
+.resumen-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.resumen-item label {
+    font-size: 0.65rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    margin-bottom: 0;
+}
+
+.resumen-item span {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #333;
+}
+
+.resumen-item.total-destacado span {
+    font-size: 1.1rem;
+    color: #007bff;
+}
+
+.btn-finalizar-main {
+    padding: 8px 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.input-descuento-factura {
+    width: 70px;
+    padding: 2px 5px;
+    border: 1px solid #ced4da;
+    border-radius: 3px;
+    text-align: right;
+    font-size: 0.8rem;
+}

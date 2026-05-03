@@ -15,7 +15,7 @@ const SiembraProds = () => {
   const [totalCab, setTotalCab] = useState("0");
   const [price, setPrice] = useState("0");
   const [qty, setQty] = useState("1");
-  const urlServidorAPI = "https://sealmarket.net/api1";
+  const urlServidorAPI = process.env.REACT_APP_URL_API1;
 
   const { valor, valor2 } = useContext(DataContext);
   const { contextData, setContextData } = valor;
