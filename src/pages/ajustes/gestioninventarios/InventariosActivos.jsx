@@ -304,7 +304,7 @@ const InventarioDetails = ({ inventario, onBack }) => {
       };
 
       try {
-        const response = await fetch('${process.env.REACT_APP_URL_API2}/api/v1/lineaajustada', {
+        const response = await fetch(`${process.env.REACT_APP_URL_API2}/api/v1/lineaajustada`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -606,7 +606,7 @@ const InventariosActivos = () => {
 
     try {
       const response = await fetch(
-        "${process.env.REACT_APP_URL_API1}/getresumeninventariosweb",
+        `${process.env.REACT_APP_URL_API1}/getresumeninventariosweb`,
         { signal: controller.signal }
       );
 
