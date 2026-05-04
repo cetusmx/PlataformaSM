@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { BiArrowBack } from "react-icons/bi";
-import "../styles/herramsiembraprods.css";
+import "../styles/ajustescotizador.css";
 import { MenuAjustesContext } from "../contexts/context-menu-ajustes";
 import CodigoBarras from "./CodigoBarras";
 

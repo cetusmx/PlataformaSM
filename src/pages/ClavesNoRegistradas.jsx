@@ -3,12 +3,22 @@ import Axios from "axios";
 import * as XLSX from "xlsx";
 import "../styles/clavesnoregistradas.css";
 import { BiDownload } from "react-icons/bi";
-import TablaNoRegistradas from "./admon/siembra/TablaNoRegistradas";
+import Table from "../components/Table";
 
 const ClavesNoRegistradas = () => {
   const urlServidorAPI = process.env.REACT_APP_URL_API1;
   const urlServidorAPI2 = `${process.env.REACT_APP_URL_API2}/api/v1`;
   const [clavesNoRegistradas, setClavesNoRegistradas] = useState([]);
+
+  const encabezados = [
+    { id: "clave", label: "Clave", minWidth: "17%" },
+    { id: "claveProveedor", label: "Clave proveedor", minWidth: "18%" },
+    { id: "nombre", label: "Proveedor", minWidth: "15%", align: "right" },
+    { id: "sucursal", label: "Sucursal", minWidth: "12%", align: "right" },
+    { id: "factura", label: "Factura", minWidth: "12%", align: "right" },
+    { id: "fecha", label: "Fecha", minWidth: "12%", align: "right" },
+    { id: "accion", label: "Marcar", minWidth: "14%", align: "center" },
+  ];
 
   useEffect(() => {
     getClavesNoRegistradas();
@@ -79,7 +89,7 @@ const ClavesNoRegistradas = () => {
           La columna Clave fue capturada manualmente durante la recepción de
           mercancía.
         </p>
-        <TablaNoRegistradas rows={clavesNoRegistradas} onActualizar={handleActualizar} />
+        <Table data={clavesNoRegistradas} headers={encabezados} onActualizar={handleActualizar} />
       </div>
     </div>
   );

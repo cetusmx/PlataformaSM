@@ -57,7 +57,7 @@ const FacturaXMLReutilizable = ({ storageKey = "factura_progress" }) => {
     }, [facturaData, partidas, almacenSeleccionado, claveProvSistema, storageKey]);
 
     const fetchAlmacenes = () => {
-        Axios.get(`${urlServidorAPI}/getalmacenes`)
+        Axios.get(`${urlServidorAPI}/compras/getalmacenes`)
             .then(res => setAlmacenes(res.data))
             .catch(err => console.error("Error al cargar almacenes", err));
     };
@@ -72,7 +72,7 @@ const FacturaXMLReutilizable = ({ storageKey = "factura_progress" }) => {
     const getClavesMasivas = (rfc, items) => {
         setRecargandoMasivo(true);
         const clavesUnicas = [...new Set(items.map(p => p.claveProveedor))];
-        Axios.post(`${urlServidorAPI}/getclavesproveedor`, { rfc, claves: clavesUnicas })
+        Axios.post(`${urlServidorAPI}/compras/getclavesproveedor`, { rfc, claves: clavesUnicas })
             .then((response) => {
                 const { cve_clpv, partidas: clavesServidor } = response.data;
                 setClaveProvSistema(cve_clpv || "NO ENCONTRADO");
@@ -94,7 +94,7 @@ const FacturaXMLReutilizable = ({ storageKey = "factura_progress" }) => {
 
     const getClaveUnitaria = (item) => {
         setFilasCargando(prev => ({ ...prev, [item.id]: true }));
-        Axios.get(`${urlServidorAPI}/getclavesproveedor`, {
+        Axios.get(`${urlServidorAPI}/compras/getclavesproveedor`, {
             params: { rfc: facturaData.rfc, clave: item.claveProveedor, _t: Date.now() }
         }).then((response) => {
             const data = response.data;
@@ -177,10 +177,12 @@ const FacturaXMLReutilizable = ({ storageKey = "factura_progress" }) => {
     const faltaAlmacen = !almacenSeleccionado;
 
     const reset = () => {
+        localStorage.removeItem(storageKey); // Limpieza física del almacenamiento
         setFacturaData(null);
         setPartidas([]);
         setClaveProvSistema(null);
         setAlmacenSeleccionado("");
+        setFilasCargando({});
     };
 
     const finalizarProceso = () => {
@@ -195,7 +197,11 @@ const FacturaXMLReutilizable = ({ storageKey = "factura_progress" }) => {
             a.click();
             window.URL.revokeObjectURL(url);
             document.body.removeChild(a);
+            
             show_alerta("Archivo .MOD generado", "success");
+            
+            // Opcional: ¿Deseas que se limpie todo automáticamente al terminar?
+            // reset(); 
         } catch (error) {
             show_alerta("Error al generar archivo", "error");
         }
