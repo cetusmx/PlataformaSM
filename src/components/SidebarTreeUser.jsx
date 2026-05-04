@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import SideBarItem from "./SideBarItem";
 import items from "../data/sidebarUser.json";
 import "../styles/sidebartree.css";
@@ -6,6 +6,12 @@ import { BiHome } from "react-icons/bi";
 import logoImage from "../assets/Logo3tr.png";
 
 const SidebarTreeUser = () => {
+    const [openIndex, setOpenIndex] = useState(null);
+
+    const handleToggle = (index) => {
+      setOpenIndex(openIndex === index ? null : index);
+    };
+
     return (
         <>
           <div className="sidebar">
@@ -15,7 +21,12 @@ const SidebarTreeUser = () => {
               <h4 style={{ padding: 0 }}>Seal Market</h4>
             </div>
             {items.map((item, index) => (
-              <SideBarItem key={index} item={item} />
+              <SideBarItem 
+                key={index} 
+                item={item} 
+                isOpen={openIndex === index}
+                toggleOpen={() => handleToggle(index)}
+              />
             ))}
           </div>
         </>

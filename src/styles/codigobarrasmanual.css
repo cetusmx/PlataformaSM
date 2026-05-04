@@ -43,8 +43,10 @@
 }
 .claveProd{
   margin-right: 10px;
+  position: relative;
 }
 .dropdown {
+  position: absolute;
   width: 100%;
   max-height: 200px;
   overflow-y: auto;
@@ -52,6 +54,8 @@
   border: 1px solid #dde6ed;
   border-radius: 4px;
   margin-top: 5px;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 .suggestion-clave {
   font-weight: bold;

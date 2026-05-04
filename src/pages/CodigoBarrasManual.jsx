@@ -273,7 +273,7 @@ const CodigoBarrasManual = () => {
                     style={{ width: "60px" }}
                   />
                 </div>
-                <div className="claveProd" style={{ marginRight: "10px", position: "relative" }}>
+                <div className="claveProd" style={{ marginRight: "10px" }}>
                   <label style={{ fontSize: "1rem" }}>Clave</label>
                   <input
                     value={value}
