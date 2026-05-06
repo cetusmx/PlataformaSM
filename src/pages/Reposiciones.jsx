@@ -29,7 +29,7 @@ const Reposiciones = () => {
                         </div>
                         <h5>Generar OC Inicial</h5>
                         <p className="text-muted">
-                            Importe datos desde Excel (Cantidad, Clave, Almacén) para crear una orden de compra inicial. Ideal para reposición de stock inicial.
+                            Importe datos desde Excel (Cantidad, Clave, Almacén) para crear una orden de compra inicial.
                         </p>
                         <button className="btn btn-primary w-100">
                             Seleccionar
@@ -45,7 +45,7 @@ const Reposiciones = () => {
                         </div>
                         <h5>Generar modelo de OC a partir de factura</h5>
                         <p className="text-muted">
-                            Genere un modelo de documento de orden de compra a partir de una factura XML de proveedor. Processa automáticamente las claves del sistema.
+                            Genere un modelo de documento de orden de compra a partir de una factura XML de proveedor.
                         </p>
                         <button className="btn btn-primary w-100">
                             Seleccionar
