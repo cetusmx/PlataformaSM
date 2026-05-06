@@ -1,7 +1,5 @@
 .wrapper{
   width: 100%;
-  /* display: flex;
-  flex-direction: row; */
 }
 .captura{
   width: 50%;
@@ -27,7 +25,7 @@
 .dropdown-row{
   cursor: pointer;
   padding: 5px 10px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #000;
 }
 .dropdown-row:hover{
   background-color: #f8f9fa;
@@ -51,7 +49,7 @@
   max-height: 200px;
   overflow-y: auto;
   background-color: white;
-  border: 1px solid #dde6ed;
+  border: 1px solid #000;
   border-radius: 4px;
   margin-top: 5px;
   z-index: 1000;
@@ -70,38 +68,93 @@
   align-items: end;
   padding: 10px 0 0 10px;
 }
+
+.div-boton-generar .btn {
+  flex: 0 0 auto;
+}
+
+#boton-nueva-importacion {
+  min-width: 160px;
+}
+
+/* Modal Buttons Styling */
+.modal-footer {
+  padding: 1rem;
+  gap: 0.5rem;
+}
+
+.btn-modal-cancelar,
+.btn-modal-importar {
+  border-radius: 6px;
+  padding: 0.375rem 1rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.btn-modal-cancelar {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #fff;
+}
+
+.btn-modal-cancelar:hover {
+  background-color: #5a6268;
+  border-color: #5a6268;
+  color: #fff;
+}
+
+.btn-modal-importar {
+  background-color: transparent;
+  border: 1px solid #6c757d;
+  color: #6c757d;
+}
+
+.btn-modal-importar:hover {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #fff;
+}
 .tablaProds{
   width: 100%;
-  border: 1px solid #dde6ed;
+  border: 1px solid #d1d5db;
   border-radius: 5px;
   z-index: 0;
   overflow-y: scroll;
   font-size: 0.8rem;
-  min-height: 52vh;
-  max-height: 52vh;
+  min-height: 50vh;
+  max-height: 50vh;
 }
 .codigosBarras{
   width: 47%;
   padding-left: 3%;
   float: right;
+  margin-top: 50px;
   min-height: 52vh;
   max-height: 52vh;
 }
 .contenedorEtiquetas2{
   display: flex;
   flex-direction: column;
-  /* flex-shrink: 0; */
-  border: 1px solid #dde6ed;
+  align-items: stretch;
+  border: 1px solid #d1d5db;
   border-radius: 5px;
-  min-height: 58vh;
-  max-height: 58vh;
+  min-height: 50vh;
+  max-height: 50vh;
   overflow-y: scroll;
   padding-left: 10%;
+}
+
+.contenedorEtiquetas2 > .etiqueta-logistica:first-of-type {
+  margin-top: 0;
+}
+
+.contenedorEtiquetas2 > .etiqueta-logistica {
+  margin-top: -1px;
 }
 .codebars{
   display: flex;
   flex-direction: column;
-  /* background-color: aqua; */
   max-height: 37px;
 }
 .codesHeader{
@@ -115,8 +168,169 @@
 }
 .btn-group-custom {
   display: flex;
-  width: 40%;
+  width: 60%;
 }
+
+/* Rediseño Etiqueta Logística Compleja */
+.etiqueta-logistica {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 150px;
+  padding: 0;
+  margin: 0;
+  page-break-inside: avoid;
+  background-color: #fff;
+  overflow: hidden;
+}
+
+/* Mitad Superior (60% de la etiqueta) */
+.logistica-superior-container {
+  height: 60%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid #000;
+}
+
+/* Fila 0: Clave + Cantidad */
+.fila-clave {
+  display: flex;
+  width: 100%;
+  font-size: 10pt;
+  font-weight: 700;
+  margin-top: 7px;
+  text-transform: uppercase;
+  border-bottom: 1px solid #000;
+  border-top: 1px solid #000;
+}
+
+.col-clave-label {
+  width: 80%;
+  padding: 3px 5px;
+  border-right: 1px solid #000;
+  display: flex;
+  align-items: center;
+}
+
+.col-cantidad {
+  width: 20%;
+  padding: 3px 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 7pt;
+}
+
+.col-cantidad strong {
+  font-size: 5pt;
+  color: #666;
+}
+
+.col-cantidad span {
+  font-weight: 700;
+  color: #000;
+}
+
+/* Fila 1: Descripción (75%) y Logo (25%) */
+.fila-desc-logo {
+  flex: 1;
+  display: flex;
+  width: 100%;
+  border-bottom: 1px solid #000;
+}
+
+.col-descripcion {
+  width: 100%;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 8pt;
+  font-weight: 600;
+  line-height: 1.1;
+  text-transform: uppercase;
+  /* border-right: 1px solid #000; */
+}
+
+.col-descripcion strong {
+  font-size: 5pt;
+  color: #666;
+  margin-bottom: 1px;
+}
+
+.col-descripcion span {
+  font-weight: 700;
+  color: #000;
+  font-size: 7pt;
+}
+
+.col-logo {
+  width: 25%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2px;
+}
+
+/* Fila 2: 5 Columnas de Datos Logísticos */
+.fila-cinco-datos {
+  flex: 1;
+  display: flex;
+  width: 100%;
+}
+
+.dato-logistico-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid #000;
+  padding: 2px;
+  font-size: 6pt;
+}
+
+.dato-logistico-item:last-child {
+  border-right: none;
+}
+
+.dato-logistico-item strong {
+  font-size: 6pt;
+  color: #666;
+  margin-bottom: 1px;
+}
+
+.dato-logistico-item span {
+  font-weight: 700;
+  color: #000;
+}
+
+/* Mitad Inferior (40% de la etiqueta) */
+.logistica-inferior-barcode {
+  height: 40%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 5px 0;
+}
+
+.barcode-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding-top: 7px;
+}
+
+.fecha-hora {
+  font-size: 6pt;
+  margin-top: 3px;
+  width: 100%;
+  text-align: left;
+}
+
 .btn-group-custom .btn {
   flex: 1;
   border-radius: 0;
@@ -133,8 +347,30 @@
   border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
 }
-.btn-group-custom .btn-outline-primary:not(.active):hover {
-  background-color: #f8f9fa;
-  color: #0d6efd;
+
+/* Modal extra ancho para logística (Doble de LG) */
+.modal-logistica-extra-wide {
+  max-width: 1600px !important;
+  width: 90% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
 
+.logistica-importada {
+  width: 100%;
+  padding: 15px 0;
+}
+
+.logistica-table {
+  min-height: calc(50vh + 50px) !important;
+  max-height: calc(50vh + 50px) !important;
+}
+
+.logistica-preview .contenedorEtiquetas2 {
+  min-height: calc(50vh + 50px) !important;
+  max-height: calc(50vh + 50px) !important;
+}
+
+.logistica-preview {
+  margin-top: -15px !important;
+}
