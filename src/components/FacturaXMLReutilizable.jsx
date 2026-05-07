@@ -153,7 +153,16 @@ const FacturaXMLReutilizable = ({ storageKey = "factura_progress" }) => {
             }
             setFacturaData(header);
             setLoading(false);
-            getClavesMasivas(header.rfc, items);
+            if (header.rfc === "ROSA7504083F6") {
+                setClaveProvSistema("8");
+                setPartidas(items.map(item => ({
+                    ...item,
+                    claveInterna: item.claveProveedor,
+                    origen: null
+                })));
+            } else {
+                getClavesMasivas(header.rfc, items);
+            }
         } catch (error) {
             setLoading(false);
         }
@@ -192,7 +201,7 @@ const FacturaXMLReutilizable = ({ storageKey = "factura_progress" }) => {
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = `PEDIDO_${claveProvSistema}_${facturaData.folio}.mod`;
+            a.download = `OC_${claveProvSistema}_${facturaData.folio}.mod`;
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
