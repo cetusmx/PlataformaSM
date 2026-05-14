@@ -186,7 +186,7 @@
 
 /* Mitad Superior (60% de la etiqueta) */
 .logistica-superior-container {
-  height: 60%;
+  height: 55%;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -197,7 +197,7 @@
 .fila-clave {
   display: flex;
   width: 100%;
-  font-size: 10pt;
+  font-size: 12pt;
   font-weight: 700;
   margin-top: 7px;
   text-transform: uppercase;
@@ -207,7 +207,7 @@
 
 .col-clave-label {
   width: 80%;
-  padding: 3px 5px;
+  padding: 1px 5px;
   border-right: 1px solid #000;
   display: flex;
   align-items: center;
@@ -215,16 +215,16 @@
 
 .col-cantidad {
   width: 20%;
-  padding: 3px 5px;
+  padding: 1px 5px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 7pt;
+  font-size: 9pt;
 }
 
 .col-cantidad strong {
-  font-size: 5pt;
+  font-size: 7pt;
   color: #666;
 }
 
@@ -247,9 +247,9 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  font-size: 8pt;
+  font-size: 12pt;
   font-weight: 600;
-  line-height: 1.1;
+  line-height: 1.2;
   text-transform: uppercase;
   /* border-right: 1px solid #000; */
 }
@@ -289,7 +289,7 @@
   justify-content: center;
   border-right: 1px solid #000;
   padding: 2px;
-  font-size: 6pt;
+  font-size: 8pt;
 }
 
 .dato-logistico-item:last-child {
@@ -309,19 +309,19 @@
 
 /* Mitad Inferior (40% de la etiqueta) */
 .logistica-inferior-barcode {
-  height: 40%;
+  height: 45%;
   width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 5px 0;
+  padding: 2px 0;
 }
 
 .barcode-container {
   display: flex;
   justify-content: center;
   width: 100%;
-  padding-top: 7px;
+  padding-top: 5px;
 }
 
 .fecha-hora {
