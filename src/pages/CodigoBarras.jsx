@@ -724,12 +724,12 @@ const CodigoBarras = () => {
                     <table className="table table-striped">
                       <thead>
                         <tr>
-                          <th style={{  width: "20%", textAlign: "center" }} scope="col">
-                            Cantidad
+                          <th style={{  width: "15%", textAlign: "center" }} scope="col">
+                            Cant
                           </th>
                           <th scope="col">Clave Proveedor</th>
                           <th scope="col">Clave</th>
-                          <th style={{ width: "20%" }} scope="col"></th>
+                          <th style={{ width: "15%" }} scope="col"></th>
                         </tr>
                       </thead>
                       <tbody>
@@ -804,11 +804,12 @@ const CodigoBarras = () => {
                     <table className="table table-striped">
                       <thead>
                         <tr>
-                          <th style={{ textAlign: "center" }} scope="col">
-                            Cantidad
+                          <th style={{ width: "12%", textAlign: "center" }} scope="col">
+                            Cant
                           </th>
                           <th scope="col">Clave Proveedor</th>
                           <th scope="col">Clave</th>
+                          <th style={{ width: "12%" }} scope="col"></th>
                         </tr>
                       </thead>
                       <tbody>
@@ -823,6 +824,19 @@ const CodigoBarras = () => {
                               </td>
                               <td className="td-table-cb">{val.producto}</td>
                               <td className="td-table-cb">{val.clave}</td>
+                              <td style={{ textAlign: "center" }}>
+                                <OverlayTrigger
+                                  placement="top"
+                                  overlay={renderTooltip}
+                                >
+                                  <button
+                                    onClick={() => printCodeBar(val)}
+                                    className="btn btn-outline-secondary boton-tb-cb"
+                                  >
+                                    <i className="fa-solid fa-barcode"></i>
+                                  </button>
+                                </OverlayTrigger>
+                              </td>
                             </tr>
                           );
                         })}
