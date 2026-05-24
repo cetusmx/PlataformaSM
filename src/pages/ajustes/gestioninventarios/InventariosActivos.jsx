@@ -104,6 +104,7 @@ const ALL_COUNTED_PRODUCTS_COLUMNS = [
   { header: 'Clave', accessor: 'Clave' },
   { header: 'Descripción', accessor: 'Descripcion' },
   { header: 'Existencia', accessor: 'qtyConteo' }, // Corrected accessor
+  { header: 'Caja', accessor: 'Caja' },
   { header: 'Unidad', accessor: 'Unidad' },
   { header: 'Observaciones', accessor: 'Observaciones' },
 ];
@@ -212,6 +213,7 @@ const InventarioDetails = ({ inventario, onBack }) => {
         Clave: p.Clave,
         Descripcion: p.Descripcion,
         qtyConteo: p.Existencia, // Mapeado a Existencia
+        Caja: p.Caja,
         Unidad: p.Unidad,
         Observaciones: p.Observaciones // Nueva columna
       })) : [];
