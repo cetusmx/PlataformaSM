@@ -205,7 +205,7 @@ const InventarioDetails = ({ inventario, onBack }) => {
     try {
       //Obtiene todo el universo de productos contados de un inventario
       const response = await fetch(
-        `${process.env.REACT_APP_URL_API1}/getproductoscontadosporauditoreinv?InventarioID=${inventario.InventarioID}&Auditor=${inventario.Auditor}`
+        `${process.env.REACT_APP_URL_API1}/getproductoscontadosporauditoreinv?InventarioID=${inventario.InventarioID}&auditor=${inventario.Auditor}`
       );
       if (!response.ok) throw new Error('Error al cargar productos');
       const data = await response.json();
@@ -238,7 +238,7 @@ const InventarioDetails = ({ inventario, onBack }) => {
       let mappedProducts;
       if (linea.isCounted) {
         
-        url = `${process.env.REACT_APP_URL_API1}/getproductoscontadosporauditorporlineaeinv?InventarioID=${inventario.InventarioID}&auditor=${inventario.Auditor}&linea=${linea.Linea}`;
+        url = `${process.env.REACT_APP_URL_API1}/getproductoscontadosporauditorporlineaeinv?InventarioID=${inventario.InventarioID}&auditor=${inventario.Auditor}&Linea=${linea.Linea}`;
         const response = await fetch(url);
         if (!response.ok) throw new Error('Error al cargar productos de la línea');
         const data = await response.json();
@@ -250,7 +250,7 @@ const InventarioDetails = ({ inventario, onBack }) => {
           Unidad: p.Unidad,
         })) : [];
       } else {
-        url = `${process.env.REACT_APP_URL_API1}/getproductosporlineaeinv?InventarioID=${inventario.InventarioID}&linea=${linea.Linea}&auditor=${inventario.Auditor}`;
+        url = `${process.env.REACT_APP_URL_API1}/getproductosporlineaeinv?InventarioID=${inventario.InventarioID}&Linea=${linea.Linea}&auditor=${inventario.Auditor}`;
         const response = await fetch(url);
         if (!response.ok) throw new Error('Error al cargar productos de la línea');
         const data = await response.json();
