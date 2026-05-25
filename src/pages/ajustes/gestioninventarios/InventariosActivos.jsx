@@ -620,6 +620,8 @@ const InventariosActivos = () => {
       }
       const data = await response.json();
       if (Array.isArray(data)) {
+        // Ordenar de más antiguo a más reciente
+        data.sort((a, b) => new Date(a.Fecha) - new Date(b.Fecha));
         setInventarios(data);
       } else {
         setInventarios([]);
