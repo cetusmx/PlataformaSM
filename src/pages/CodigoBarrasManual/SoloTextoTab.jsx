@@ -3,7 +3,7 @@ import React from "react";
 const SoloTextoTab = ({
   qty, value, sugerencias, descripcion,
   onQtyChange, onValueChange, onDescripcionChange,
-  onSearch, onAgregar
+  onSearch, onAgregar, onLimpiar
 }) => {
   const handleSelectSugerencia = (item) => {
     onValueChange(item.CLAVE);
@@ -58,8 +58,16 @@ const SoloTextoTab = ({
         />
       </div>
       <div className="div-boton">
-        <button type="button" className="btn btn-primary" onClick={onAgregar}>
+        <button
+          style={{ marginRight: "10px" }}
+          type="button"
+          className="btn btn-primary"
+          onClick={onAgregar}
+        >
           Agregar
+        </button>
+        <button type="button" className="btn btn-danger" onClick={onLimpiar}>
+          Limpiar
         </button>
       </div>
     </div>

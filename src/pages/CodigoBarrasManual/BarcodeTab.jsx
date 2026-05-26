@@ -1,6 +1,16 @@
 import React from "react";
 
-const BarcodeTab = ({ qty, value, sugerencias, setDescripcion, onQtyChange, onValueChange, onSearch, onAgregar }) => {
+const BarcodeTab = ({
+  qty,
+  value,
+  sugerencias,
+  setDescripcion,
+  onQtyChange,
+  onValueChange,
+  onSearch,
+  onAgregar,
+  onLimpiar,
+}) => {
   return (
     <div className="formulario">
       <div className="cantidad">
@@ -46,12 +56,20 @@ const BarcodeTab = ({ qty, value, sugerencias, setDescripcion, onQtyChange, onVa
       </div>
       <div className="div-boton">
         <button
-          style={{ width: "100%" }}
+          style={{ width: "130px", marginRight: "10px" }}
           type="button"
           className="btn btn-primary"
           onClick={onAgregar}
         >
           Agregar
+        </button>
+        <button
+          style={{ width: "130px" }}
+          type="button"
+          className="btn btn-danger"
+          onClick={onLimpiar}
+        >
+          Limpiar
         </button>
       </div>
     </div>

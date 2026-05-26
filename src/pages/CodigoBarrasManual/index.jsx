@@ -76,6 +76,7 @@ const CodigoBarrasManual = () => {
                 onValueChange={handleChange}
                 onSearch={onSearch}
                 onAgregar={() => agregarPartida("barcode")}
+                onLimpiar={limpiarTodo}
               />
             )}
             {activeTab === "text" && (
@@ -89,6 +90,7 @@ const CodigoBarrasManual = () => {
                 onDescripcionChange={setDescripcion}
                 onSearch={onSearch}
                 onAgregar={() => agregarPartida("text")}
+                onLimpiar={limpiarTodo}
               />
             )}
             {activeTab === "logistica" && (
@@ -99,7 +101,7 @@ const CodigoBarrasManual = () => {
             )}
           </div>
 
-          {(activeTab !== "logistica" || logisticaImported) && partidas.length > 0 && (
+          {(activeTab !== "logistica" || logisticaImported) && (
             <>
               {activeTab === "logistica" ? (
                 <>
@@ -125,8 +127,9 @@ const CodigoBarrasManual = () => {
                       className="btn btn-outline-secondary"
                       data-bs-toggle="modal"
                       data-bs-target="#myModal"
+                      disabled={activeTab !== "barcode"}
                     >
-                      Por Lote
+                      Pegar por Lote
                     </button>
                   </div>
                 </>
@@ -177,6 +180,16 @@ const CodigoBarrasManual = () => {
               ></textarea>
             </div>
             <div className="modal-footer">
+              <button
+                onClick={() => {
+                  setClavesxLote("");
+                  limpiarTodo();
+                }}
+                type="button"
+                className="btn btn-outline-danger"
+              >
+                Limpiar
+              </button>
               <button
                 onClick={() => agregarLote()}
                 type="button"

@@ -142,8 +142,8 @@ const useCodigoBarras = () => {
       }
     }
 
-    setPartidas(loteTemp);
-    setPartidasPrint(loteTemp);
+    setPartidas((prev) => [...prev, ...loteTemp]);
+    setPartidasPrint((prev) => [...prev, ...loteTemp]);
     setClavesxLote("");
   };
 
