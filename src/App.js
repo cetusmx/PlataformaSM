@@ -1,12 +1,14 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import "./App.css";
 import { DataContext } from "./contexts/dataContext";
 
 import firebaseApp from "./firebase/credenciales";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import AppAdmin from "./AppAdmin";
 import LoginPage from "./pages/LoginPage";
+import axios from "axios";
+import Swal from "sweetalert2";
 
 const auth = getAuth(firebaseApp); //pasamos nuestras credenciales
 
@@ -16,6 +18,52 @@ function App() {
     const {contextsideBarNav, setContextSidebarNav} = valor2;
     const [usuario, setUser] = useState(null);
     const firestore = getFirestore(firebaseApp);
+
+    useEffect(() => {
+        const handleSessionExpired = () => {
+            Swal.fire({
+                title: "Sesión caducada",
+                text: "Su sesión ha expirado. Por favor, inicie sesión de nuevo.",
+                icon: "warning",
+                confirmButtonText: "Aceptar",
+                allowOutsideClick: false,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    signOut(auth);
+                }
+            });
+        };
+
+        // Interceptor para Axios
+        const axiosInterceptor = axios.interceptors.response.use(
+            (response) => response,
+            (error) => {
+                if (error.response && error.response.status === 401) {
+                    handleSessionExpired();
+                }
+                return Promise.reject(error);
+            }
+        );
+
+        // Interceptor para Fetch
+        const originalFetch = window.fetch;
+        window.fetch = async (...args) => {
+            try {
+                const response = await originalFetch(...args);
+                if (response.status === 401) {
+                    handleSessionExpired();
+                }
+                return response;
+            } catch (error) {
+                return Promise.reject(error);
+            }
+        };
+
+        return () => {
+            axios.interceptors.response.eject(axiosInterceptor);
+            window.fetch = originalFetch;
+        };
+    }, []);
 
 
     async function getRol(uid) {
