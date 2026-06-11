@@ -1,10 +1,14 @@
 // src/components/InventariosActivos.js
 import React, { useState, useEffect, useCallback } from "react";
 // Importa BiCheckDouble junto con los otros íconos
-import { BiBox, BiCheck, BiArrowBack, BiCheckDouble, BiDownload , BiSearch} from "react-icons/bi";
+import { 
+  BiBox, BiCheck, BiArrowBack, BiCheckDouble, BiDownload, BiSearch,
+  BiBarChart, BiTargetLock, BiTrendingDown, BiTimeFive 
+} from "react-icons/bi";
 import "./InventariosActivos.css";
+import InventoryAnalytics from "./InventoryAnalytics";
 
-// Componente mejorado para mostrar productos en una tabla
+// ... (ProductTable logic) ...
 const ProductTable = ({
   products,
   onBack,
@@ -152,8 +156,23 @@ const LineaCard = ({ linea, onClick }) => {
   );
 };
 
+const MetricCard = ({ label, value, icon, colorClass, onClick, isActive }) => (
+  <div 
+    className={`metric-card interactive ${isActive ? 'active-filter' : ''}`} 
+    onClick={onClick}
+  >
+    <div className={`metric-icon-container ${colorClass}`}>
+      {icon}
+    </div>
+    <div className="metric-content">
+      <span className="metric-label">{label}</span>
+      <span className="metric-value">{value}</span>
+    </div>
+  </div>
+);
+
 const InventarioDetails = ({ inventario, onBack }) => {
-  const [viewMode, setViewMode] = useState('lines'); // 'lines', 'lineProducts', 'allProducts'
+  const [viewMode, setViewMode] = useState('lines'); // 'lines', 'lineProducts', 'allProducts', 'analytics'
   const [lineas, setLineas] = useState([]);
   const [products, setProducts] = useState([]);
   const [selectedLinea, setSelectedLinea] = useState(null);
@@ -162,7 +181,9 @@ const InventarioDetails = ({ inventario, onBack }) => {
   const [showConfirmModal, setShowConfirmModal] = useState(false); // State for modal visibility
   const [claveBuscada, setClaveBuscada] = useState("");
 
-  // Función para cargar las líneas del inventario
+  const handleOpenAnalytics = () => {
+    setViewMode('analytics');
+  };
   const refreshLineas = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -278,6 +299,7 @@ const InventarioDetails = ({ inventario, onBack }) => {
     refreshLineas(); // Call to refresh the lines data
   };
 
+  // ... (Adjustment handlers remain the same) ...
   // Handler para mostrar el modal de confirmación
   const handleLineaAjustada = () => {
     setShowConfirmModal(true);
@@ -340,6 +362,7 @@ const InventarioDetails = ({ inventario, onBack }) => {
     resetView(); // Navigate back to the previous view after actions
   };
 
+  // ... (exportTableDataToCsv remains the same) ...
   // Function to export table data to CSV
   const exportTableDataToCsv = () => {
     if (!products || products.length === 0) {
@@ -398,6 +421,13 @@ const InventarioDetails = ({ inventario, onBack }) => {
     if (error) return <div className="error-message">{error}</div>;
 
     switch (viewMode) {
+      case 'analytics':
+        return (
+          <InventoryAnalytics 
+            inventario={inventario} 
+            onClose={() => setViewMode('lines')} 
+          />
+        );
       case 'lineProducts':
         const currentColumns = selectedLinea?.isCounted ? COUNTED_LINE_PRODUCT_COLUMNS : BASIC_PRODUCT_COLUMNS;
         return (
@@ -437,20 +467,47 @@ const InventarioDetails = ({ inventario, onBack }) => {
   return (
     <div className="inventario-details-container">
       <div className="inventario-header">
-        <h3>Inventario ID: {inventario.InventarioID}</h3>
-        <div className="inventario-header-details">
-          <p>
-            <strong>Ciudad:</strong> {inventario.Ciudad}
-          </p>
-          <p>
-            <strong>Auditor:</strong> {inventario.Auditor}
-          </p>
-          <p>
-            <strong>No. de Líneas:</strong> {lineas.length}
-          </p>
-          <p>
-            <strong>Productos:</strong> {inventario.qtyProductos}
-          </p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+          <h3>Inventario ID: {inventario.InventarioID}</h3>
+          <div style={{ display: 'flex', gap: '20px', fontSize: '0.85rem', color: '#666' }}>
+            <span><strong>Auditor:</strong> {inventario.Auditor}</span>
+            <span><strong>Ciudad:</strong> {inventario.Ciudad}</span>
+          </div>
+        </div>
+        
+        <div className="metrics-grid">
+          <MetricCard 
+            label="Progreso" 
+            value={`${inventario.ProgressPorcentage}%`} 
+            icon={<BiBarChart />} 
+            colorClass="metric-blue"
+            onClick={handleOpenAnalytics}
+            isActive={viewMode === 'analytics'} 
+          />
+          <MetricCard 
+            label="Exactitud" 
+            value="98.2%" 
+            icon={<BiTargetLock />} 
+            colorClass="metric-green"
+            onClick={handleOpenAnalytics}
+            isActive={viewMode === 'analytics'} 
+          />
+          <MetricCard 
+            label="Diferencias" 
+            value="12 art." 
+            icon={<BiTrendingDown />} 
+            colorClass="metric-red"
+            onClick={handleOpenAnalytics}
+            isActive={viewMode === 'analytics'} 
+          />
+          <MetricCard 
+            label="Eficiencia" 
+            value="45 SKU/hr" 
+            icon={<BiTimeFive />} 
+            colorClass="metric-orange"
+            onClick={handleOpenAnalytics}
+            isActive={viewMode === 'analytics'} 
+          />
         </div>
       </div>
 
