@@ -153,8 +153,9 @@ const FacturaXMLReutilizable = ({ storageKey = "factura_progress" }) => {
             }
             setFacturaData(header);
             setLoading(false);
-            if (header.rfc === "ROSA7504083F6") {
-                setClaveProvSistema("8");
+            if (header.rfc === "ROSA7504083F6" || header.rfc === "SAHR520527U29") {
+                const claveSistema = header.rfc === "ROSA7504083F6" ? "8" : "46";
+                setClaveProvSistema(claveSistema);
                 setPartidas(items.map(item => ({
                     ...item,
                     claveInterna: item.claveProveedor,
