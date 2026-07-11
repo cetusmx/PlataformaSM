@@ -160,8 +160,8 @@ const LineaCard = ({ linea, onClick }) => {
 
 const MetricCard = ({ label, value, icon, colorClass, onClick, isActive, loading }) => (
   <div 
-    className={`metric-card interactive ${isActive ? 'active-filter' : ''} ${loading ? 'disabled' : ''}`} 
-    onClick={loading ? undefined : onClick}
+    className={`metric-card ${onClick ? 'interactive' : ''} ${isActive ? 'active-filter' : ''} ${loading ? 'disabled' : ''}`} 
+    onClick={loading || !onClick ? undefined : onClick}
   >
     <div className={`metric-icon-container ${colorClass}`}>
       {icon}
@@ -185,6 +185,8 @@ const formatMoney = (n) => {
   return n >= 0 ? `+$${abs}` : `-$${abs}`;
 };
 
+const resolveInvId = (id) => id === "052026-1" ? "INVMAY" : id;
+
 const InventarioDetails = ({ inventario, onBack }) => {
   const [viewMode, setViewMode] = useState('lines'); // 'lines', 'lineProducts', 'allProducts', 'analytics'
   const [lineas, setLineas] = useState([]);
@@ -198,6 +200,8 @@ const InventarioDetails = ({ inventario, onBack }) => {
   const [assertivenessRawData, setAssertivenessRawData] = useState(null);
   const [assertivenessLoading, setAssertivenessLoading] = useState(false);
   const [activeMetric, setActiveMetric] = useState(null);
+  const [efficiencyData, setEfficiencyData] = useState(null);
+  const [efficiencyLoading, setEfficiencyLoading] = useState(false);
 
   const handleOpenMetric = (metric) => {
     setActiveMetric(metric);
@@ -205,6 +209,8 @@ const InventarioDetails = ({ inventario, onBack }) => {
       handleViewAllProducts();
     } else if (metric === 'magnitud') {
       setViewMode('magnitud');
+    } else if (metric === 'eficiencia') {
+      setViewMode('eficiencia');
     } else {
       setViewMode('analytics');
     }
@@ -213,9 +219,8 @@ const InventarioDetails = ({ inventario, onBack }) => {
   const fetchAssertiveness = useCallback(async () => {
     setAssertivenessLoading(true);
     try {
-      const invId = inventario.InventarioID === "052026-1" ? "INVMAY" : inventario.InventarioID;
       const response = await fetch(
-        `${process.env.REACT_APP_URL_API1}/dashboard/asertividad?inventarioId=${invId}`
+        `${process.env.REACT_APP_URL_API1}/dashboard/asertividad?inventarioId=${resolveInvId(inventario.InventarioID)}`
       );
       if (!response.ok) throw new Error('Error al cargar asertividad');
       const data = await response.json();
@@ -226,6 +231,23 @@ const InventarioDetails = ({ inventario, onBack }) => {
       console.error("Error al cargar asertividad:", e);
     } finally {
       setAssertivenessLoading(false);
+    }
+  }, [inventario.InventarioID]);
+
+  const fetchEfficiency = useCallback(async () => {
+    setEfficiencyLoading(true);
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_URL_API1}/dashboard/sku-hr?inventarioId=${resolveInvId(inventario.InventarioID)}`
+      );
+      if (!response.ok) throw new Error('Error al cargar eficiencia');
+      const data = await response.json();
+      setEfficiencyData(Array.isArray(data) ? data : []);
+    } catch (e) {
+      console.error("Error al cargar eficiencia:", e);
+      setEfficiencyData([]);
+    } finally {
+      setEfficiencyLoading(false);
     }
   }, [inventario.InventarioID]);
 
@@ -266,7 +288,8 @@ const InventarioDetails = ({ inventario, onBack }) => {
   // Fetch asertividad al montar el detalle
   useEffect(() => {
     fetchAssertiveness();
-  }, [fetchAssertiveness]);
+    fetchEfficiency();
+  }, [fetchAssertiveness, fetchEfficiency]);
 
   // Handler para ver todos los productos
   const handleViewAllProducts = async () => {
@@ -474,6 +497,7 @@ const InventarioDetails = ({ inventario, onBack }) => {
     switch (viewMode) {
       case 'analytics':
       case 'magnitud':
+      case 'eficiencia':
         return (
           <InventoryAnalytics 
             mode={viewMode}
@@ -485,6 +509,8 @@ const InventarioDetails = ({ inventario, onBack }) => {
             rawProducts={assertivenessRawData || []}
             magnitud={assertivenessData?.global.magnitud ?? null}
             loading={assertivenessLoading}
+            efficiencyData={efficiencyData || []}
+            efficiencyLoading={efficiencyLoading}
           />
         );
       case 'lineProducts':
@@ -540,8 +566,6 @@ const InventarioDetails = ({ inventario, onBack }) => {
             value={`${inventario.ProgressPorcentage}%`} 
             icon={<BiBarChart />} 
             colorClass="metric-blue"
-            onClick={() => handleOpenMetric('progreso')}
-            isActive={viewMode === 'allProducts' && activeMetric === 'progreso'} 
           />
           <MetricCard 
             label="Asertividad" 
@@ -572,11 +596,25 @@ const InventarioDetails = ({ inventario, onBack }) => {
           />
           <MetricCard 
             label="Eficiencia" 
-            value="45 SKU/hr" 
+            value={efficiencyLoading ? "..." : (() => {
+              const grouped = (efficiencyData || []).reduce((acc, row) => {
+                if (!row.linea) return acc;
+                if (!acc[row.linea]) acc[row.linea] = { productos: 0, horasActivas: 0 };
+                acc[row.linea].productos += Number(row.productos || 0);
+                acc[row.linea].horasActivas += Number(row.horasActivas || 0);
+                return acc;
+              }, {});
+              const rows = Object.values(grouped);
+              const totalProd = rows.reduce((s, r) => s + r.productos, 0);
+              const totalHrs = rows.reduce((s, r) => s + r.horasActivas, 0);
+              if (totalHrs <= 0) return "—";
+              return `${(totalProd / totalHrs).toFixed(1)} SKU/hr`;
+            })()}
             icon={<BiTimeFive />} 
             colorClass="metric-orange"
             onClick={() => handleOpenMetric('eficiencia')}
-            isActive={viewMode === 'analytics' && activeMetric === 'eficiencia'} 
+            isActive={viewMode === 'eficiencia'}
+            loading={efficiencyLoading}
           />
         </div>
       </div>

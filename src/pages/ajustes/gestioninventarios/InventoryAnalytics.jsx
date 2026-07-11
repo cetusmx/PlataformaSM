@@ -58,7 +58,9 @@ const InventoryAnalytics = ({
   globalExactitud = null,
   rawProducts = [],
   magnitud = null,
-  loading = false
+  loading = false,
+  efficiencyData = [],
+  efficiencyLoading = false
 }) => {
   const [selectedDimension, setSelectedDimension] = useState('linea');
   const [drillDown, setDrillDown] = useState(null);
@@ -287,6 +289,74 @@ const InventoryAnalytics = ({
             </p>
           </div>
         </>)}
+      </div>
+    );
+  }
+
+  // === Vista de eficiencia ===
+  if (mode === 'eficiencia') {
+    const aggregated = (efficiencyData || []).reduce((acc, row) => {
+      if (!row.linea) return acc;
+      if (!acc[row.linea]) acc[row.linea] = { linea: row.linea, productos: 0, horasActivas: 0, skuHr: null };
+      acc[row.linea].productos += Number(row.productos || 0);
+      acc[row.linea].horasActivas += Number(row.horasActivas || 0);
+      return acc;
+    }, {});
+    const rows = Object.values(aggregated).map(r => {
+      r.skuHr = r.horasActivas > 0 ? (r.productos / r.horasActivas) : null;
+      return r;
+    }).sort((a, b) => b.productos - a.productos);
+    const totalProductos = rows.reduce((s, r) => s + r.productos, 0);
+    const totalHoras = rows.reduce((s, r) => s + r.horasActivas, 0);
+
+    return (
+      <div className="analytics-dashboard">
+        <div className="analytics-nav" style={{ marginBottom: '10px', paddingBottom: '8px' }}>
+          <div className="analytics-title">
+            <h4 style={{ margin: 0 }}>Eficiencia por Línea</h4>
+            <span className="text-muted" style={{ fontSize: '0.85rem', marginTop: '2px' }}>
+              Total: {totalProductos} artículos en {totalHoras.toFixed(2)} hrs — 
+              Promedio: <strong>{totalHoras > 0 ? (totalProductos / totalHoras).toFixed(1) : '—'} SKU/hr</strong>
+            </span>
+          </div>
+          <button className="back-button-table" onClick={onClose}>
+            <BiArrowBack size={18} /> Volver
+          </button>
+        </div>
+
+        {efficiencyLoading ? <Spinner text="Consultando eficiencia..." /> : rows.length === 0 ? (
+          <div style={{ padding: '40px', textAlign: 'center', color: '#888' }}>Sin datos de eficiencia.</div>
+        ) : (
+          <>
+          <div className="table-scroll-wrapper" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+            <table className="product-table" style={{ fontSize: '0.75rem' }}>
+              <thead>
+                <tr>
+                  <th style={{ width: '20%', textAlign: 'left' }}>Línea</th>
+                  <th style={{ width: '20%', textAlign: 'right' }}>Productos</th>
+                  <th style={{ width: '20%', textAlign: 'right' }}>Horas Activas</th>
+                  <th style={{ width: '20%', textAlign: 'right' }}>SKU/Hr</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r, i) => (
+                  <tr key={i}>
+                    <td style={{ fontWeight: 600 }}>{r.linea}</td>
+                    <td style={{ textAlign: 'right' }}>{r.productos}</td>
+                    <td style={{ textAlign: 'right' }}>{r.horasActivas.toFixed(2)}</td>
+                    <td style={{ textAlign: 'right', fontWeight: 600 }}>{r.skuHr != null ? r.skuHr.toFixed(1) : '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="analytics-footer" style={{ marginTop: '15px', padding: '12px', background: '#f8f9fa', borderRadius: '8px', border: '1px solid #eee' }}>
+            <p style={{ margin: 0, fontSize: '0.8rem', color: '#666' }}>
+              <strong>{rows.length}</strong> líneas | <strong>{totalProductos}</strong> artículos | <strong>{totalHoras.toFixed(2)}</strong> horas activas
+            </p>
+          </div>
+          </>
+        )}
       </div>
     );
   }
