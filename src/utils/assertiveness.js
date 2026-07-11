@@ -30,15 +30,17 @@ export function computeAssertiveness(products) {
     if (p.RESULTADO === 'AJUSTE') {
       const cant = Number(p.CANT || 0);
       const costo = Number(p.COSTO || 0);
+      const costoAjustado = p.LINEA === 'GIMBF' ? costo / 1000 : costo;
       magnitud.ajuste.count++;
       magnitud.ajuste.piezas += cant;
-      magnitud.ajuste.monto += cant * costo;
+      magnitud.ajuste.monto += cant * costoAjustado;
     } else if (p.RESULTADO === 'MERMA') {
       const cant = Number(p.CANT || 0);
       const costo = Number(p.COSTO || 0);
+      const costoAjustado = p.LINEA === 'GIMBF' ? costo / 1000 : costo;
       magnitud.merma.count++;
       magnitud.merma.piezas += cant;
-      magnitud.merma.monto += cant * costo;
+      magnitud.merma.monto += cant * costoAjustado;
     }
 
     for (const [, g] of Object.entries(groups)) {

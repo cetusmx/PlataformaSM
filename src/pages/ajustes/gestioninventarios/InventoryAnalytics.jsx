@@ -82,9 +82,10 @@ const InventoryAnalytics = ({
         const cantContada = Number(p.CANT_CONTADA || 0);
         const cantSistema = Number(p.CANT || 0);
         const costo = Number(p.COSTO || 0);
+        const costoAjustado = p.LINEA === 'GIMBF' ? costo / 1000 : costo;
         const isAjuste = p.RESULTADO === 'AJUSTE';
         const diff = cantContada - cantSistema;
-        return { ...p, _diferencia: diff, _impacto: isAjuste ? cantSistema * costo : -(cantSistema * costo) };
+        return { ...p, _diferencia: diff, _impacto: isAjuste ? cantSistema * costoAjustado : -(cantSistema * costoAjustado) };
       })
       .sort((a, b) => Math.abs(b._impacto) - Math.abs(a._impacto));
   }, [rawProducts, mode]);
