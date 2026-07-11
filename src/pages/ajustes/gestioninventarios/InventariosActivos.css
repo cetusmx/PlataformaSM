@@ -482,7 +482,7 @@
 /* Estilos para el Dashboard de Métricas */
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 15px;
   width: 100%;
   margin-top: 10px;
@@ -497,12 +497,17 @@
   gap: 12px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
   border: 1px solid #f0f0f0;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
 }
 
-.metric-card:hover {
+.metric-card.interactive {
+  cursor: pointer;
+}
+
+.metric-card.interactive:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-color: #007bff;
 }
 
 .metric-icon-container {
@@ -632,9 +637,17 @@
   font-size: 0.9rem;
 }
 
+.segment-clickable {
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.segment-clickable:hover {
+  background: #e8f0fe;
+}
+
 .metric-card.interactive {
   cursor: pointer;
-  border: 1px solid #f0f0f0;
 }
 
 .metric-card.interactive:hover {
@@ -645,6 +658,35 @@
   background: #f0f7ff;
   border-color: #007bff;
   transform: scale(1.02);
+  box-shadow: 0 2px 8px rgba(0,123,255,0.15);
+}
+
+.metric-card.disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.metric-spinner-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.metric-spinner {
+  animation: spin 1s linear infinite;
+  font-size: 1rem;
+  color: #888;
+}
+
+.metric-spinner-text {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .search-box {

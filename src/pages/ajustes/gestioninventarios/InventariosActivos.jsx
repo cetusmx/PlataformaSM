@@ -3,10 +3,12 @@ import React, { useState, useEffect, useCallback } from "react";
 // Importa BiCheckDouble junto con los otros íconos
 import { 
   BiBox, BiCheck, BiArrowBack, BiCheckDouble, BiDownload, BiSearch,
-  BiBarChart, BiTargetLock, BiTrendingDown, BiTimeFive 
+  BiBarChart, BiTargetLock, BiTrendingDown, BiTimeFive, BiDollarCircle,
+  BiLoaderAlt
 } from "react-icons/bi";
 import "./InventariosActivos.css";
 import InventoryAnalytics from "./InventoryAnalytics";
+import { computeAssertiveness } from "../../../utils/assertiveness";
 
 // ... (ProductTable logic) ...
 const ProductTable = ({
@@ -156,20 +158,32 @@ const LineaCard = ({ linea, onClick }) => {
   );
 };
 
-const MetricCard = ({ label, value, icon, colorClass, onClick, isActive }) => (
+const MetricCard = ({ label, value, icon, colorClass, onClick, isActive, loading }) => (
   <div 
-    className={`metric-card interactive ${isActive ? 'active-filter' : ''}`} 
-    onClick={onClick}
+    className={`metric-card interactive ${isActive ? 'active-filter' : ''} ${loading ? 'disabled' : ''}`} 
+    onClick={loading ? undefined : onClick}
   >
     <div className={`metric-icon-container ${colorClass}`}>
       {icon}
     </div>
     <div className="metric-content">
       <span className="metric-label">{label}</span>
-      <span className="metric-value">{value}</span>
+      {loading ? (
+        <div className="metric-spinner-wrapper">
+          <BiLoaderAlt className="metric-spinner" />
+          <span className="metric-spinner-text">Cargando...</span>
+        </div>
+      ) : (
+        <span className="metric-value">{value}</span>
+      )}
     </div>
   </div>
 );
+
+const formatMoney = (n) => {
+  const abs = Math.abs(n).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return n >= 0 ? `+$${abs}` : `-$${abs}`;
+};
 
 const InventarioDetails = ({ inventario, onBack }) => {
   const [viewMode, setViewMode] = useState('lines'); // 'lines', 'lineProducts', 'allProducts', 'analytics'
@@ -180,10 +194,41 @@ const InventarioDetails = ({ inventario, onBack }) => {
   const [error, setError] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false); // State for modal visibility
   const [claveBuscada, setClaveBuscada] = useState("");
+  const [assertivenessData, setAssertivenessData] = useState(null);
+  const [assertivenessRawData, setAssertivenessRawData] = useState(null);
+  const [assertivenessLoading, setAssertivenessLoading] = useState(false);
+  const [activeMetric, setActiveMetric] = useState(null);
 
-  const handleOpenAnalytics = () => {
-    setViewMode('analytics');
+  const handleOpenMetric = (metric) => {
+    setActiveMetric(metric);
+    if (metric === 'progreso') {
+      handleViewAllProducts();
+    } else if (metric === 'magnitud') {
+      setViewMode('magnitud');
+    } else {
+      setViewMode('analytics');
+    }
   };
+
+  const fetchAssertiveness = useCallback(async () => {
+    setAssertivenessLoading(true);
+    try {
+      const invId = inventario.InventarioID === "052026-1" ? "INVMAY" : inventario.InventarioID;
+      const response = await fetch(
+        `${process.env.REACT_APP_URL_API1}/dashboard/asertividad?inventarioId=${invId}`
+      );
+      if (!response.ok) throw new Error('Error al cargar asertividad');
+      const data = await response.json();
+      setAssertivenessRawData(data);
+      const computed = computeAssertiveness(data);
+      setAssertivenessData(computed);
+    } catch (e) {
+      console.error("Error al cargar asertividad:", e);
+    } finally {
+      setAssertivenessLoading(false);
+    }
+  }, [inventario.InventarioID]);
+
   const refreshLineas = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -217,6 +262,11 @@ const InventarioDetails = ({ inventario, onBack }) => {
   useEffect(() => {
     refreshLineas();
   }, [refreshLineas]); // Depend on refreshLineas to re-run when its dependencies change
+
+  // Fetch asertividad al montar el detalle
+  useEffect(() => {
+    fetchAssertiveness();
+  }, [fetchAssertiveness]);
 
   // Handler para ver todos los productos
   const handleViewAllProducts = async () => {
@@ -296,7 +346,8 @@ const InventarioDetails = ({ inventario, onBack }) => {
     setSelectedLinea(null);
     setProducts([]);
     setError(null);
-    refreshLineas(); // Call to refresh the lines data
+    setActiveMetric(null);
+    refreshLineas();
   };
 
   // ... (Adjustment handlers remain the same) ...
@@ -422,10 +473,18 @@ const InventarioDetails = ({ inventario, onBack }) => {
 
     switch (viewMode) {
       case 'analytics':
+      case 'magnitud':
         return (
           <InventoryAnalytics 
-            inventario={inventario} 
-            onClose={() => setViewMode('lines')} 
+            mode={viewMode}
+            onClose={() => { setViewMode('lines'); setActiveMetric(null); }}
+            byLinea={assertivenessData?.byLinea || []}
+            byFamilia={assertivenessData?.byFamilia || []}
+            byGenero={assertivenessData?.byGenero || []}
+            globalExactitud={assertivenessData?.global.exactitud ?? null}
+            rawProducts={assertivenessRawData || []}
+            magnitud={assertivenessData?.global.magnitud ?? null}
+            loading={assertivenessLoading}
           />
         );
       case 'lineProducts':
@@ -481,32 +540,43 @@ const InventarioDetails = ({ inventario, onBack }) => {
             value={`${inventario.ProgressPorcentage}%`} 
             icon={<BiBarChart />} 
             colorClass="metric-blue"
-            onClick={handleOpenAnalytics}
-            isActive={viewMode === 'analytics'} 
+            onClick={() => handleOpenMetric('progreso')}
+            isActive={viewMode === 'allProducts' && activeMetric === 'progreso'} 
           />
           <MetricCard 
-            label="Exactitud" 
-            value="98.2%" 
+            label="Asertividad" 
+            value={assertivenessLoading ? "..." : `${(assertivenessData?.global.exactitud ?? 0).toFixed(1)}%`}
             icon={<BiTargetLock />} 
             colorClass="metric-green"
-            onClick={handleOpenAnalytics}
-            isActive={viewMode === 'analytics'} 
+            onClick={() => handleOpenMetric('exactitud')}
+            isActive={viewMode === 'analytics' && activeMetric === 'exactitud'}
+            loading={assertivenessLoading}
           />
           <MetricCard 
             label="Diferencias" 
-            value="12 art." 
+            value={assertivenessLoading ? "..." : `${assertivenessData?.global.diferencias ?? 0} art.`}
             icon={<BiTrendingDown />} 
             colorClass="metric-red"
-            onClick={handleOpenAnalytics}
-            isActive={viewMode === 'analytics'} 
+            onClick={() => handleOpenMetric('diferencias')}
+            isActive={viewMode === 'analytics' && activeMetric === 'diferencias'}
+            loading={assertivenessLoading}
+          />
+          <MetricCard 
+            label="Magnitud" 
+            value={assertivenessLoading ? "..." : formatMoney(assertivenessData?.global.magnitud?.balance?.monto ?? 0)}
+            icon={<BiDollarCircle />} 
+            colorClass={(assertivenessData?.global.magnitud?.balance?.monto ?? 0) >= 0 ? 'metric-green' : 'metric-red'}
+            onClick={() => handleOpenMetric('magnitud')}
+            isActive={viewMode === 'magnitud'}
+            loading={assertivenessLoading}
           />
           <MetricCard 
             label="Eficiencia" 
             value="45 SKU/hr" 
             icon={<BiTimeFive />} 
             colorClass="metric-orange"
-            onClick={handleOpenAnalytics}
-            isActive={viewMode === 'analytics'} 
+            onClick={() => handleOpenMetric('eficiencia')}
+            isActive={viewMode === 'analytics' && activeMetric === 'eficiencia'} 
           />
         </div>
       </div>

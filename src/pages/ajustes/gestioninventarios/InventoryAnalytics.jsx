@@ -1,137 +1,362 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { BiX, BiLineChart, BiCategory, BiUser, BiRefresh, BiErrorCircle } from 'react-icons/bi';
+import React, { useState, useMemo, useEffect } from 'react';
+import { BiX, BiLineChart, BiCategory, BiUser, BiArrowBack, BiSortUp, BiSortDown } from 'react-icons/bi';
 
-const InventoryAnalytics = ({ inventario, onClose }) => {
+const DIMENSION_KEY_MAP = { linea: 'LINEA', familia: 'FAMILIA', genero: 'GENERO' };
+
+const DRILL_COLUMNS = [
+  { header: 'Clave', accessor: 'CVE_ART' },
+  { header: 'Descripción', accessor: 'DESCRIPCION_LOCAL' },
+  { header: 'Resultado', accessor: 'RESULTADO' },
+  { header: 'Cant. Contada', accessor: 'CANT_CONTADA' },
+  { header: 'Cant. Mov.', accessor: 'CANT' },
+  { header: 'Costo', accessor: 'COSTO' },
+];
+
+const MAGNITUD_COLUMNS = [
+  { header: 'Clave', accessor: 'CVE_ART' },
+  { header: 'Descripción', accessor: 'DESCRIPCION_LOCAL' },
+  { header: 'Resultado', accessor: 'RESULTADO' },
+  { header: 'Cant. Mov.', accessor: 'CANT' },
+  { header: 'Cant. Contada', accessor: 'CANT_CONTADA' },
+  { header: 'Exist. SAE', accessor: '_diferencia' },
+  { header: 'Costo', accessor: 'COSTO' },
+  { header: 'Impacto', accessor: '_impacto' },
+];
+
+const formatCurrency = (val) => {
+  if (val === null || val === undefined) return '—';
+  return Number(val).toLocaleString('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 2 });
+};
+
+const formatValue = (row, col) => {
+  const val = row[col.accessor];
+  if (val === null || val === undefined) return '—';
+  if (col.accessor === 'COSTO') return formatCurrency(val);
+  if (col.accessor === '_impacto') {
+    const abs = Math.abs(val).toLocaleString('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 2 });
+    return val >= 0 ? `+${abs}` : `-${abs}`;
+  }
+  if (col.accessor === '_diferencia') return val >= 0 ? `+${val}` : `${val}`;
+  return String(val);
+};
+
+const Spinner = ({ text = 'Consultando indicadores reales...' }) => (
+  <div style={{ padding: '40px', textAlign: 'center' }}>
+    <div className="spinner-border text-primary" role="status">
+      <span className="visually-hidden">Cargando...</span>
+    </div>
+    <p style={{ marginTop: '10px', color: '#666' }}>{text}</p>
+  </div>
+);
+
+const InventoryAnalytics = ({
+  mode = 'assertiveness',
+  onClose,
+  byLinea = [],
+  byFamilia = [],
+  byGenero = [],
+  globalExactitud = null,
+  rawProducts = [],
+  magnitud = null,
+  loading = false
+}) => {
   const [selectedDimension, setSelectedDimension] = useState('linea');
-  const [activeMetric, setActiveMetric] = useState('exactitud');
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const fetchAnalytics = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      // Sustitución especial solicitada por el usuario
-      const invId = inventario.InventarioID === "052026-1" ? "INVMAY" : inventario.InventarioID;
-
-      const response = await fetch(
-        `${process.env.REACT_APP_URL_API1}/dashboard/asertividad?inventarioId=${invId}`
-      );
-      
-      if (!response.ok) {
-        throw new Error(`Error en el servidor: ${response.statusText}`);
-      }
-      
-      const result = await response.json();
-      setData(result);
-    } catch (err) {
-      console.error("Error al cargar analíticas:", err);
-      setError("No se pudieron cargar los datos de asertividad.");
-    } finally {
-      setLoading(false);
-    }
-  }, [inventario.InventarioID]);
+  const [drillDown, setDrillDown] = useState(null);
+  const [resultadoFilter, setResultadoFilter] = useState('all');
+  const [sortAsc, setSortAsc] = useState(false);
 
   useEffect(() => {
-    fetchAnalytics();
-  }, [fetchAnalytics]);
+    setDrillDown(null);
+  }, [mode]);
+
+  useEffect(() => {
+    setResultadoFilter('all');
+    setSortAsc(false);
+  }, [mode]);
+
+  const discrepantProducts = useMemo(() => {
+    if (mode !== 'magnitud') return [];
+    return (rawProducts || [])
+      .filter(p => p.RESULTADO === 'AJUSTE' || p.RESULTADO === 'MERMA')
+      .map(p => {
+        const cantContada = Number(p.CANT_CONTADA || 0);
+        const cantSistema = Number(p.CANT || 0);
+        const costo = Number(p.COSTO || 0);
+        const isAjuste = p.RESULTADO === 'AJUSTE';
+        const diff = cantContada - cantSistema;
+        return { ...p, _diferencia: diff, _impacto: isAjuste ? cantSistema * costo : -(cantSistema * costo) };
+      })
+      .sort((a, b) => Math.abs(b._impacto) - Math.abs(a._impacto));
+  }, [rawProducts, mode]);
+
+  const filteredSortedProducts = useMemo(() => {
+    let list = discrepantProducts;
+    if (resultadoFilter !== 'all') {
+      list = list.filter(p => p.RESULTADO === resultadoFilter);
+    }
+    return [...list].sort((a, b) => sortAsc ? a._impacto - b._impacto : b._impacto - a._impacto);
+  }, [discrepantProducts, resultadoFilter, sortAsc]);
 
   const dimensions = [
     { id: 'linea', label: 'Línea', icon: <BiLineChart /> },
     { id: 'familia', label: 'Familia', icon: <BiCategory /> },
     { id: 'genero', label: 'Género', icon: <BiUser /> },
-    { id: 'rotacion', label: 'Rotación', icon: <BiRefresh /> },
   ];
 
-  // Función para determinar el color según el valor (Semáforo)
   const getBarColor = (value) => {
-    if (value >= 95) return '#28a745'; // Verde
-    if (value >= 85) return '#fd7e14'; // Naranja
-    return '#dc3545'; // Rojo
+    if (value >= 95) return '#28a745';
+    if (value >= 85) return '#fd7e14';
+    return '#dc3545';
   };
 
-  const renderContent = () => {
-    if (loading) return (
-      <div className="loading-analytics" style={{padding: '40px', textAlign: 'center'}}>
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Cargando...</span>
+  const handleSegmentClick = (segmentName) => {
+    const dimensionKey = DIMENSION_KEY_MAP[selectedDimension];
+    const filteredProducts = (rawProducts || []).filter(p => p[dimensionKey] === segmentName);
+    setDrillDown({ dimension: selectedDimension, name: segmentName, products: filteredProducts });
+  };
+
+  const handleBackToOverview = () => {
+    setDrillDown(null);
+  };
+
+  // === Vista de drill-down: tabla de productos filtrados ===
+  if (drillDown) {
+    const labelMap = { linea: 'Línea', familia: 'Familia', genero: 'Género' };
+    return (
+      <div className="analytics-dashboard">
+        <div className="analytics-nav">
+          <div className="analytics-title">
+            <h4>Productos de {labelMap[drillDown.dimension]}: {drillDown.name}</h4>
+          </div>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.85rem', color: '#666' }}>
+              {drillDown.products.length} artículos
+            </span>
+            <button className="back-button-table" onClick={handleBackToOverview}>
+              <BiArrowBack size={18} /> Volver
+            </button>
+          </div>
         </div>
-        <p style={{marginTop: '10px', color: '#666'}}>Consultando indicadores reales...</p>
+
+        <div className="table-scroll-wrapper" style={{ maxHeight: '55vh', overflowY: 'auto' }}>
+          <table className="product-table">
+            <thead>
+              <tr>
+                {DRILL_COLUMNS.map((col, i) => (
+                  <th key={i} style={{
+                    width: col.accessor === 'CVE_ART' ? '20%' : ['COSTO', 'RESULTADO'].includes(col.accessor) ? '10%' : ['CANT_CONTADA', 'CANT'].includes(col.accessor) ? '13%' : undefined,
+                    textAlign: ['RESULTADO', 'CANT_CONTADA', 'CANT', 'COSTO'].includes(col.accessor) ? 'center' : 'left'
+                  }}>{col.header}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {drillDown.products.length === 0 ? (
+                <tr>
+                  <td colSpan={DRILL_COLUMNS.length} style={{ textAlign: 'center', padding: '30px', color: '#888' }}>
+                    No hay productos para este segmento.
+                  </td>
+                </tr>
+              ) : (
+                drillDown.products.map((row, idx) => (
+                  <tr key={idx}>
+                    {DRILL_COLUMNS.map((col, ci) => (
+                      <td key={ci} style={{
+                        textAlign: col.accessor === 'COSTO' || col.accessor === 'CANT_CONTADA' ? 'right' : 'left',
+                        width: col.accessor === 'CVE_ART' ? '20%' : ['COSTO', 'RESULTADO'].includes(col.accessor) ? '10%' : ['CANT_CONTADA', 'CANT'].includes(col.accessor) ? '13%' : undefined
+                      }}>
+                        {formatValue(row, col)}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="analytics-footer" style={{ marginTop: '15px', padding: '12px', background: '#f8f9fa', borderRadius: '8px', border: '1px solid #eee' }}>
+          <p style={{ margin: 0, fontSize: '0.8rem', color: '#666' }}>
+            <strong>Total:</strong> {drillDown.products.length} artículos | <strong>Segmento:</strong> {drillDown.name}
+          </p>
+        </div>
       </div>
     );
+  }
 
-    if (error) return (
-      <div className="error-analytics" style={{padding: '40px', textAlign: 'center', color: '#dc3545'}}>
-        <BiErrorCircle size={40} />
-        <p style={{marginTop: '10px'}}>{error}</p>
-        <button className="btn btn-outline-danger btn-sm" onClick={fetchAnalytics}>Reintentar</button>
-      </div>
-    );
+  // === Vista de magnitud ===
+  if (mode === 'magnitud') {
+    const m = magnitud || { ajuste: { count: 0, piezas: 0, monto: 0 }, merma: { count: 0, piezas: 0, monto: 0 }, balance: { piezas: 0, monto: 0 } };
 
-    const currentData = data && data[selectedDimension] ? data[selectedDimension] : [];
-
-    if (currentData.length === 0) {
-      return (
-        <div style={{padding: '40px', textAlign: 'center', color: '#888'}}>
-          No hay datos disponibles para la segmentación por {selectedDimension}.
-        </div>
-      );
-    }
+    const summaryRows = [
+      { label: 'AJUSTE', count: m.ajuste.count, piezas: `+${m.ajuste.piezas}`, monto: `+${formatCurrency(m.ajuste.monto)}`, color: '#28a745' },
+      { label: 'MERMA', count: m.merma.count, piezas: `-${m.merma.piezas}`, monto: `-${formatCurrency(m.merma.monto)}`, color: '#dc3545' },
+      { label: 'BALANCE', count: m.ajuste.count + m.merma.count, piezas: `${m.balance.piezas >= 0 ? '+' : ''}${m.balance.piezas}`, monto: `${m.balance.monto >= 0 ? '+' : ''}${formatCurrency(Math.abs(m.balance.monto))}`, color: m.balance.monto >= 0 ? '#28a745' : '#dc3545', bold: true },
+    ];
 
     return (
-      <div className="segmented-results-grid">
-        {currentData.map((item, index) => (
-          <div key={index} className="segment-item">
-            <div className="segment-name">{item.name || item.Nombre || item.Clave}</div>
-            <div className="segment-bar-container">
-              <div 
-                className="segment-bar-fill" 
-                style={{ 
-                  width: `${item.value || item.Asertividad || 0}%`, 
-                  backgroundColor: getBarColor(item.value || item.Asertividad || 0) 
-                }}
-              ></div>
+      <div className="analytics-dashboard">
+          <div className="analytics-nav" style={{ marginBottom: '10px', paddingBottom: '8px' }}>
+            <div className="analytics-title">
+              <h4 style={{ margin: 0 }}>Magnitud del Inventario</h4>
             </div>
-            <div className="segment-value">{Math.round(item.value || item.Asertividad || 0)}%</div>
+          <button className="back-button-table" onClick={onClose}>
+            <BiArrowBack size={18} /> Volver
+          </button>
+        </div>
+
+        {loading ? <Spinner /> : (<>
+          <div style={{ display: 'flex', gap: '12px', padding: '8px 0', flexWrap: 'wrap' }}>
+            {summaryRows.map((row, i) => (
+              <div key={i} style={{
+                flex: 1, minWidth: '160px', padding: '8px 12px', borderRadius: '6px',
+                background: row.bold ? '#f8f9fa' : '#fcfcfc',
+                border: row.bold ? `2px solid ${row.color}` : '1px solid #eee',
+                fontWeight: row.bold ? 700 : 400
+              }}>
+                <div style={{ fontSize: '0.7rem', color: '#666', marginBottom: '2px' }}>{row.label}</div>
+                <div style={{ fontSize: '0.9rem', color: row.color, fontWeight: 700 }}>{row.monto}</div>
+                <div style={{ fontSize: '0.7rem', color: '#888', marginTop: '1px' }}>
+                  {row.count} art. | {row.piezas} pz.
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 0' }}>
+            <span style={{ fontSize: '0.8rem', color: '#666', fontWeight: 600 }}>Filtrar:</span>
+            {['all', 'AJUSTE', 'MERMA'].map(f => (
+              <button key={f} className={`pill-button ${resultadoFilter === f ? 'active' : ''}`} style={{ fontSize: '0.75rem', padding: '4px 12px' }} onClick={() => setResultadoFilter(f)}>
+                {f === 'all' ? 'Todos' : f}
+              </button>
+            ))}
+            <span style={{ marginLeft: 'auto', fontSize: '0.75rem', color: '#888' }}>
+              {filteredSortedProducts.length} artículos
+            </span>
+          </div>
+
+          <div className="table-scroll-wrapper" style={{ maxHeight: '52vh', overflowY: 'auto' }}>
+            <table className="product-table" style={{ fontSize: '0.75rem' }}>
+              <thead>
+                <tr>
+                  {MAGNITUD_COLUMNS.map((col, i) => (
+                    <th key={i} style={{
+                      cursor: col.accessor === '_impacto' ? 'pointer' : undefined,
+                      userSelect: col.accessor === '_impacto' ? 'none' : undefined,
+                      textAlign: col.accessor === '_impacto' || col.accessor === 'COSTO' || col.accessor === '_diferencia' || col.accessor === 'CANT_CONTADA' || col.accessor === 'CANT' ? 'center' : 'left',
+                      width: col.accessor === 'CVE_ART' ? '16%' : col.accessor === 'DESCRIPCION_LOCAL' ? '30%' : col.accessor === 'CANT_CONTADA' ? '10%' : col.accessor === '_diferencia' ? '10%' : ['RESULTADO', 'CANT', 'COSTO'].includes(col.accessor) ? '8%' : col.accessor === '_impacto' ? '10%' : undefined
+                    }} onClick={col.accessor === '_impacto' ? () => setSortAsc(p => !p) : undefined}>
+                      {col.accessor === '_impacto' ? (<><span>Impacto </span>{sortAsc ? <BiSortUp style={{ verticalAlign: 'middle' }} /> : <BiSortDown style={{ verticalAlign: 'middle' }} />}</>) : col.header}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filteredSortedProducts.length === 0 ? (
+                  <tr>
+                    <td colSpan={MAGNITUD_COLUMNS.length} style={{ textAlign: 'center', padding: '30px', color: '#888' }}>
+                      No hay productos con discrepancia.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredSortedProducts.map((row, idx) => (
+                    <tr key={idx}>
+                      {MAGNITUD_COLUMNS.map((col, ci) => (
+                        <td key={ci} style={{
+                          textAlign: col.accessor === '_impacto' || col.accessor === 'COSTO' || col.accessor === 'CANT' || col.accessor === 'CANT_CONTADA' ? 'right' : 'left',
+                          color: col.accessor === '_impacto' ? (row._impacto >= 0 ? '#28a745' : '#dc3545') : undefined,
+                          fontWeight: col.accessor === '_impacto' ? 600 : undefined,
+                          width: col.accessor === 'CVE_ART' ? '16%' : col.accessor === 'DESCRIPCION_LOCAL' ? '30%' : col.accessor === 'CANT_CONTADA' ? '10%' : col.accessor === '_diferencia' ? '10%' : ['RESULTADO', 'CANT', 'COSTO'].includes(col.accessor) ? '8%' : col.accessor === '_impacto' ? '10%' : undefined
+                        }}>
+                          {formatValue(row, col)}
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="analytics-footer" style={{ marginTop: '15px', padding: '12px', background: '#f8f9fa', borderRadius: '8px', border: '1px solid #eee' }}>
+            <p style={{ margin: 0, fontSize: '0.8rem', color: '#666' }}>
+              <strong>Total:</strong> {filteredSortedProducts.length} artículos con discrepancia |
+              <span style={{ color: '#28a745' }}> AJUSTE ({m.ajuste.count})</span> |
+              <span style={{ color: '#dc3545' }}> MERMA ({m.merma.count})</span>
+            </p>
+          </div>
+        </>)}
       </div>
     );
-  };
+  }
+
+  // === Vista de overview: barras de asertividad por segmento ===
+  const dimensionMap = { linea: byLinea, familia: byFamilia, genero: byGenero };
+  const currentData = dimensionMap[selectedDimension] || [];
 
   return (
     <div className="analytics-dashboard">
       <div className="analytics-nav">
         <div className="analytics-title">
           <h4>Análisis de Asertividad</h4>
-          <span className="text-muted" style={{fontSize: '0.8rem'}}>Desglose por {selectedDimension}</span>
+          {globalExactitud !== null && (
+            <span className="text-muted" style={{ fontSize: '0.85rem', marginTop: '2px' }}>
+              Exactitud global: <strong>{globalExactitud.toFixed(1)}%</strong>
+            </span>
+          )}
         </div>
-        
+
         <div className="dimension-selector">
           {dimensions.map(dim => (
             <button
               key={dim.id}
               className={`pill-button ${selectedDimension === dim.id ? 'active' : ''}`}
-              onClick={() => setSelectedDimension(dim.id)}
+              onClick={() => { setSelectedDimension(dim.id); setDrillDown(null); }}
             >
-              <span style={{marginRight: '6px'}}>{dim.icon}</span>
+              <span style={{ marginRight: '6px' }}>{dim.icon}</span>
               {dim.label}
             </button>
           ))}
         </div>
 
-        <button className="back-button-table" onClick={onClose} style={{marginLeft: '20px'}}>
+        <button className="back-button-table" onClick={onClose} style={{ marginLeft: '20px' }}>
           <BiX size={20} /> Cerrar Análisis
         </button>
       </div>
 
-      {renderContent()}
+      {loading ? <Spinner /> : currentData.length === 0 ? (
+        <div style={{ padding: '40px', textAlign: 'center', color: '#888' }}>
+          No hay datos disponibles para la segmentación por {selectedDimension}.
+        </div>
+      ) : (
+        <div className="segmented-results-grid">
+          {currentData.map((item, index) => (
+            <div
+              key={index}
+              className="segment-item segment-clickable"
+              onClick={() => handleSegmentClick(item.name)}
+              title={`Ver productos de ${item.name}`}
+            >
+              <div className="segment-name">{item.name}</div>
+              <div className="segment-bar-container">
+                <div
+                  className="segment-bar-fill"
+                  style={{
+                    width: `${item.value}%`,
+                    backgroundColor: getBarColor(item.value)
+                  }}
+                ></div>
+              </div>
+              <div className="segment-value">{Math.round(item.value)}%</div>
+            </div>
+          ))}
+        </div>
+      )}
 
-      <div className="analytics-footer" style={{marginTop: '25px', padding: '12px', background: '#f8f9fa', borderRadius: '8px', border: '1px solid #eee'}}>
-        <p style={{margin: 0, fontSize: '0.8rem', color: '#666'}}>
-          <strong>Fuente:</strong> Datos obtenidos en tiempo real desde el servidor de analítica (Puerto 3001). 
-          Los colores representan niveles de cumplimiento: <span style={{color: '#28a745'}}>●</span> &gt;95% | <span style={{color: '#fd7e14'}}>●</span> &gt;85% | <span style={{color: '#dc3545'}}>●</span> &lt;85%
+      <div className="analytics-footer" style={{ marginTop: '25px', padding: '12px', background: '#f8f9fa', borderRadius: '8px', border: '1px solid #eee' }}>
+        <p style={{ margin: 0, fontSize: '0.8rem', color: '#666' }}>
+          <strong>Fuente:</strong> Datos obtenidos en tiempo real desde el servidor de analítica (Puerto 3001).
+          Los colores representan niveles de cumplimiento: <span style={{ color: '#28a745' }}>●</span> &gt;95% | <span style={{ color: '#fd7e14' }}>●</span> &gt;85% | <span style={{ color: '#dc3545' }}>●</span> &lt;85%
         </p>
       </div>
     </div>
