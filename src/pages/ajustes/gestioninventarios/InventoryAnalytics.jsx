@@ -18,7 +18,6 @@ const MAGNITUD_COLUMNS = [
   { header: 'Resultado', accessor: 'RESULTADO' },
   { header: 'Cant. Mov.', accessor: 'CANT' },
   { header: 'Cant. Contada', accessor: 'CANT_CONTADA' },
-  { header: 'Exist. SAE', accessor: '_diferencia' },
   { header: 'Costo', accessor: 'COSTO' },
   { header: 'Impacto', accessor: '_impacto' },
 ];
@@ -36,7 +35,6 @@ const formatValue = (row, col) => {
     const abs = Math.abs(val).toLocaleString('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 2 });
     return val >= 0 ? `+${abs}` : `-${abs}`;
   }
-  if (col.accessor === '_diferencia') return val >= 0 ? `+${val}` : `${val}`;
   return String(val);
 };
 
@@ -81,13 +79,11 @@ const InventoryAnalytics = ({
     return (rawProducts || [])
       .filter(p => p.RESULTADO === 'AJUSTE' || p.RESULTADO === 'MERMA')
       .map(p => {
-        const cantContada = Number(p.CANT_CONTADA || 0);
         const cantSistema = Number(p.CANT || 0);
         const costo = Number(p.COSTO || 0);
         const costoAjustado = p.LINEA === 'GIMBF' ? costo / 1000 : costo;
         const isAjuste = p.RESULTADO === 'AJUSTE';
-        const diff = cantContada - cantSistema;
-        return { ...p, _diferencia: diff, _impacto: isAjuste ? cantSistema * costoAjustado : -(cantSistema * costoAjustado) };
+        return { ...p, _impacto: isAjuste ? cantSistema * costoAjustado : -(cantSistema * costoAjustado) };
       })
       .sort((a, b) => Math.abs(b._impacto) - Math.abs(a._impacto));
   }, [rawProducts, mode]);
