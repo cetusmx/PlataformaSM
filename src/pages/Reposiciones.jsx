@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import FacturaXMLReutilizable from '../components/FacturaXMLReutilizable';
+import FacturaXMLEditable from '../components/FacturaXMLEditable';
 import OrdenCompraInicial from '../components/OrdenCompraInicial';
 import { BiSpreadsheet, BiFile } from 'react-icons/bi';
 
@@ -7,7 +7,7 @@ const Reposiciones = () => {
     const [flujoSeleccionado, setFlujoSeleccionado] = useState(null);
 
     if (flujoSeleccionado === 'factura') {
-        return <FacturaXMLReutilizable storageKey="reposiciones_progress" />;
+        return <FacturaXMLEditable storageKey="reposiciones_progress" />;
     }
 
     if (flujoSeleccionado === 'inicial') {
