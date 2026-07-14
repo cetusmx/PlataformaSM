@@ -13,6 +13,7 @@ const FacturaXMLEditable = ({ storageKey = "factura_progress" }) => {
     const [claveProvSistema, setClaveProvSistema] = useState(null);
     const [loading, setLoading] = useState(false);
     const [recargandoMasivo, setRecargandoMasivo] = useState(false);
+    const [filasEditando, setFilasEditando] = useState({});
     const [filasCargando, setFilasCargando] = useState({});
 
     const urlServidorAPI = process.env.REACT_APP_URL_API1;
@@ -94,6 +95,7 @@ const FacturaXMLEditable = ({ storageKey = "factura_progress" }) => {
 
     const getClaveUnitaria = (item) => {
         setFilasCargando(prev => ({ ...prev, [item.id]: true }));
+        setFilasEditando(prev => ({ ...prev, [item.id]: false }));
         Axios.get(`${urlServidorAPI}/compras/getclavesproveedor`, {
             params: { rfc: facturaData.rfc, clave: item.claveProveedor, _t: Date.now() }
         }).then((response) => {
@@ -174,6 +176,7 @@ const FacturaXMLEditable = ({ storageKey = "factura_progress" }) => {
     };
 
     const handleClaveInternaChange = (id, value) => {
+        setFilasEditando(prev => ({ ...prev, [id]: true }));
         setPartidas(partidas.map(item => item.id === id ? { ...item, claveInterna: value } : item));
     };
 
@@ -325,7 +328,7 @@ const FacturaXMLEditable = ({ storageKey = "factura_progress" }) => {
                     <tbody>
                         {partidas.map((item) => {
                             const montoDesc = (item.importe * item.descuento) / 100;
-                            const isNoReg = item.claveInterna === "No-registrada" || !item.claveInterna || item.claveInterna.trim() === "";
+                            const isNoReg = item.claveInterna === "No-registrada" || !item.claveInterna || item.claveInterna.trim() === "" || filasEditando[item.id];
                             const loadingFila = filasCargando[item.id];
                             return (
                                 <tr key={item.id}>
