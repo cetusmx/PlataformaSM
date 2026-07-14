@@ -336,7 +336,7 @@ const FacturaXMLEditable = ({ storageKey = "factura_progress" }) => {
                                     </td>
                                     <td>
                                         {isNoReg ? (
-                                            <div className="input-group input-group-sm" style={{ width: "130px" }}>
+                                            <div className="input-group input-group-sm" style={{ width: "100%" }}>
                                                 <input type="text" className="form-control" value={item.claveInterna === "No-registrada" ? "" : (item.claveInterna || "")} onChange={(e) => handleClaveInternaChange(item.id, e.target.value)} placeholder="Escribir clave..." />
                                                 <button className="btn btn-outline-secondary btn-sm" onClick={() => getClaveUnitaria(item)} disabled={loadingFila} title="Reintentar búsqueda">
                                                     <BiRefresh className={loadingFila ? "fa-spin" : ""} />
