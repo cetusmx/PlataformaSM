@@ -13,7 +13,6 @@ const FacturaXMLEditable = ({ storageKey = "factura_progress" }) => {
     const [claveProvSistema, setClaveProvSistema] = useState(null);
     const [loading, setLoading] = useState(false);
     const [recargandoMasivo, setRecargandoMasivo] = useState(false);
-    const [filasEditando, setFilasEditando] = useState({});
     const [filasCargando, setFilasCargando] = useState({});
 
     const urlServidorAPI = process.env.REACT_APP_URL_API1;
@@ -95,7 +94,6 @@ const FacturaXMLEditable = ({ storageKey = "factura_progress" }) => {
 
     const getClaveUnitaria = (item) => {
         setFilasCargando(prev => ({ ...prev, [item.id]: true }));
-        setFilasEditando(prev => ({ ...prev, [item.id]: false }));
         Axios.get(`${urlServidorAPI}/compras/getclavesproveedor`, {
             params: { rfc: facturaData.rfc, clave: item.claveProveedor, _t: Date.now() }
         }).then((response) => {
@@ -175,11 +173,6 @@ const FacturaXMLEditable = ({ storageKey = "factura_progress" }) => {
         setPartidas(partidas.map(item => item.id === id ? { ...item, descuento: parseFloat(value) || 0 } : item));
     };
 
-    const handleClaveInternaChange = (id, value) => {
-        setFilasEditando(prev => ({ ...prev, [id]: true }));
-        setPartidas(partidas.map(item => item.id === id ? { ...item, claveInterna: value } : item));
-    };
-
     const eliminarPartida = (id) => {
         setPartidas(prev => prev.filter(p => p.id !== id));
     };
@@ -194,7 +187,7 @@ const FacturaXMLEditable = ({ storageKey = "factura_progress" }) => {
     };
 
     const { subtotal, descuentoTotal, iva, total } = calcularTotales();
-    const tienePendientes = partidas.some(p => !p.claveInterna || p.claveInterna === "No-registrada" || p.claveInterna.trim() === "");
+    const tienePendientes = partidas.some(p => p.claveInterna === "No-registrada" || !p.claveInterna);
     const faltaAlmacen = !almacenSeleccionado;
 
     const reset = () => {
@@ -328,7 +321,7 @@ const FacturaXMLEditable = ({ storageKey = "factura_progress" }) => {
                     <tbody>
                         {partidas.map((item) => {
                             const montoDesc = (item.importe * item.descuento) / 100;
-                            const isNoReg = item.claveInterna === "No-registrada" || !item.claveInterna || item.claveInterna.trim() === "" || filasEditando[item.id];
+                            const isNoReg = item.claveInterna === "No-registrada";
                             const loadingFila = filasCargando[item.id];
                             return (
                                 <tr key={item.id}>
@@ -338,18 +331,14 @@ const FacturaXMLEditable = ({ storageKey = "factura_progress" }) => {
                                         <span className="desc-secundaria">{item.descripcion}</span>
                                     </td>
                                     <td>
-                                        {isNoReg ? (
-                                            <div className="input-group input-group-sm" style={{ width: "100%" }}>
-                                                <input type="text" className="form-control" value={item.claveInterna === "No-registrada" ? "" : (item.claveInterna || "")} onChange={(e) => handleClaveInternaChange(item.id, e.target.value)} placeholder="Escribir clave..." />
-                                                <button className="btn btn-outline-secondary btn-sm" onClick={() => getClaveUnitaria(item)} disabled={loadingFila} title="Reintentar búsqueda">
-                                                    <BiRefresh className={loadingFila ? "fa-spin" : ""} />
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <>
-                                                <span className="col-clave">{item.claveInterna}</span>
-                                                {item.origen && <span className="origen-info">{item.origen}</span>}
-                                            </>
+                                        <span className={`col-clave ${isNoReg ? "no-registrada" : ""}`}>
+                                            {loadingFila ? "..." : (item.claveInterna || "...")}
+                                        </span>
+                                        {item.origen && !loadingFila && !isNoReg && <span className="origen-info">{item.origen}</span>}
+                                        {isNoReg && (
+                                            <button className="btn-refresh-min" onClick={() => getClaveUnitaria(item)} disabled={loadingFila}>
+                                                <BiRefresh className={loadingFila ? "fa-spin" : ""} />
+                                            </button>
                                         )}
                                     </td>
                                     <td style={{ textAlign: "right" }}>{formatCurrency(item.valorUnitario)}</td>
