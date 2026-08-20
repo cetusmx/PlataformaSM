@@ -2,18 +2,23 @@
   {
     "title": "Inventario",
     "icon": "bi bi-box-seam",
-    "childrens": [
-      {
-        "title": "Códigos de barras",
-        "icon": "bi bi-upc",
-        "path": "/codigosbarras"
-      },
-      {
-        "title": "Recepción mercancía",
-        "icon": "bi bi-upc-scan",
-        "path": "/recepcionmercancia"
-      }
-    ]
+        "childrens": [
+          {
+            "title": "Códigos de barras",
+            "icon": "bi bi-upc",
+            "path": "/codigosbarras"
+          },
+          {
+            "title": "Recepción mercancía",
+            "icon": "bi bi-upc-scan",
+            "path": "/recepcionmercancia"
+          },
+          {
+            "title": "Gestión de inventarios",
+            "icon": "bi bi-boxes",
+            "path": "/gestioninventarios"
+          }
+        ]
   },
   {
     "title": "Precios",
@@ -55,11 +60,6 @@
         "title": "Claves no registradas",
         "icon": "bi bi-clipboard-x",
         "path": "/noregistradas"
-      },
-      {
-        "title": "Gestión de inventarios",
-        "icon": "bi bi-boxes",
-        "path": "/gestioninventarios"
       },
       {
         "title": "Usuarios",

@@ -96,6 +96,23 @@ const InventoryAnalytics = ({
     return [...list].sort((a, b) => sortAsc ? a._impacto - b._impacto : b._impacto - a._impacto);
   }, [discrepantProducts, resultadoFilter, sortAsc]);
 
+  const diferenciasData = useMemo(() => {
+    const key = DIMENSION_KEY_MAP[selectedDimension];
+    const map = {};
+    for (const p of (rawProducts || [])) {
+      const seg = p[key] || 'SIN CLASIFICAR';
+      if (!map[seg]) map[seg] = { sinCambio: 0, ajuste: 0, merma: 0, total: 0 };
+      const d = map[seg];
+      d.total++;
+      if (p.RESULTADO === 'SIN CAMBIO') d.sinCambio++;
+      else if (p.RESULTADO === 'AJUSTE') d.ajuste++;
+      else if (p.RESULTADO === 'MERMA') d.merma++;
+    }
+    return Object.entries(map)
+      .map(([name, d]) => ({ name, ...d }))
+      .sort((a, b) => b.total - a.total);
+  }, [rawProducts, selectedDimension]);
+
   const dimensions = [
     { id: 'linea', label: 'Línea', icon: <BiLineChart /> },
     { id: 'familia', label: 'Familia', icon: <BiCategory /> },
@@ -353,6 +370,89 @@ const InventoryAnalytics = ({
           </div>
           </>
         )}
+      </div>
+    );
+  }
+
+  // === Vista de diferencias: distribución por Resultado (SIN CAMBIO / AJUSTE / MERMA) ===
+  const DIFERENCIAS_LEYENDA = [
+    { label: 'SIN CAMBIO', color: '#28a745' },
+    { label: 'AJUSTE', color: '#fd7e14' },
+    { label: 'MERMA', color: '#dc3545' },
+  ];
+
+  if (mode === 'diferencias') {
+    return (
+      <div className="analytics-dashboard">
+        <div className="analytics-nav">
+          <div className="analytics-title">
+            <h4>Distribución de Diferencias</h4>
+            <span className="text-muted" style={{ fontSize: '0.85rem', marginTop: '2px' }}>
+              Partidas por {selectedDimension === 'linea' ? 'Línea' : selectedDimension === 'familia' ? 'Familia' : 'Género'} — conteo de Resultado
+            </span>
+          </div>
+
+          <div className="dimension-selector">
+            {dimensions.map(dim => (
+              <button
+                key={dim.id}
+                className={`pill-button ${selectedDimension === dim.id ? 'active' : ''}`}
+                onClick={() => { setSelectedDimension(dim.id); setDrillDown(null); }}
+              >
+                <span style={{ marginRight: '6px' }}>{dim.icon}</span>
+                {dim.label}
+              </button>
+            ))}
+          </div>
+
+          <button className="back-button-table" onClick={onClose} style={{ marginLeft: '20px' }}>
+            <BiX size={20} /> Cerrar Análisis
+          </button>
+        </div>
+
+        <div style={{ display: 'flex', gap: '18px', margin: '10px 0', flexWrap: 'wrap' }}>
+          {DIFERENCIAS_LEYENDA.map(l => (
+            <span key={l.label} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: '#555' }}>
+              <span style={{ width: '14px', height: '14px', borderRadius: '3px', background: l.color, display: 'inline-block' }} />
+              {l.label}
+            </span>
+          ))}
+        </div>
+
+        {loading ? <Spinner /> : diferenciasData.length === 0 ? (
+          <div style={{ padding: '40px', textAlign: 'center', color: '#888' }}>
+            No hay datos disponibles para la segmentación por {selectedDimension}.
+          </div>
+        ) : (
+          <div className="segmented-results-grid">
+            {diferenciasData.map((s) => (
+              <div
+                key={s.name}
+                className="segment-item segment-clickable"
+                onClick={() => handleSegmentClick(s.name)}
+                title={`Ver productos de ${s.name}`}
+              >
+                <div className="segment-name">{s.name} ({s.total})</div>
+                <div className="segment-bar-container" style={{ display: 'flex' }}>
+                  <div style={{ width: `${(s.sinCambio / s.total) * 100}%`, height: '100%', background: '#28a745' }} title={`SIN CAMBIO: ${s.sinCambio}`} />
+                  <div style={{ width: `${(s.ajuste / s.total) * 100}%`, height: '100%', background: '#fd7e14' }} title={`AJUSTE: ${s.ajuste}`} />
+                  <div style={{ width: `${(s.merma / s.total) * 100}%`, height: '100%', background: '#dc3545' }} title={`MERMA: ${s.merma}`} />
+                </div>
+                <div className="segment-value" style={{ width: '120px', fontSize: '0.8rem' }}>
+                  🟢{s.sinCambio} 🟠{s.ajuste} 🔴{s.merma}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="analytics-footer" style={{ marginTop: '25px', padding: '12px', background: '#f8f9fa', borderRadius: '8px', border: '1px solid #eee' }}>
+          <p style={{ margin: 0, fontSize: '0.8rem', color: '#666' }}>
+            <strong>Fuente:</strong> Datos obtenidos en tiempo real desde el servidor de analítica (Puerto 3001).
+            Cada barra muestra el total de partidas dividido en SIN CAMBIO (verde), AJUSTE (naranja) y MERMA (rojo).
+            Da clic en un segmento para ver sus productos.
+          </p>
+        </div>
       </div>
     );
   }

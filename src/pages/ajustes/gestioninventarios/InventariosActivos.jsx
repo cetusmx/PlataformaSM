@@ -211,6 +211,8 @@ const InventarioDetails = ({ inventario, onBack }) => {
       setViewMode('magnitud');
     } else if (metric === 'eficiencia') {
       setViewMode('eficiencia');
+    } else if (metric === 'diferencias') {
+      setViewMode('diferencias');
     } else {
       setViewMode('analytics');
     }
@@ -498,6 +500,7 @@ const InventarioDetails = ({ inventario, onBack }) => {
       case 'analytics':
       case 'magnitud':
       case 'eficiencia':
+      case 'diferencias':
         return (
           <InventoryAnalytics 
             mode={viewMode}
@@ -582,7 +585,7 @@ const InventarioDetails = ({ inventario, onBack }) => {
             icon={<BiTrendingDown />} 
             colorClass="metric-red"
             onClick={() => handleOpenMetric('diferencias')}
-            isActive={viewMode === 'analytics' && activeMetric === 'diferencias'}
+            isActive={viewMode === 'diferencias'}
             loading={assertivenessLoading}
           />
           <MetricCard 
