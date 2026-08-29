@@ -197,6 +197,31 @@
   font-weight: 600;
 }
 
+.ri-preview-titulo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ri-cargando-inline {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  animation: ri-parpadeo 1.2s ease-in-out infinite;
+}
+
+@keyframes ri-parpadeo {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
 .ri-mensaje {
   margin-top: 12px;
   padding: 10px 14px;

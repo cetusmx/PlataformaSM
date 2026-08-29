@@ -4,7 +4,8 @@ export function computeAssertiveness(products) {
       global: { exactitud: 0, diferencias: 0, totalProductos: 0, magnitud: null },
       byLinea: [],
       byFamilia: [],
-      byGenero: []
+      byGenero: [],
+      byRotacion: []
     };
   }
 
@@ -12,6 +13,7 @@ export function computeAssertiveness(products) {
     linea: { key: 'LINEA', map: {} },
     familia: { key: 'FAMILIA', map: {} },
     genero: { key: 'GENERO', map: {} },
+    rotacion: { key: 'ROTACION', map: {} },
   };
 
   let total = 0;
@@ -44,7 +46,8 @@ export function computeAssertiveness(products) {
     }
 
     for (const [, g] of Object.entries(groups)) {
-      const segment = p[g.key] || 'SIN CLASIFICAR';
+      const raw = p[g.key];
+      const segment = (raw === null || raw === undefined || raw === '') ? 'SIN CLASIFICAR' : raw;
       if (!g.map[segment]) g.map[segment] = { total: 0, correctos: 0 };
       g.map[segment].total++;
       if (esCorrecto) g.map[segment].correctos++;
@@ -72,6 +75,7 @@ export function computeAssertiveness(products) {
     },
     byLinea: toArray(groups.linea.map),
     byFamilia: toArray(groups.familia.map),
-    byGenero: toArray(groups.genero.map)
+    byGenero: toArray(groups.genero.map),
+    byRotacion: toArray(groups.rotacion.map)
   };
 }

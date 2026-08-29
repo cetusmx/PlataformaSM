@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import StocksEnAlmacenes from "./StocksEnAlmacenes";
+import VisualizarStocks from "./VisualizarStocks";
 import "../../../styles/reposicioninventarios.css";
 
 const SUBMODULOS = [
   { id: "stocks", label: "Stocks en Almacenes" },
+  { id: "visualizar", label: "Visualización de Stocks" },
 ];
 
 const ReposicionInventarios = () => {
@@ -32,6 +34,7 @@ const ReposicionInventarios = () => {
 
       <div className="ri-contenido">
         {active === "stocks" && <StocksEnAlmacenes />}
+        {active === "visualizar" && <VisualizarStocks />}
       </div>
     </div>
   );

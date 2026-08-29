@@ -3,6 +3,7 @@ import { useDropzone } from "react-dropzone";
 import * as XLSX from "xlsx";
 import Axios from "axios";
 import { show_alerta } from "../../../functions";
+import StocksTabla from "./StocksTabla";
 
 // Columnas requeridas en el orden esperado. El chequeo es insensible a
 // mayúsculas/minúsculas para tolerar variaciones en el encabezado del Excel.
@@ -33,7 +34,6 @@ const StocksEnAlmacenes = () => {
   const [guardando, setGuardando] = useState(false);
   const [mensaje, setMensaje] = useState("");
   const [reemplazar, setReemplazar] = useState(false);
-  const [pagina, setPagina] = useState(1);
   const [busquedaClave, setBusquedaClave] = useState("");
   const [filtroAlmacen, setFiltroAlmacen] = useState("");
   const [filtroRotacion, setFiltroRotacion] = useState("");
@@ -41,7 +41,6 @@ const StocksEnAlmacenes = () => {
 
   const onDrop = (acceptedFiles) => {
     setMensaje("");
-    setPagina(1);
     setBusquedaClave("");
     setFiltroAlmacen("");
     setFiltroRotacion("");
@@ -126,7 +125,6 @@ const StocksEnAlmacenes = () => {
     setFile(null);
     setDataExcel([]);
     setMensaje("");
-    setPagina(1);
     setBusquedaClave("");
     setFiltroAlmacen("");
     setFiltroRotacion("");
@@ -156,13 +154,6 @@ const StocksEnAlmacenes = () => {
       return okClave && okAlm && okRot;
     });
   }, [dataExcel, busquedaClave, filtroAlmacen, filtroRotacion]);
-
-  const registrosPagina = useMemo(() => {
-    const inicio = (pagina - 1) * 10;
-    return registrosFiltrados.slice(inicio, inicio + 10);
-  }, [registrosFiltrados, pagina]);
-
-  const totalPaginas = Math.max(1, Math.ceil(registrosFiltrados.length / 10));
 
   const opcionesAlmacen = useMemo(() => {
     const set = new Set(
@@ -278,7 +269,6 @@ const StocksEnAlmacenes = () => {
                   setBusquedaClave("");
                   setFiltroAlmacen("");
                   setFiltroRotacion("");
-                  setPagina(1);
                 }}
               >
                 Limpiar filtros
@@ -306,98 +296,17 @@ const StocksEnAlmacenes = () => {
               </button>
             </div>
           </div>
-          <div className="ri-tabla-scroll">
-            <table className="ri-tabla">
-              <thead>
-                <tr>
-                  {CANONICAL.map((col) => (
-                    <th key={col}>
-                      <div className="ri-th-head">
-                        <span className="ri-th-label">{col}</span>
-                        {col === "clave" && (
-                          <input
-                            className="ri-th-input"
-                            type="text"
-                            placeholder="Buscar..."
-                            value={busquedaClave}
-                            onChange={(e) => {
-                              setBusquedaClave(e.target.value);
-                              setPagina(1);
-                            }}
-                          />
-                        )}
-                        {col === "almacen" && (
-                          <select
-                            className="ri-th-select ri-th-select-alm"
-                            value={filtroAlmacen}
-                            onChange={(e) => {
-                              setFiltroAlmacen(e.target.value);
-                              setPagina(1);
-                            }}
-                          >
-                            <option value="">Todos</option>
-                            {opcionesAlmacen.map((op) => (
-                              <option key={op} value={op}>{op}</option>
-                            ))}
-                          </select>
-                        )}
-                        {col === "rotacion" && (
-                          <select
-                            className="ri-th-select"
-                            value={filtroRotacion}
-                            onChange={(e) => {
-                              setFiltroRotacion(e.target.value);
-                              setPagina(1);
-                            }}
-                          >
-                            <option value="">Todos</option>
-                            {opcionesRotacion.map((op) => (
-                              <option key={op} value={op}>{op}</option>
-                            ))}
-                          </select>
-                        )}
-                      </div>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {registrosPagina.map((row, i) => (
-                  <tr key={i}>
-                    {CANONICAL.map((col) => (
-                      <td key={col}>{row[col] ?? ""}</td>
-                    ))}
-                  </tr>
-                ))}
-                {registrosPagina.length === 0 && (
-                  <tr>
-                    <td colSpan={CANONICAL.length} className="ri-sin-resultados">
-                      No hay registros que coincidan con los filtros.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-          <div className="ri-paginacion">
-            <button
-              className="ri-btn ri-btn-ghost"
-              onClick={() => setPagina((p) => Math.max(1, p - 1))}
-              disabled={pagina === 1}
-            >
-              Anterior
-            </button>
-            <span className="ri-pagina-info">
-              Página {pagina} de {totalPaginas}
-            </span>
-            <button
-              className="ri-btn ri-btn-ghost"
-              onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))}
-              disabled={pagina === totalPaginas}
-            >
-              Siguiente
-            </button>
-          </div>
+          <StocksTabla
+            datos={registrosFiltrados}
+            opcionesAlmacen={opcionesAlmacen}
+            opcionesRotacion={opcionesRotacion}
+            busquedaClave={busquedaClave}
+            setBusquedaClave={setBusquedaClave}
+            filtroAlmacen={filtroAlmacen}
+            setFiltroAlmacen={setFiltroAlmacen}
+            filtroRotacion={filtroRotacion}
+            setFiltroRotacion={setFiltroRotacion}
+          />
         </div>
       )}
 

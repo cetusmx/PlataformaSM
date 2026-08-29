@@ -508,6 +508,7 @@ const InventarioDetails = ({ inventario, onBack }) => {
             byLinea={assertivenessData?.byLinea || []}
             byFamilia={assertivenessData?.byFamilia || []}
             byGenero={assertivenessData?.byGenero || []}
+            byRotacion={assertivenessData?.byRotacion || []}
             globalExactitud={assertivenessData?.global.exactitud ?? null}
             rawProducts={assertivenessRawData || []}
             magnitud={assertivenessData?.global.magnitud ?? null}

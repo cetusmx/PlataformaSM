@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { BiX, BiLineChart, BiCategory, BiUser, BiArrowBack, BiSortUp, BiSortDown } from 'react-icons/bi';
+import { BiX, BiLineChart, BiCategory, BiUser, BiArrowBack, BiSortUp, BiSortDown, BiRefresh } from 'react-icons/bi';
 
-const DIMENSION_KEY_MAP = { linea: 'LINEA', familia: 'FAMILIA', genero: 'GENERO' };
+const DIMENSION_KEY_MAP = { linea: 'LINEA', familia: 'FAMILIA', genero: 'GENERO', rotacion: 'ROTACION' };
+const SIN_CLASIFICAR = 'SIN CLASIFICAR';
 
 const DRILL_COLUMNS = [
   { header: 'Clave', accessor: 'CVE_ART' },
@@ -53,6 +54,7 @@ const InventoryAnalytics = ({
   byLinea = [],
   byFamilia = [],
   byGenero = [],
+  byRotacion = [],
   globalExactitud = null,
   rawProducts = [],
   magnitud = null,
@@ -100,7 +102,8 @@ const InventoryAnalytics = ({
     const key = DIMENSION_KEY_MAP[selectedDimension];
     const map = {};
     for (const p of (rawProducts || [])) {
-      const seg = p[key] || 'SIN CLASIFICAR';
+      const raw = p[key];
+      const seg = (raw === null || raw === undefined || raw === '') ? SIN_CLASIFICAR : raw;
       if (!map[seg]) map[seg] = { sinCambio: 0, ajuste: 0, merma: 0, total: 0 };
       const d = map[seg];
       d.total++;
@@ -117,6 +120,7 @@ const InventoryAnalytics = ({
     { id: 'linea', label: 'Línea', icon: <BiLineChart /> },
     { id: 'familia', label: 'Familia', icon: <BiCategory /> },
     { id: 'genero', label: 'Género', icon: <BiUser /> },
+    { id: 'rotacion', label: 'Rotación', icon: <BiRefresh /> },
   ];
 
   const getBarColor = (value) => {
@@ -127,7 +131,13 @@ const InventoryAnalytics = ({
 
   const handleSegmentClick = (segmentName) => {
     const dimensionKey = DIMENSION_KEY_MAP[selectedDimension];
-    const filteredProducts = (rawProducts || []).filter(p => p[dimensionKey] === segmentName);
+    const filteredProducts = (rawProducts || []).filter(p => {
+      if (segmentName === SIN_CLASIFICAR) {
+        const v = p[dimensionKey];
+        return v === null || v === undefined || v === '';
+      }
+      return p[dimensionKey] === segmentName;
+    });
     setDrillDown({ dimension: selectedDimension, name: segmentName, products: filteredProducts });
   };
 
@@ -137,7 +147,7 @@ const InventoryAnalytics = ({
 
   // === Vista de drill-down: tabla de productos filtrados ===
   if (drillDown) {
-    const labelMap = { linea: 'Línea', familia: 'Familia', genero: 'Género' };
+    const labelMap = { linea: 'Línea', familia: 'Familia', genero: 'Género', rotacion: 'Rotación' };
     return (
       <div className="analytics-dashboard">
         <div className="analytics-nav">
@@ -458,7 +468,7 @@ const InventoryAnalytics = ({
   }
 
   // === Vista de overview: barras de asertividad por segmento ===
-  const dimensionMap = { linea: byLinea, familia: byFamilia, genero: byGenero };
+  const dimensionMap = { linea: byLinea, familia: byFamilia, genero: byGenero, rotacion: byRotacion };
   const currentData = dimensionMap[selectedDimension] || [];
 
   return (
