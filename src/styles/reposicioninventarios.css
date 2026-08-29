@@ -1,0 +1,396 @@
+.reposicion-inventarios {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 10px 5px;
+}
+
+/* Banner de bienvenida */
+.ri-bienvenida {
+  background: linear-gradient(135deg, #1f3a5f 0%, #2c5282 100%);
+  color: #fff;
+  border-radius: 10px;
+  padding: 11px 26px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.ri-bienvenida h2 {
+  margin: 0 0 8px 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.ri-bienvenida p {
+  margin: 0;
+  font-size: 0.95rem;
+  opacity: 0.92;
+  max-width: 760px;
+}
+
+/* Sub-navegación de funcionalidades */
+.ri-subnav {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  border-bottom: 2px solid #e6e9ef;
+  padding-bottom: 0;
+}
+
+.ri-subnav-btn {
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 10px 16px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #5a6b85;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ri-subnav-btn:hover {
+  color: #2c5282;
+}
+
+.ri-subnav-btn.active {
+  color: #2c5282;
+  border-bottom-color: #2c5282;
+}
+
+.ri-contenido {
+  margin-top: 4px;
+}
+
+/* Stocks en Almacenes */
+.ri-stocks-titulo {
+  margin: 0 0 4px 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #27374d;
+}
+
+.ri-stocks-descripcion {
+  margin: 0 0 16px 0;
+  color: #667;
+  font-size: 0.9rem;
+}
+
+/* Instrucciones de columnas */
+.ri-instrucciones {
+  background: #f1f6fb;
+  border: 1px solid #d6e3f0;
+  border-left: 4px solid #2c5282;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
+.ri-instrucciones h6 {
+  margin: 0 0 8px 0;
+  color: #2c5282;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.ri-instrucciones-lista {
+  margin: 0 0 8px 0;
+  padding-left: 20px;
+  color: #3d4d63;
+  font-size: 0.88rem;
+}
+
+.ri-instrucciones-lista code {
+  background: #e3ebf5;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  color: #1f3a5f;
+}
+
+.ri-instrucciones-nota {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #5a6b85;
+}
+
+.ri-dropzone {
+  border: 2px dashed #b9c2d0;
+  border-radius: 12px;
+  padding: 36px 20px;
+  text-align: center;
+  cursor: pointer;
+  background: #f8fafc;
+  transition: all 0.15s ease;
+  color: #5a6b85;
+}
+
+.ri-dropzone:hover,
+.ri-dropzone.active {
+  border-color: #2c5282;
+  background: #eef4fb;
+}
+
+.ri-dropzone-icon {
+  font-size: 2.4rem;
+  display: block;
+  margin-bottom: 8px;
+  color: #2c5282;
+}
+
+.ri-dropzone p {
+  margin: 0 0 4px 0;
+  font-weight: 600;
+}
+
+.ri-dropzone small {
+  color: #8a96a8;
+}
+
+.ri-archivo-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding: 8px 14px;
+  background: #eef4fb;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.ri-btn {
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ri-btn-ghost {
+  background: #fff;
+  border: 1px solid #cdd5e0;
+  color: #2c5282;
+}
+
+.ri-btn-ghost:hover {
+  background: #f0f4f9;
+}
+
+.ri-btn-primary {
+  background: #2c5282;
+  border: 1px solid #2c5282;
+  color: #fff;
+}
+
+.ri-btn-primary:hover {
+  background: #234169;
+}
+
+.ri-btn-primary:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.ri-cargando {
+  margin-top: 12px;
+  color: #2c5282;
+  font-weight: 600;
+}
+
+.ri-mensaje {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: #fff4e5;
+  border-left: 4px solid #fd7e14;
+  border-radius: 6px;
+  color: #8a4b00;
+  font-size: 0.9rem;
+}
+
+/* Preview */
+.ri-preview {
+  margin-top: -2px;
+}
+
+.ri-opciones-guardado {
+  margin-bottom: 12px;
+}
+
+.ri-opciones-guardado .form-check-label {
+  font-size: 0.9rem;
+  color: #3d4d63;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Filtros y búsqueda inline en el header de la tabla */
+.ri-th-head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ri-th-label {
+  font-size: 0.72rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ri-th-input {
+  width: 210px;
+  box-sizing: border-box;
+  padding: 2px 5px;
+  font-size: 0.74rem;
+  border: 1px solid #cdd5e0;
+  border-radius: 4px;
+  outline: none;
+}
+
+.ri-th-select {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 2px 4px;
+  font-size: 0.72rem;
+  border: 1px solid #cdd5e0;
+  border-radius: 4px;
+  outline: none;
+}
+
+.ri-th-select-alm {
+  flex: 0 0 50%;
+  width: 50%;
+}
+
+.ri-th-input:focus,
+.ri-th-select:focus {
+  border-color: #2c5282;
+  box-shadow: 0 0 0 2px rgba(44, 82, 130, 0.15);
+}
+
+.ri-btn-sm {
+  padding: 3px 10px;
+  font-size: 0.8rem;
+}
+
+/* Paginación */
+.ri-paginacion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 12px;
+  font-size: 0.88rem;
+  color: #3d4d63;
+}
+
+.ri-pagina-info {
+  font-weight: 600;
+}
+
+.ri-sin-resultados {
+  text-align: center;
+  padding: 24px;
+  color: #8a96a8;
+  font-style: italic;
+}
+
+.ri-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.ri-preview-acciones {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ri-preview-header h5 {
+  margin: 0;
+  color: #27374d;
+}
+
+.ri-pending-note {
+  font-size: 0.8rem;
+  color: #8a96a8;
+  font-style: italic;
+}
+
+.ri-tabla-scroll {
+  max-height: 55vh;
+  overflow: auto;
+  border: 1px solid #e6e9ef;
+  border-radius: 8px;
+}
+
+.ri-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.ri-tabla thead th {
+  position: sticky;
+  top: 0;
+  background: #2c5282;
+  color: #fff;
+  text-align: left;
+  padding: 8px 12px;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+.ri-tabla tbody td {
+  padding: 3px 12px;
+  border-bottom: 1px solid #eef1f5;
+  white-space: nowrap;
+}
+
+.ri-tabla tbody tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+/* Modal de confirmación */
+.ri-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+
+.ri-modal {
+  background: #fff;
+  border-radius: 10px;
+  padding: 22px 24px;
+  max-width: 420px;
+  width: calc(100% - 40px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.ri-modal-title {
+  margin: 0 0 10px 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1f3a5f;
+}
+
+.ri-modal-text {
+  margin: 0 0 18px 0;
+  color: #444;
+  line-height: 1.45;
+}
+
+.ri-modal-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}

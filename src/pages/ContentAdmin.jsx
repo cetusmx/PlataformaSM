@@ -11,6 +11,7 @@ import Editamars from "./Editamars";
 import Usuarios from "./Usuarios";
 import ClavesNoRegistradas from "./ClavesNoRegistradas";
 import InventariosPage from "./ajustes/gestioninventarios/InventarioPage";
+import ReposicionInventarios from "./ajustes/reposicioninventarios/ReposicionInventarios";
 import PedidosEspeciales from "./PedidosEspeciales";
 import Reposiciones from "./Reposiciones";
 
@@ -32,6 +33,7 @@ const ContentAdmin = () => {
           <Route path="gestioninventarios" element={<InventariosPage />} />
           <Route path="pedidosespeciales" element={<PedidosEspeciales />} />
           <Route path="reposiciones" element={<Reposiciones />} />
+          <Route path="reposicioninventarios" element={<ReposicionInventarios />} />
         </Routes>
       </div>
     </div>
