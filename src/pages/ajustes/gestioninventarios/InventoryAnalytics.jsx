@@ -1,5 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { BiX, BiLineChart, BiCategory, BiUser, BiArrowBack, BiSortUp, BiSortDown, BiRefresh } from 'react-icons/bi';
+import { Select } from 'antd';
+import { BiX, BiLineChart, BiCategory, BiUser, BiArrowBack, BiSortUp, BiSortDown, BiRefresh, BiBarChart } from 'react-icons/bi';
+import BiExplorer from './BiExplorer';
 
 const DIMENSION_KEY_MAP = { linea: 'LINEA', familia: 'FAMILIA', genero: 'GENERO', rotacion: 'ROTACION' };
 const SIN_CLASIFICAR = 'SIN CLASIFICAR';
@@ -60,7 +62,9 @@ const InventoryAnalytics = ({
   magnitud = null,
   loading = false,
   efficiencyData = [],
-  efficiencyLoading = false
+  efficiencyLoading = false,
+  onOpenBI,
+  onBackToAnalytics
 }) => {
   const [selectedDimension, setSelectedDimension] = useState('linea');
   const [drillDown, setDrillDown] = useState(null);
@@ -467,6 +471,13 @@ const InventoryAnalytics = ({
     );
   }
 
+  // === Vista BI: explorador tipo cubo ===
+  if (mode === 'bi') {
+    return (
+      <BiExplorer rawProducts={rawProducts} loading={loading} onBack={onBackToAnalytics} />
+    );
+  }
+
   // === Vista de overview: barras de asertividad por segmento ===
   const dimensionMap = { linea: byLinea, familia: byFamilia, genero: byGenero, rotacion: byRotacion };
   const currentData = dimensionMap[selectedDimension] || [];
@@ -496,10 +507,15 @@ const InventoryAnalytics = ({
           ))}
         </div>
 
-        <button className="back-button-table" onClick={onClose} style={{ marginLeft: '20px' }}>
-          <BiX size={20} /> Cerrar Análisis
-        </button>
-      </div>
+          <button className="back-button-table" onClick={onClose} style={{ marginLeft: '20px' }}>
+            <BiX size={20} /> Cerrar Análisis
+          </button>
+          {onOpenBI && (
+            <button className="back-button-table" onClick={onOpenBI} style={{ marginLeft: '10px' }}>
+              <BiBarChart size={18} /> BI
+            </button>
+          )}
+        </div>
 
       {loading ? <Spinner /> : currentData.length === 0 ? (
         <div style={{ padding: '40px', textAlign: 'center', color: '#888' }}>

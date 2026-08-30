@@ -213,6 +213,8 @@ const InventarioDetails = ({ inventario, onBack }) => {
       setViewMode('eficiencia');
     } else if (metric === 'diferencias') {
       setViewMode('diferencias');
+    } else if (metric === 'bi') {
+      setViewMode('bi');
     } else {
       setViewMode('analytics');
     }
@@ -501,6 +503,7 @@ const InventarioDetails = ({ inventario, onBack }) => {
       case 'magnitud':
       case 'eficiencia':
       case 'diferencias':
+      case 'bi':
         return (
           <InventoryAnalytics 
             mode={viewMode}
@@ -515,6 +518,8 @@ const InventarioDetails = ({ inventario, onBack }) => {
             loading={assertivenessLoading}
             efficiencyData={efficiencyData || []}
             efficiencyLoading={efficiencyLoading}
+            onOpenBI={() => handleOpenMetric('bi')}
+            onBackToAnalytics={() => { setViewMode('analytics'); setActiveMetric('exactitud'); }}
           />
         );
       case 'lineProducts':

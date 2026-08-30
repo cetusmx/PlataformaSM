@@ -549,7 +549,7 @@
 .analytics-dashboard {
   background: white;
   border-radius: 12px;
-  padding: 20px;
+  padding: 12px 20px 20px 20px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.08);
   margin-bottom: 20px;
   animation: fadeIn 0.3s ease;
@@ -635,6 +635,17 @@
   text-align: right;
   font-weight: 700;
   font-size: 0.9rem;
+}
+
+.bi-result-dist .segment-name {
+  width: auto;
+  white-space: nowrap;
+}
+
+.bi-result-dist .segment-value {
+  width: auto;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .segment-clickable {
