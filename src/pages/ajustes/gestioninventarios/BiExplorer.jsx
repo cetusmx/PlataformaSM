@@ -29,6 +29,15 @@ const RESULTADO_COLOR = {
   MERMA: '#dc3545',
 };
 
+const DRILL_COLUMNS = [
+  { header: 'Clave', accessor: 'CVE_ART' },
+  { header: 'Descripción', accessor: 'DESCRIPCION_LOCAL' },
+  { header: 'Resultado', accessor: 'RESULTADO' },
+  { header: 'Cant. Contada', accessor: 'CANT_CONTADA' },
+  { header: 'Cant. Mov.', accessor: 'CANT' },
+  { header: 'Costo', accessor: 'COSTO' },
+];
+
 // Explorador tipo "cubo": filtros multi-dimensión combinables (AND) sobre
 // rawProducts, con KPIs, distribución de RESULTADO y desglose por dimensión.
 const BiExplorer = ({ rawProducts = [], loading = false, onBack }) => {
@@ -99,10 +108,21 @@ const BiExplorer = ({ rawProducts = [], loading = false, onBack }) => {
     return Object.values(map).sort((a, b) => b.total - a.total);
   }, [filtrados, grupoPor]);
 
+  const [drillDown, setDrillDown] = useState(null);
   const limpiar = () =>
     setFiltros({ linea: [], familia: [], genero: [], rotacion: [] });
   const hayFiltros = DIM.some((d) => filtros[d.id].length > 0);
   const totalResultado = metricas.sinCambio + metricas.ajuste + metricas.merma;
+
+  const handleBarClick = (name) => {
+    const d = DIM.find((x) => x.id === grupoPor);
+    const products = filtrados.filter((p) => {
+      const v = p[d.key];
+      if (name === SIN_CLASIFICAR) return v == null || v === '';
+      return norm(v) === name;
+    });
+    setDrillDown({ name, products });
+  };
 
   const barColor = (v) =>
     v >= 95 ? '#28a745' : v >= 85 ? '#fd7e14' : '#dc3545';
@@ -194,11 +214,6 @@ const BiExplorer = ({ rawProducts = [], loading = false, onBack }) => {
                 label: 'Total productos',
                 value: metricas.total,
                 color: '#27374d',
-              },
-              {
-                label: 'Exactitud',
-                value: `${metricas.exactitud}%`,
-                color: barColor(metricas.exactitud),
               },
               { label: 'Ajustes', value: metricas.ajuste, color: '#fd7e14' },
               { label: 'Mermas', value: metricas.merma, color: '#dc3545' },
@@ -317,16 +332,34 @@ const BiExplorer = ({ rawProducts = [], loading = false, onBack }) => {
                 const tot = s.sinCambio + s.ajuste + s.merma;
                 const exact = tot > 0 ? +((s.sinCambio / tot) * 100).toFixed(1) : 0;
                 return (
-                  <div key={s.name} className="segment-item">
+                  <div
+                    key={s.name}
+                    className="segment-item segment-clickable"
+                    onClick={() => handleBarClick(s.name)}
+                  >
                     <div className="segment-name">
                       {s.name} ({tot})
                     </div>
                     <div className="segment-bar-container">
                       <div
-                        className="segment-bar-fill"
                         style={{
-                          width: `${exact}%`,
-                          backgroundColor: barColor(exact),
+                          width: `${(s.sinCambio / (tot || 1)) * 100}%`,
+                          height: '100%',
+                          background: RESULTADO_COLOR['SIN CAMBIO'],
+                        }}
+                      />
+                      <div
+                        style={{
+                          width: `${(s.ajuste / (tot || 1)) * 100}%`,
+                          height: '100%',
+                          background: RESULTADO_COLOR['AJUSTE'],
+                        }}
+                      />
+                      <div
+                        style={{
+                          width: `${(s.merma / (tot || 1)) * 100}%`,
+                          height: '100%',
+                          background: RESULTADO_COLOR['MERMA'],
                         }}
                       />
                     </div>
@@ -345,6 +378,58 @@ const BiExplorer = ({ rawProducts = [], loading = false, onBack }) => {
               })
             )}
           </div>
+
+          {drillDown && (
+            <div style={{ marginTop: '16px' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '8px',
+                }}
+              >
+                <h6 style={{ margin: 0, color: '#27374d' }}>
+                  Productos de {drillDown.name} ({drillDown.products.length})
+                </h6>
+                <button
+                  className="back-button-table"
+                  onClick={() => setDrillDown(null)}
+                  style={{ fontSize: '0.75rem', padding: '4px 10px' }}
+                >
+                  <BiArrowBack size={16} /> Volver
+                </button>
+              </div>
+              <div className="table-scroll-wrapper" style={{ maxHeight: '50vh', overflowY: 'auto' }}>
+                <table className="product-table">
+                  <thead>
+                    <tr>
+                      {DRILL_COLUMNS.map((col, i) => (
+                        <th key={i}>{col.header}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {drillDown.products.length === 0 ? (
+                      <tr>
+                        <td colSpan={DRILL_COLUMNS.length} style={{ textAlign: 'center', padding: '20px', color: '#888' }}>
+                          No hay productos para este segmento.
+                        </td>
+                      </tr>
+                    ) : (
+                      drillDown.products.map((p, idx) => (
+                        <tr key={p.CVE_ART || idx}>
+                          {DRILL_COLUMNS.map((col) => (
+                            <td key={col.accessor}>{p[col.accessor] ?? '-'}</td>
+                          ))}
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </>
       )}
 

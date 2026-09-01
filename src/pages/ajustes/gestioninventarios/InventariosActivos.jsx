@@ -595,7 +595,7 @@ const InventarioDetails = ({ inventario, onBack }) => {
             loading={assertivenessLoading}
           />
           <MetricCard 
-            label="Magnitud" 
+            label="COSTO INV." 
             value={assertivenessLoading ? "..." : formatMoney(assertivenessData?.global.magnitud?.balance?.monto ?? 0)}
             icon={<BiDollarCircle />} 
             colorClass={(assertivenessData?.global.magnitud?.balance?.monto ?? 0) >= 0 ? 'metric-green' : 'metric-red'}
@@ -624,6 +624,7 @@ const InventarioDetails = ({ inventario, onBack }) => {
             onClick={() => handleOpenMetric('eficiencia')}
             isActive={viewMode === 'eficiencia'}
             loading={efficiencyLoading}
+            style={{ display: 'none' }}
           />
         </div>
       </div>
