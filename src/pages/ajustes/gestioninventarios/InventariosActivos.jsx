@@ -158,10 +158,11 @@ const LineaCard = ({ linea, onClick }) => {
   );
 };
 
-const MetricCard = ({ label, value, icon, colorClass, onClick, isActive, loading }) => (
+const MetricCard = ({ label, value, icon, colorClass, onClick, isActive, loading, style }) => (
   <div 
     className={`metric-card ${onClick ? 'interactive' : ''} ${isActive ? 'active-filter' : ''} ${loading ? 'disabled' : ''}`} 
     onClick={loading || !onClick ? undefined : onClick}
+    style={style}
   >
     <div className={`metric-icon-container ${colorClass}`}>
       {icon}
