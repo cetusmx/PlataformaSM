@@ -175,10 +175,7 @@ const SubirInventario = ({ onUploadSuccess }) => {
       if (parsedData.length > 0) {
         const firstRow = parsedData[0];
         const uniqueLines = new Set(parsedData.map((item) => item.Linea)).size;
-        const totalProducts = parsedData.reduce(
-          (sum, item) => sum + (Number(item.Existencias) || 0),
-          0
-        );
+        const totalProducts = parsedData.length;
 
         setPreviewDataCiclico({
           InventarioID: nombreInventario,
