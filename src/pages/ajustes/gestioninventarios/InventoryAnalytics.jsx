@@ -422,6 +422,11 @@ const InventoryAnalytics = ({
           <button className="back-button-table" onClick={onClose} style={{ marginLeft: '20px' }}>
             <BiX size={20} /> Cerrar Análisis
           </button>
+          {onOpenBI && (
+            <button className="back-button-table" onClick={onOpenBI} style={{ marginLeft: '10px' }}>
+              <BiBarChart size={18} /> BI
+            </button>
+          )}
         </div>
 
         <div style={{ display: 'flex', gap: '18px', margin: '10px 0', flexWrap: 'wrap' }}>
