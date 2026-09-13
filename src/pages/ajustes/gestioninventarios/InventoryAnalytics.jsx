@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Select } from 'antd';
-import { BiX, BiLineChart, BiCategory, BiUser, BiArrowBack, BiSortUp, BiSortDown, BiRefresh, BiBarChart } from 'react-icons/bi';
+import { BiX, BiLineChart, BiCategory, BiUser, BiArrowBack, BiSortUp, BiSortDown, BiRefresh, BiBarChart, BiDownload } from 'react-icons/bi';
 import BiExplorer from './BiExplorer';
+import * as XLSX from 'xlsx';
 
 const DIMENSION_KEY_MAP = { linea: 'LINEA', familia: 'FAMILIA', genero: 'GENERO', rotacion: 'ROTACION' };
 const SIN_CLASIFICAR = 'SIN CLASIFICAR';
@@ -18,6 +19,8 @@ const DRILL_COLUMNS = [
 const MAGNITUD_COLUMNS = [
   { header: 'Clave', accessor: 'CVE_ART' },
   { header: 'Descripción', accessor: 'DESCRIPCION_LOCAL' },
+  { header: 'Línea', accessor: 'LINEA' },
+  { header: 'Rotación', accessor: 'ROTACION' },
   { header: 'Resultado', accessor: 'RESULTADO' },
   { header: 'Cant. Mov.', accessor: 'CANT' },
   { header: 'Cant. Contada', accessor: 'CANT_CONTADA' },
@@ -224,15 +227,34 @@ const InventoryAnalytics = ({
       { label: 'BALANCE', count: m.ajuste.count + m.merma.count, piezas: `${m.balance.piezas >= 0 ? '+' : ''}${m.balance.piezas}`, monto: `${m.balance.monto >= 0 ? '+' : ''}${formatCurrency(Math.abs(m.balance.monto))}`, color: m.balance.monto >= 0 ? '#28a745' : '#dc3545', bold: true },
     ];
 
+    const handleExportExcel = () => {
+      if (!filteredSortedProducts || filteredSortedProducts.length === 0) return;
+      const worksheet = XLSX.utils.json_to_sheet(filteredSortedProducts.map(row => {
+        const exportedRow = {};
+        MAGNITUD_COLUMNS.forEach(col => {
+          exportedRow[col.header] = row[col.accessor];
+        });
+        return exportedRow;
+      }));
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Magnitud");
+      XLSX.writeFile(workbook, "Magnitud_Inventario.xlsx");
+    };
+
     return (
       <div className="analytics-dashboard">
           <div className="analytics-nav" style={{ marginBottom: '10px', paddingBottom: '8px' }}>
             <div className="analytics-title">
               <h4 style={{ margin: 0 }}>Magnitud del Inventario</h4>
             </div>
-          <button className="back-button-table" onClick={onClose}>
-            <BiArrowBack size={18} /> Volver
-          </button>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button className="download-button" onClick={handleExportExcel} title="Descargar a Excel" style={{ padding: '6px 12px', display: 'flex', alignItems: 'center', gap: '5px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+                <BiDownload size={18} /> Descargar
+              </button>
+              <button className="back-button-table" onClick={onClose}>
+                <BiArrowBack size={18} /> Volver
+              </button>
+            </div>
         </div>
 
         {loading ? <Spinner /> : (<>
