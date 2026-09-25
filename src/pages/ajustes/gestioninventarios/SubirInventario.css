@@ -90,9 +90,9 @@ h3 {
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-/* Grupos de radio buttons */
 .radio-group {
     display: flex;
+    flex-wrap: wrap;
     gap: 20px; /* Espacio entre los radio buttons */
     margin-bottom: 15px;
 }

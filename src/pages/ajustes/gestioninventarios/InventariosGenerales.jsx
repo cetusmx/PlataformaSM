@@ -7,13 +7,10 @@ const InventarioCard = ({ inventario, onViewDetails }) => {
   const {
     InventarioID,
     Fecha,
-    // Removed 'qtyProductos' as it's not needed for cyclic inventories in this context
-    qtyLineas,
+    qtyProductos,
     Almacen, // This will now represent 'Ubicación' from the new API
-    Ubicacion,
     Ciudad,
-    // Assuming the API for cyclic inventories might return an 'Ubicacion' field
-    // If not, 'Almacen' will be used as the 'Ubicación' value as per your existing data structure.
+    Auditor,
   } = inventario;
 
   // Format the date
@@ -32,18 +29,17 @@ const InventarioCard = ({ inventario, onViewDetails }) => {
         <p>
           <strong>Fecha de Alta:</strong> {formattedDate}
         </p>
-        {/* Changed from 'Productos a Contar' to 'Ubicación(es)' */}
         <p>
           <strong>Almacén:</strong> {Almacen}
         </p>
         <p>
-          <strong>Ubicación(es):</strong> {Ubicacion}
-        </p>
-        <p>
-          <strong>Líneas a Contar:</strong> {qtyLineas}
+          <strong>Productos Contados:</strong> {qtyProductos || 0}
         </p>
         <p>
           <strong>Ciudad:</strong> {Ciudad}
+        </p>
+        <p>
+          <strong>Auditor:</strong> {Auditor || "N/A"}
         </p>
       </div>
       {/* <div className="card-progress">
