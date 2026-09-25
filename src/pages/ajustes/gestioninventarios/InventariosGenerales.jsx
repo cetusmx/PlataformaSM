@@ -89,7 +89,7 @@ const InventariosGenerales = ({ onViewDetails }) => {
   }, []); // The empty array ensures this runs only once on mount
 
   if (loading) {
-    return <div className="loading-message">Cargando inventarios cíclicos...</div>;
+    return <div className="loading-message">Cargando inventarios generales...</div>;
   }
 
   if (error) {

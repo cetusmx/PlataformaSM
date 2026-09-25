@@ -194,6 +194,59 @@ const SubirInventario = ({ onUploadSuccess }) => {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
+  const onDropGeneral = async (acceptedFiles) => {
+    if (acceptedFiles.length === 0) {
+      alert("Por favor, selecciona un archivo .xls o .xlsx válido.");
+      return;
+    }
+    const uploadedFile = acceptedFiles[0];
+    if (
+      !uploadedFile.name.endsWith(".xls") &&
+      !uploadedFile.name.endsWith(".xlsx")
+    ) {
+      alert("Solo se permiten archivos con extensión .xls o .xlsx.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: "array" });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+      if (json.length < 2) {
+        alert("El archivo Excel está vacío o solo contiene encabezados.");
+        return;
+      }
+
+      const headers = json[0];
+      const requiredHeader = tipoSeleccionGeneral === "ubicaciones" ? "Ubicacion" : "Linea";
+      const headerIndex = headers.indexOf(requiredHeader);
+
+      if (headerIndex === -1) {
+        alert(`Falta la columna "${requiredHeader}" en el archivo.`);
+        return;
+      }
+
+      const parsedData = json.slice(1).map(row => row[headerIndex]).filter(val => val !== undefined && val !== null && val.toString().trim() !== "");
+
+      if (parsedData.length === 0) {
+        alert("No se encontraron datos en la columna.");
+        return;
+      }
+
+      if (tipoSeleccionGeneral === "ubicaciones") {
+        setUbicacionesInput(parsedData.join(", "));
+      } else {
+        setLineasSeleccionadas(parsedData.map(l => ({ id: l, linea: l })));
+      }
+    };
+    reader.readAsArrayBuffer(uploadedFile);
+  };
+  const { getRootProps: getRootPropsGeneral, getInputProps: getInputPropsGeneral, isDragActive: isDragActiveGeneral } = useDropzone({ onDrop: onDropGeneral });
+
   // Función para cancelar la carga de archivo en inventario cíclico
   const handleCancelFileUpload = () => {
     setFile(null);
@@ -271,7 +324,8 @@ const SubirInventario = ({ onUploadSuccess }) => {
       const hasRequiredData =
         sucursalSeleccionada &&
         almacenInput &&
-        ((tipoSeleccionGeneral === "ubicaciones" && ubicacionesInput) ||
+        (tipoSeleccionGeneral === "ninguna" ||
+          (tipoSeleccionGeneral === "ubicaciones" && ubicacionesInput) ||
           (tipoSeleccionGeneral === "lineas" &&
             lineasSeleccionadas.length > 0));
 
@@ -699,79 +753,53 @@ const SubirInventario = ({ onUploadSuccess }) => {
                     />
                     Líneas de Productos
                   </label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="ninguna"
+                      checked={tipoSeleccionGeneral === "ninguna"}
+                      onChange={() => {
+                        setTipoSeleccionGeneral("ninguna");
+                        setUbicacionesInput("");
+                        setLineasSeleccionadas([]);
+                        setLineasInput("");
+                      }}
+                    />
+                    Ninguna
+                  </label>
                 </div>
               </div>
 
-              {tipoSeleccionGeneral === "ubicaciones" && (
+              {tipoSeleccionGeneral !== "ninguna" && (
                 <div className="form-group">
-                  <label className="titulos-label" htmlFor="ubicacionesInput">
-                    Ubicación(es) (Pasillos/Zonas):
+                  <label className="titulos-label">
+                    Sube tu archivo Excel con la columna <strong>{tipoSeleccionGeneral === 'ubicaciones' ? 'Ubicacion' : 'Linea'}</strong>:
                   </label>
-                  <input
-                    type="text"
-                    id="ubicacionesInput"
-                    value={ubicacionesInput}
-                    onChange={(e) => setUbicacionesInput(e.target.value)}
-                    placeholder="Ej: A1, B2, Zona Principal"
-                  />
-                  <p className="required-fields-info">
-                    Ingresa múltiples ubicaciones separadas por comas.
-                  </p>
-                </div>
-              )}
-
-              {tipoSeleccionGeneral === "lineas" && (
-                <div className="form-group">
-                  <label className="titulos-label" htmlFor="lineasInput">
-                    Seleccionar Líneas de Productos:
-                  </label>
-                  <input
-                    type="text"
-                    id="lineasInput"
-                    value={lineasInput}
-                    onChange={handleLineasInputChange}
-                    placeholder="Empieza a teclear para buscar líneas..."
-                    disabled={loadingLineas}
-                  />
-                  {loadingLineas && (
-                    <span className="loading-inline">Cargando líneas...</span>
-                  )}
-                  {sugerenciasLineas.length > 0 && lineasInput.length > 0 && (
-                    <ul className="suggestions-list">
-                      {sugerenciasLineas.map((linea) => (
-                        <li
-                          key={linea.id}
-                          onClick={() => handleSelectLinea(linea)}
-                        >
-                          {linea.linea}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                  <div className="selected-tags-container lineas-tags-container">
-                    {lineasSeleccionadas.map((linea) => (
-                      <span key={linea.id} className="selected-tag">
-                        {linea.linea}
-                        <button onClick={() => handleSelectLinea(linea)}>
-                          x
-                        </button>
-                      </span>
-                    ))}
-                    {lineasSeleccionadas.length === 0 &&
-                      lineasInput.length === 0 &&
-                      !loadingLineas && (
-                        <p className="no-data-message-small">
-                          No hay líneas seleccionadas.
-                        </p>
-                      )}
+                  <div
+                    {...getRootPropsGeneral()}
+                    className={`dropzone ${isDragActiveGeneral ? "active" : ""}`}
+                  >
+                    <input {...getInputPropsGeneral()} />
+                    <p>Arrastra y suelta tu archivo Excel aquí, o haz clic para seleccionar</p>
                   </div>
+                  {tipoSeleccionGeneral === 'ubicaciones' && ubicacionesInput && (
+                    <p style={{ marginTop: '10px', color: '#28a745' }}>
+                      Se cargaron <strong>{ubicacionesInput.split(',').length}</strong> ubicaciones.
+                    </p>
+                  )}
+                  {tipoSeleccionGeneral === 'lineas' && lineasSeleccionadas.length > 0 && (
+                    <p style={{ marginTop: '10px', color: '#28a745' }}>
+                      Se cargaron <strong>{lineasSeleccionadas.length}</strong> líneas.
+                    </p>
+                  )}
                 </div>
               )}
 
               {previewDataGeneral &&
                 sucursalSeleccionada &&
                 almacenInput &&
-                ((tipoSeleccionGeneral === "ubicaciones" && ubicacionesInput) ||
+                (tipoSeleccionGeneral === "ninguna" ||
+                  (tipoSeleccionGeneral === "ubicaciones" && ubicacionesInput) ||
                   (tipoSeleccionGeneral === "lineas" &&
                     lineasSeleccionadas.length > 0)) && (
                   <div className="preview-card">
