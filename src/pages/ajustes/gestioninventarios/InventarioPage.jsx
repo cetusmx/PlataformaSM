@@ -29,7 +29,7 @@ const InventariosPage = () => {
         return <InventariosActivos onViewDetails={handleViewDetails} />; // Pasa la función onViewDetails
       case 'en-conteo':
         // return <InventariosEnConteo onViewDetails={handleViewDetails} />;
-        return <InventariosGenerales onViewDetails={handleViewDetails} />;
+        return <InventariosGenerales />;
       case 'subir':
         // return <SubirInventario />;
         return <SubirInventario onUploadSuccess={() => setCurrentView('activos')} />; // Placeholder
