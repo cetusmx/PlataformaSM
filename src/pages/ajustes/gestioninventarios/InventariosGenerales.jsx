@@ -1,7 +1,65 @@
 // src/components/InventariosCiclicos.js
 import React, { useState, useEffect } from "react";
-import { BiBox, BiTargetLock, BiTrendingDown, BiDollarCircle, BiTimeFive, BiBarChart, BiLoaderAlt, BiArrowBack, BiCheck, BiCheckDouble } from "react-icons/bi";
+import { BiBox, BiTargetLock, BiTrendingDown, BiDollarCircle, BiTimeFive, BiBarChart, BiLoaderAlt, BiArrowBack, BiCheck, BiCheckDouble, BiDownload } from "react-icons/bi";
 import "./InventariosActivos.css"; // Specific styles for this section
+
+const ProductTable = ({
+  products,
+  onBack,
+  viewTitle,
+  columns,
+  onAdjustLineClick,
+  showAdjustButton,
+  buttonLabel = "Ubicación Ajustada"
+}) => (
+  <div className="product-table-container" style={{ marginTop: '15px' }}>
+    <div className="product-table-header">
+      <div className="header-left">
+        <button onClick={onBack} className="back-button-table">
+          <BiArrowBack /> Volver
+        </button>
+      </div>
+      <div className="header-center">
+        <h3>{viewTitle}</h3>
+      </div>
+      <div className="header-right">
+        {showAdjustButton && (
+          <button
+            className="adjust-line-table-button"
+            onClick={onAdjustLineClick}
+            title="Marcar como procesado en ERP"
+          >
+            {buttonLabel}
+          </button>
+        )}
+      </div>
+    </div>
+    {products.length > 0 ? (
+      <div className="table-scroll-wrapper">
+        <table className="product-table">
+          <thead>
+            <tr>
+              {columns.map((col, index) => (
+                <th key={index} style={col.width ? { width: col.width } : {}}>{col.header}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {products.map((product, index) => (
+              <tr key={index}>
+                {columns.map((col, colIndex) => (
+                  <td key={colIndex} style={col.width ? { width: col.width } : {}}>{product[col.accessor]}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ) : (
+      <div className="no-data-message">No hay productos para mostrar.</div>
+    )}
+  </div>
+);
 
 const InventarioCard = ({ inventario, onViewDetails }) => {
   const {
@@ -118,17 +176,39 @@ const InventarioGeneralDetails = ({ inventario, onBack }) => {
   const [ubicacionesEstados, setUbicacionesEstados] = useState([]);
   const [loadingBitacora, setLoadingBitacora] = useState(true);
   const [errorBitacora, setErrorBitacora] = useState(null);
+  
+  const [viewMode, setViewMode] = useState("grid");
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  const fetchEstados = async () => {
+    try {
+      const urlEstados = `${process.env.REACT_APP_URL_API2}/api/v1/ubicacionesactivas/${inventario.InventarioID}`;
+      const respEstados = await fetch(urlEstados);
+      if (respEstados.ok) {
+        const dataEstados = await respEstados.json();
+        const arr = dataEstados.body ? dataEstados.body : dataEstados;
+        setUbicacionesEstados(Array.isArray(arr) ? arr : []);
+      } else {
+         const urlFallback = `${process.env.REACT_APP_URL_API2}/api/v1/ubicacionestado/${inventario.InventarioID}`;
+         const respFallback = await fetch(urlFallback);
+         if (respFallback.ok) {
+           const dataFallback = await respFallback.json();
+           const arr = dataFallback.body ? dataFallback.body : dataFallback;
+           setUbicacionesEstados(Array.isArray(arr) ? arr : []);
+         }
+      }
+    } catch (err) {
+      console.error("Error fetching estados:", err);
+    }
+  };
 
   useEffect(() => {
     const fetchDatos = async () => {
       setLoadingBitacora(true);
       setErrorBitacora(null);
       try {
-        const inventarioID = inventario.InventarioID;
-        const auditor = inventario.Auditor;
-        
-        // 1. Fetch de productos contados
-        const urlProds = `${process.env.REACT_APP_URL_API2}/api/v1/productoscontados/inventario/${inventarioID}/auditor/${encodeURIComponent(auditor)}`;
+        const urlProds = `${process.env.REACT_APP_URL_API2}/api/v1/productoscontados/inventario/${inventario.InventarioID}/auditor/${encodeURIComponent(inventario.Auditor)}`;
         const respProds = await fetch(urlProds);
         const dataProds = await respProds.json();
         
@@ -140,23 +220,7 @@ const InventarioGeneralDetails = ({ inventario, onBack }) => {
           throw new Error(dataProds.msg || "Error al obtener datos");
         }
 
-        // 2. Fetch de estados de ubicación
-        // Se intenta ubicacionesactivas, si no, ubicacionestado
-        const urlEstados = `${process.env.REACT_APP_URL_API2}/api/v1/ubicacionesactivas/${inventarioID}`;
-        const respEstados = await fetch(urlEstados);
-        if (respEstados.ok) {
-          const dataEstados = await respEstados.json();
-          setUbicacionesEstados(Array.isArray(dataEstados) ? dataEstados : []);
-        } else {
-           // fallback just in case the name was ubicacionestado
-           const urlFallback = `${process.env.REACT_APP_URL_API2}/api/v1/ubicacionestado/${inventarioID}`;
-           const respFallback = await fetch(urlFallback);
-           if (respFallback.ok) {
-             const dataFallback = await respFallback.json();
-             setUbicacionesEstados(Array.isArray(dataFallback) ? dataFallback : []);
-           }
-        }
-
+        await fetchEstados();
       } catch (err) {
         console.error("Error al cargar datos del inventario:", err);
         setErrorBitacora("No se pudieron cargar los datos en vivo.");
@@ -171,6 +235,86 @@ const InventarioGeneralDetails = ({ inventario, onBack }) => {
       setLoadingBitacora(false);
     }
   }, [inventario.InventarioID, inventario.Auditor]);
+
+  const exportToCsv = (products, filename, columns) => {
+    if (!products || products.length === 0) {
+      console.warn("No hay datos para exportar.");
+      return;
+    }
+    const header = columns.map(col => col.header).join(',');
+    const rows = products.map(row =>
+      columns.map(col => {
+        const value = row[col.accessor] ?? "";
+        return typeof value === 'string' && (value.includes(',') || value.includes('\n') || value.includes('"'))
+          ? `"${value.replace(/"/g, '""')}"`
+          : String(value);
+      }).join(',')
+    );
+
+    const csvContent = [header, ...rows].join('\n');
+    const BOM = "\ufeff";
+    const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
+    
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", filename);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const triggerProcesarEnERP = () => {
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmAdjustment = async () => {
+    setShowConfirmModal(false);
+    if (!selectedLocation) return;
+    
+    const LOCATION_PRODUCT_COLUMNS = [
+      { header: 'Clave', accessor: 'Clave' },
+      { header: 'Descripción', accessor: 'Descripcion' },
+      { header: 'Existencia', accessor: 'Existencia' },
+      { header: 'Unidad', accessor: 'Unidad' },
+      { header: 'Caja', accessor: 'Caja' },
+      { header: 'Observaciones', accessor: 'Observaciones' },
+    ];
+
+    exportToCsv(
+      selectedLocation.productos, 
+      `Ubicacion_${selectedLocation.Ubicacion}_${inventario.InventarioID}.csv`, 
+      LOCATION_PRODUCT_COLUMNS
+    );
+
+    try {
+      const url = `${process.env.REACT_APP_URL_API2}/api/v1/ubicacionestado/procesar`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          InventarioID: inventario.InventarioID,
+          Ubicacion: selectedLocation.Ubicacion,
+          Auditor: "Gerente" // Fixed to Gerente or similar role
+        })
+      });
+      
+      if (response.ok) {
+        await fetchEstados();
+        setViewMode("grid");
+      } else {
+        alert("Hubo un error al intentar procesar la ubicación.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Error de conexión al procesar en ERP.");
+    }
+  };
+
+  const handleCancelAdjustment = () => {
+    setShowConfirmModal(false);
+  };
 
   // Estadísticas globales (para Progreso y Grid)
   const totalUniqueSKUs = new Set(productosContados.map(p => p.Clave)).size;
@@ -200,16 +344,125 @@ const InventarioGeneralDetails = ({ inventario, onBack }) => {
   }, {});
 
   const ubicacionesArray = Object.keys(ubicacionesMap).map(key => {
-    const estado = ubicacionesEstados.find(u => u.Ubicacion === key) || {};
+    const cleanKey = key.trim().toLowerCase();
+    const matchingStates = ubicacionesEstados.filter(u => (u.Ubicacion || "").trim().toLowerCase() === cleanKey);
+    
+    const isAdjusted = matchingStates.some(u => u.isAdjusted);
+    const isCounted = matchingStates.some(u => u.isCounted);
+
     return {
-      Ubicacion: key,
+      Ubicacion: key, 
       totalUnidades: ubicacionesMap[key].totalUnidades,
       uniqueSKUs: ubicacionesMap[key].uniqueSKUs.size,
       productos: ubicacionesMap[key].productos,
-      isCounted: estado.isCounted || false,
-      isAdjusted: estado.isAdjusted || false
+      isCounted: isCounted,
+      isAdjusted: isAdjusted
     };
   });
+
+  const renderContent = () => {
+    if (loadingBitacora) {
+      return <div className="loading-message">Procesando información...</div>;
+    }
+    if (errorBitacora) {
+      return <div className="error-message">{errorBitacora}</div>;
+    }
+
+    if (viewMode === 'allProducts') {
+      const ALL_COUNTED_PRODUCTS_COLUMNS = [
+        { header: 'Clave', accessor: 'Clave', width: '15%' },
+        { header: 'Descripción', accessor: 'Descripcion', width: '25%' },
+        { header: 'Existencia', accessor: 'Existencia', width: '6%' },
+        { header: 'Unidad', accessor: 'Unidad', width: '6%' },
+        { header: 'Caja', accessor: 'Caja', width: '6%' },
+        { header: 'Observaciones', accessor: 'Observaciones', width: '30%' },
+        { header: 'Ubicación', accessor: 'Ubicacion', width: '12%' },
+      ];
+      return (
+        <ProductTable
+          products={productosContados}
+          onBack={() => setViewMode('grid')}
+          viewTitle="Todos los Productos Contados"
+          columns={ALL_COUNTED_PRODUCTS_COLUMNS}
+          showAdjustButton={false}
+          onDownload={() => exportToCsv(productosContados, `TodosProductos_${inventario.InventarioID}.csv`, ALL_COUNTED_PRODUCTS_COLUMNS)}
+        />
+      );
+    }
+
+    if (viewMode === 'locationProducts' && selectedLocation) {
+      const LOCATION_PRODUCT_COLUMNS = [
+        { header: 'Clave', accessor: 'Clave', width: '15%' },
+        { header: 'Descripción', accessor: 'Descripcion', width: '30%' },
+        { header: 'Existencia', accessor: 'Existencia', width: '8%' },
+        { header: 'Unidad', accessor: 'Unidad', width: '6%' },
+        { header: 'Caja', accessor: 'Caja', width: '6%' },
+        { header: 'Observaciones', accessor: 'Observaciones', width: '35%' },
+      ];
+      
+      // Mostrar el botón si el estatus de la ubicación es "Contada" pero no "Procesada"
+      const showProcesarButton = selectedLocation.isCounted && !selectedLocation.isAdjusted;
+      
+      return (
+        <ProductTable
+          products={selectedLocation.productos}
+          onBack={() => setViewMode('grid')}
+          viewTitle={`Ubicación: ${selectedLocation.Ubicacion}`}
+          columns={LOCATION_PRODUCT_COLUMNS}
+          onAdjustLineClick={triggerProcesarEnERP}
+          showAdjustButton={showProcesarButton}
+          buttonLabel="Ubicación Ajustada"
+        />
+      );
+    }
+
+    // Default: 'grid'
+    if (ubicacionesArray.length === 0) {
+      return <div className="no-data-message">Aún no se han registrado productos.</div>;
+    }
+
+    return (
+      <div className="lineas-grid">
+        {ubicacionesArray.map((ubi, index) => {
+          let cardClass = "linea-card interactive";
+          let tooltip = "Ubicación pendiente";
+          if (ubi.isAdjusted) {
+            cardClass += " adjusted";
+            tooltip = "Procesada en ERP";
+          } else if (ubi.isCounted) {
+            cardClass += " counted";
+            tooltip = "Auditoría Terminada";
+          }
+
+          return (
+            <div 
+              key={index} 
+              className={cardClass} 
+              title={tooltip} 
+              onClick={() => {
+                if (!ubi.isAdjusted) {
+                  setSelectedLocation(ubi);
+                  setViewMode("locationProducts");
+                }
+              }}
+              style={ubi.isAdjusted ? { cursor: 'not-allowed' } : {}}
+            >
+              <div className="linea-info">
+                <h4>📍 {ubi.Ubicacion}</h4>
+                <p style={{ marginTop: '5px' }}>Claves Únicas: <strong>{ubi.uniqueSKUs}</strong></p>
+                <p>Unidades Físicas: <strong>{ubi.totalUnidades}</strong></p>
+              </div>
+              {ubi.isAdjusted ? (
+                <BiCheckDouble className="icon-check" size={30} color="#28a745" />
+              ) : ubi.isCounted ? (
+                <BiCheck className="icon-check" size={30} color="#ffc107" />
+              ) : null}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
 
   return (
     <div className="inventario-details-container">
@@ -266,57 +519,46 @@ const InventarioGeneralDetails = ({ inventario, onBack }) => {
         </div>
       </div>
 
-      <div className="navigation-buttons">
-        <button className="nav-button">
-          Ver Todos Productos Contados
-        </button>
-        <h4 style={{ textAlign: 'center', margin: '0' }}>Ubicaciones</h4>
-        <button style={{ width: "100%" }} onClick={onBack} className="back-button">
-          <BiArrowBack /> Regresar a Inventarios
-        </button>
-      </div>
+      {viewMode === "grid" && (
+        <div className="navigation-buttons">
+          <button className="nav-button" onClick={() => setViewMode('allProducts')}>
+            Ver Todos Productos Contados
+          </button>
+          <h4 style={{ textAlign: 'center', margin: '0' }}>Ubicaciones</h4>
+          <button style={{ width: "100%" }} onClick={onBack} className="back-button">
+            <BiArrowBack /> Regresar a Inventarios
+          </button>
+        </div>
+      )}
 
       <div className="lineas-scroll-container">
-        {loadingBitacora ? (
-          <div className="loading-message">Procesando ubicaciones...</div>
-        ) : errorBitacora ? (
-          <div className="error-message">{errorBitacora}</div>
-        ) : ubicacionesArray.length === 0 ? (
-          <div className="no-data-message">Aún no se han registrado productos.</div>
-        ) : (
-          <div className="lineas-grid">
-            {ubicacionesArray.map((ubi, index) => {
-              let cardClass = "linea-card interactive";
-              let tooltip = "Ubicación pendiente";
-              if (ubi.isAdjusted) {
-                cardClass += " adjusted";
-                tooltip = "Procesada en ERP";
-              } else if (ubi.isCounted) {
-                cardClass += " counted";
-                tooltip = "Auditoría Terminada";
-              }
-
-              // Import BiCheck and BiCheckDouble at the top of the file if needed. 
-              // Oh wait, I need to make sure BiCheck and BiCheckDouble are imported.
-              return (
-                <div key={index} className={cardClass} title={tooltip} onClick={ubi.isAdjusted ? undefined : () => {}} style={ubi.isAdjusted ? { cursor: 'not-allowed' } : {}}>
-                  <div className="linea-info">
-                    <h4>📍 {ubi.Ubicacion}</h4>
-                    <p style={{ marginTop: '5px' }}>Claves Únicas: <strong>{ubi.uniqueSKUs}</strong></p>
-                    <p>Unidades Físicas: <strong>{ubi.totalUnidades}</strong></p>
-                  </div>
-                  {/* Iconos de estado idénticos a los inventarios cíclicos */}
-                  {ubi.isAdjusted ? (
-                    <BiCheckDouble className="icon-check" size={30} color="#28a745" />
-                  ) : ubi.isCounted ? (
-                    <BiCheck className="icon-check" size={30} color="#ffc107" />
-                  ) : null}
-                </div>
-              );
-            })}
-          </div>
-        )}
+        {renderContent()}
       </div>
+
+      {showConfirmModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h4>Confirmación de Ajuste</h4>
+            <p>
+              ¿Estás seguro de que deseas ajustar esta ubicación y descargar sus datos?
+            </p>
+            <div className="modal-actions">
+              <button
+                onClick={handleCancelAdjustment}
+                className="modal-button cancel-button"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleConfirmAdjustment}
+                className="modal-button confirm-button"
+              >
+                Aceptar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
