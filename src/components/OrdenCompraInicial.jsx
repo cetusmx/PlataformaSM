@@ -176,6 +176,17 @@ const reset = () => {
 
     const totalCantidad = calcularTotales();
 
+    const getProveedorName = (id) => {
+        const provs = {
+            "3": "La Capital",
+            "35": "Sellos y Retenes",
+            "57": "ROSA MARIA QUEZADA LARA",
+            "46": "ROSA MARIA SALAS HERNANDEZ",
+            "8": "ALBERTO RODRIGUEZ SALAS"
+        };
+        return provs[id] || id;
+    };
+
     // Si no hay partidas procesadas, mostrar formulario de carga
     if (!mostrarPreview) {
         return (
@@ -213,7 +224,10 @@ const reset = () => {
                                     >
                                         <option value="">Seleccione proveedor...</option>
                                         <option value="3">3 - La Capital</option>
+                                        <option value="8">8 - ALBERTO RODRIGUEZ SALAS</option>
                                         <option value="35">35 - Sellos y Retenes</option>
+                                        <option value="46">46 - ROSA MARIA SALAS HERNANDEZ</option>
+                                        <option value="57">57 - ROSA MARIA QUEZADA LARA</option>
                                     </select>
                                 </div>
                                 
@@ -254,7 +268,7 @@ const reset = () => {
             <div className="header-factura">
                 <div className="header-item">
                     <strong>Proveedor</strong>
-                    <span>{proveedor === "3" ? "La Capital" : "Sellos y Retenes"}</span>
+                    <span>{getProveedorName(proveedor)}</span>
                 </div>
                 <div className="header-item" style={{ border: 'none' }}>
                     <strong>Total Partidas</strong>

@@ -1,50 +1,50 @@
 [
-    {
-        "title": "Inventario",
-        "icon": "bi bi-box-seam",
-        "childrens": [
-            {
-                "title": "Códigos de barras",
-                "icon": "bi bi-upc",
-                "path": "/codigosbarras"
-            },
-            {
-                "title": "Recepción mercancía",
-                "icon": "bi bi-upc-scan",
-                "path": "/recepcionmercancia"
-            },
-            {
-                "title": "Gestión de inventarios",
-                "icon": "bi bi-boxes",
-                "path": "/gestioninventarios"
-            }
-        ]
-    },
-    {
-        "title": "Precios",
-        "icon": "bi bi-currency-dollar",
-        "childrens": [
-            {
-                "title": "Cotizador",
-                "icon": "bi bi-calculator",
-                "path": "/cotizador"
-            }
-        ]
-    },
-    {
+  {
+    "title": "Inventario",
+    "icon": "bi bi-box-seam",
+    "childrens": [
+      {
+        "title": "Códigos de barras",
+        "icon": "bi bi-upc",
+        "path": "/codigosbarras"
+      },
+      {
+        "title": "Recepción mercancía",
+        "icon": "bi bi-upc-scan",
+        "path": "/recepcionmercancia"
+      },
+      {
+        "title": "Gestión de inventarios",
+        "icon": "bi bi-boxes",
+        "path": "/gestioninventarios"
+      }
+    ]
+  },
+  {
+    "title": "Precios",
+    "icon": "bi bi-currency-dollar",
+    "childrens": [
+      {
+        "title": "Cotizador",
+        "icon": "bi bi-calculator",
+        "path": "/cotizador"
+      }
+    ]
+  },
+  {
+    "title": "Gestor de Docs",
+    "icon": "bi bi-folder2-open",
+    "childrens": [
+      {
         "title": "Compras",
         "icon": "bi bi-cart",
-        "childrens": [
-            {
-                "title": "Pedidos especiales",
-                "icon": "bi bi-star",
-                "path": "/pedidosespeciales"
-            },
-            {
-                "title": "Reposiciones",
-                "icon": "bi bi-arrow-repeat",
-                "path": "/reposiciones"
-            }
-        ]
-    }
+        "path": "/gestordocumentos/compras"
+      },
+      {
+        "title": "Ventas",
+        "icon": "bi bi-shop",
+        "path": "/gestordocumentos/ventas"
+      }
+    ]
+  }
 ]

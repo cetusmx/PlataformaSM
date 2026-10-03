@@ -12,8 +12,7 @@ import Usuarios from "./Usuarios";
 import ClavesNoRegistradas from "./ClavesNoRegistradas";
 import InventariosPage from "./ajustes/gestioninventarios/InventarioPage";
 import ReposicionInventarios from "./ajustes/reposicioninventarios/ReposicionInventarios";
-import PedidosEspeciales from "./PedidosEspeciales";
-import Reposiciones from "./Reposiciones";
+import GestorDocumentos from "./GestorDocumentos";
 
 const ContentAdmin = () => {
   return (
@@ -31,8 +30,8 @@ const ContentAdmin = () => {
           <Route path="usuarios" element={<Usuarios />} />
           <Route path="noregistradas" element={<ClavesNoRegistradas />} />
           <Route path="gestioninventarios" element={<InventariosPage />} />
-          <Route path="pedidosespeciales" element={<PedidosEspeciales />} />
-          <Route path="reposiciones" element={<Reposiciones />} />
+          <Route path="gestordocumentos" element={<GestorDocumentos />} />
+          <Route path="gestordocumentos/:seccion" element={<GestorDocumentos />} />
           <Route path="reposicioninventarios" element={<ReposicionInventarios />} />
         </Routes>
       </div>
@@ -41,3 +40,5 @@ const ContentAdmin = () => {
 };
 
 export default ContentAdmin;
+
+
