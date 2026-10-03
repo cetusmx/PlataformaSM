@@ -106,12 +106,12 @@ const GestorDocumentos = () => {
     };
 
     return (
-        <div className="container-fluid p-4">
-            <h2 className="mb-4 text-dark" style={{ fontWeight: '600' }}>
+        <div className="container-fluid p-3">
+            <h2 className="mb-2 text-dark" style={{ fontWeight: '600' }}>
                 {activeTab === 'compras' ? 'Compras' : 'Ventas'}
             </h2>
             
-            <div className="bg-white p-4 rounded shadow-sm border-0">
+            <div className="bg-white p-3 rounded shadow-sm border-0">
                 {activeTab === 'compras' && renderContenidoProveedores()}
                 {activeTab === 'ventas' && renderContenidoClientes()}
             </div>
@@ -120,4 +120,5 @@ const GestorDocumentos = () => {
 };
 
 export default GestorDocumentos;
+
 

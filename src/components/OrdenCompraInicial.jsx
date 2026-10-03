@@ -1,34 +1,36 @@
 import React, { useState, useEffect, useRef } from "react";
 import "../styles/facturaReutilizable.css";
-import { BiXCircle, BiSpreadsheet, BiCheckDouble, BiArrowBack, BiTrash } from "react-icons/bi";
+import { BiXCircle, BiCheckDouble, BiArrowBack, BiTrash, BiFile, BiUpload } from "react-icons/bi";
 import { show_alerta } from "../functions";
+import * as XLSX from "xlsx";
 
 const OrdenCompraInicial = ({ onVolver }) => {
-    const [proveedor, setProveedor] = useState(null);
-    const [datosExcel, setDatosExcel] = useState("");
+    const [proveedor, setProveedor] = useState("");
     const [partidas, setPartidas] = useState([]);
     const [mostrarPreview, setMostrarPreview] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [fileName, setFileName] = useState("");
+    const [filtroClave, setFiltroClave] = useState("");
+    
     const isFirstRender = useRef(true);
+    const fileInputRef = useRef(null);
 
     const storageKey = "reposiciones_inicial_progress";
 
-    // Constantes fijas
     const CONSTANTES = {
         ESQUEMA: 1,
         NUM_MONED: 1
     };
 
-    // Cargar datos guardados al montar (solo una vez)
     useEffect(() => {
         const saved = localStorage.getItem(storageKey);
         if (saved) {
             try {
                 const parsed = JSON.parse(saved);
                 if (parsed && parsed.partidas && parsed.partidas.length > 0) {
-                    setProveedor(parsed.proveedor || null);
+                    setProveedor(parsed.proveedor || "");
                     setPartidas(parsed.partidas || []);
-                    setDatosExcel(parsed.datosExcel || "");
+                    setFileName(parsed.fileName || "Archivo recuperado");
                     setMostrarPreview(true);
                 }
             } catch (e) {
@@ -36,89 +38,115 @@ const OrdenCompraInicial = ({ onVolver }) => {
             }
         }
         isFirstRender.current = false;
-    }, []); // Solo se ejecuta al montar
+    }, []);
 
-    // Guardar en localStorage solo cuando cambian datos (no al montar)
     useEffect(() => {
-        // Skip en el primer render
         if (isFirstRender.current) return;
-        
         const dataToSave = {
             proveedor: proveedor,
             partidas: partidas,
-            datosExcel: datosExcel
+            fileName: fileName
         };
         localStorage.setItem(storageKey, JSON.stringify(dataToSave));
-    }, [proveedor, partidas, datosExcel]);
+    }, [proveedor, partidas, fileName]);
 
-    const procesarExcel = () => {
-        if (!datosExcel.trim()) {
-            show_alerta("El área de pegado está vacía", "warning");
-            return;
-        }
+    const handleFileUpload = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
-        if (!proveedor) {
-            show_alerta("Seleccione un proveedor primero", "warning");
-            return;
-        }
-
+        setFileName(file.name);
         setLoading(true);
-        const lineas = datosExcel.trim().split("\n");
-        const items = [];
 
-        lineas.forEach((linea, i) => {
-            const campos = linea.split(/\t/);
-            if (campos.length >= 2) {
-                // Nuevo orden: Almacén | Clave | Descripción | Línea | Familia | Cantidad
-                const almacen = campos[0]?.trim() || "1";
-                const clave = campos[1]?.trim() || "";
-                const descripcion = campos[2]?.trim() || "";
-                const lineaProd = campos[3]?.trim() || "";
-                const familia = campos[4]?.trim() || "";
-                const cantidad = parseFloat(campos[5]?.trim()) || 0;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+            try {
+                const bstr = evt.target.result;
+                const wb = XLSX.read(bstr, { type: "binary" });
+                const wsname = wb.SheetNames[0];
+                const ws = wb.Sheets[wsname];
                 
-                if (cantidad > 0 && clave) {
-                    items.push({
-                        id: i,
-                        cantidad,
-                        claveProveedor: clave,
-                        almacen,
-                        descripcion,
-                        lineaProd,
-                        familia
-                    });
-                }
-            }
-        });
+                const data = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
 
-        if (items.length === 0) {
-            setLoading(false);
-            show_alerta("No se detectaron datos válidos", "error");
+                const items = [];
+                let startIndex = 0;
+                
+                // Asume encabezado si la cantidad (col 5) no es número
+                if (data.length > 0 && isNaN(parseFloat(data[0][5]))) {
+                    startIndex = 1;
+                }
+
+                for (let i = startIndex; i < data.length; i++) {
+                    const row = data[i];
+                    if (row.length >= 2) {
+                        const almacen = String(row[0] || "1").trim();
+                        const clave = String(row[1] || "").trim();
+                        const descripcion = String(row[2] || "").trim();
+                        const lineaProd = String(row[3] || "").trim();
+                        const familia = String(row[4] || "").trim();
+                        const cantidad = parseFloat(row[5]) || 0;
+                        const costo = parseFloat(row[6]) || 0;
+
+                        if (clave && cantidad > 0) {
+                            items.push({
+                                id: i,
+                                claveProveedor: clave,
+                                almacen,
+                                descripcion,
+                                lineaProd,
+                                familia,
+                                cantidad,
+                                costo
+                            });
+                        }
+                    }
+                }
+
+                if (items.length === 0) {
+                    show_alerta("No se detectaron datos válidos. Revise que el archivo tenga las 6 columnas correctas.", "error");
+                    setLoading(false);
+                    return;
+                }
+
+                setPartidas(items);
+                setMostrarPreview(true);
+            } catch (error) {
+                console.error(error);
+                show_alerta("Error al leer el archivo Excel", "error");
+            } finally {
+                setLoading(false);
+                if (fileInputRef.current) fileInputRef.current.value = "";
+            }
+        };
+        reader.readAsBinaryString(file);
+    };
+
+    const handleProcesarClick = () => {
+        if (!proveedor) {
+            show_alerta("Seleccione un proveedor antes de cargar el archivo", "warning");
             return;
         }
-
-        setLoading(false);
-        setPartidas(items);
-        setMostrarPreview(true);
+        fileInputRef.current.click();
     };
 
-const reset = () => {
+    const reset = () => {
         localStorage.removeItem(storageKey);
-        setProveedor(null);
-        setDatosExcel("");
+        setProveedor("");
         setPartidas([]);
+        setFileName("");
+        setFiltroClave("");
         setMostrarPreview(false);
+        if (fileInputRef.current) fileInputRef.current.value = "";
     };
 
-    // Mostrar tabla de previsualización solo si hay partidas
-    const tienePartidas = partidas.length > 0 && mostrarPreview;
+    const eliminarPartida = (id) => {
+        setPartidas(prev => prev.filter(p => p.id !== id));
+    };
 
     const calcularTotales = () => {
         return partidas.reduce((acc, item) => acc + item.cantidad, 0);
     };
 
     const generarMOD = () => {
-        // Agrupar partidas por almacén
         const partidasPorAlmacen = {};
         partidas.forEach(p => {
             const alm = p.almacen;
@@ -130,8 +158,7 @@ const reset = () => {
 
         const numAlmacenes = Object.keys(partidasPorAlmacen).length;
         
-        // Generar archivo por cada almacén
-        Object.keys(partidasPorAlmacen).forEach((almacenHeader, index) => {
+        Object.keys(partidasPorAlmacen).forEach((almacenHeader) => {
             const partidasAlmacen = partidasPorAlmacen[almacenHeader];
             
             try {
@@ -143,7 +170,7 @@ const reset = () => {
                 xml += `<dtfield>\n`;
                 
                 partidasAlmacen.forEach(p => {
-                    xml += `<ROWdtfield CANT="${p.cantidad}" CVE_ART="${p.claveProveedor}" DESC1="0" DESC2="0" DESC3="0" IMPU1="0" IMPU2="0" IMPU3="0" IMPU4="16" PREC="0" NUM_ALM="${p.almacen}" STR_OBS="" REG_GPOPROD="0" REG_KITPROD="0" NUM_REG="0" COSTO="0" TIPO_PROD="P" TIPO_ELEM="N" MINDIRECTO="0" TIP_CAM="1" FACT_CONV="1" UNI_VENTA="PZ" IMP1APLA="6" IMP2APLA="6" IMP3APLA="6" IMP4APLA="0" PREC_SINREDO="0" COST_SINREDO="0" LOTE="" PEDIMENTO="" FECHCADUC="" FECHADUANA="" CVE_PRODSERV="" CVE_UNIDAD=""/>\n`;
+                    xml += `<ROWdtfield CANT="${p.cantidad}" CVE_ART="${p.claveProveedor}" DESC1="0" DESC2="0" DESC3="0" IMPU1="0" IMPU2="0" IMPU3="0" IMPU4="16" PREC="0" NUM_ALM="${p.almacen}" STR_OBS="" REG_GPOPROD="0" REG_KITPROD="0" NUM_REG="0" COSTO="${p.costo}" TIPO_PROD="P" TIPO_ELEM="N" MINDIRECTO="0" TIP_CAM="1" FACT_CONV="1" UNI_VENTA="PZ" IMP1APLA="6" IMP2APLA="6" IMP3APLA="6" IMP4APLA="0" PREC_SINREDO="0" COST_SINREDO="${p.costo}" LOTE="" PEDIMENTO="" FECHCADUC="" FECHADUANA="" CVE_PRODSERV="" CVE_UNIDAD=""/>\n`;
                 });
                 
                 xml += `</dtfield>\n</ROW>\n</ROWDATA>\n</DATAPACKET>`;
@@ -152,7 +179,6 @@ const reset = () => {
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement("a");
                 a.href = url;
-                // Si hay un solo archivo, nombre simple. Si hay varios, incluir almacén
                 if (numAlmacenes === 1) {
                     a.download = `OC_INICIAL_${proveedor}.mod`;
                 } else {
@@ -187,10 +213,9 @@ const reset = () => {
         return provs[id] || id;
     };
 
-    // Si no hay partidas procesadas, mostrar formulario de carga
     if (!mostrarPreview) {
         return (
-            <div className="factura-reutilizable">
+            <div className="factura-reutilizable mt-0">
                 <div className="header-factura" style={{ justifyContent: 'space-between' }}>
                     <div className="d-flex align-items-center gap-3">
                         <button className="btn btn-outline-secondary btn-volver" onClick={onVolver}>
@@ -206,19 +231,19 @@ const reset = () => {
                             <div className="spinner-border text-primary" role="status">
                                 <span className="visually-hidden">Cargando...</span>
                             </div>
-                            <p className="mt-2">Procesando datos...</p>
+                            <p className="mt-2">Procesando archivo...</p>
                         </div>
                     ) : (
                         <>
-                            <BiSpreadsheet size={50} color="#198754" />
-                            <h4>Importar desde Excel</h4>
-                            <p>Seleccione el proveedor y pegue los datos desde Excel</p>
+                            <BiFile size={50} color="#198754" />
+                            <h4>Importar OC desde Excel</h4>
+                            <p>Seleccione el proveedor y suba su archivo de Excel</p>
                             
                             <div className="w-100" style={{ maxWidth: "500px", margin: "20px auto" }}>
-                                <div className="mb-3">
+                                <div className="mb-4 text-start">
                                     <label className="form-label fw-bold">Proveedor</label>
                                     <select 
-                                        className="form-select" 
+                                        className="form-select form-select-lg" 
                                         value={proveedor || ""} 
                                         onChange={(e) => setProveedor(e.target.value)}
                                     >
@@ -232,27 +257,35 @@ const reset = () => {
                                 </div>
                                 
                                 <div className="mb-3">
-                                    <label className="form-label fw-bold">Datos de Excel</label>
-                                    <p className="text-muted" style={{ fontSize: "0.85rem" }}>
-                                        Copie las siguientes columnas de Excel:<br />
-                                        <code>Almacén | Clave | Descripción | Línea | Familia | Cantidad</code>
-                                    </p>
-                                    <textarea
-                                        className="form-control"
-                                        rows={10}
-                                        placeholder="Pegue aquí los datos desde Excel..."
-                                        style={{ fontFamily: "monospace", fontSize: "0.9rem" }}
-                                        value={datosExcel}
-                                        onChange={(e) => setDatosExcel(e.target.value)}
+                                    <div className="alert alert-light border shadow-sm text-start">
+                                        <p className="mb-2" style={{ fontSize: "0.9rem" }}>
+                                            <strong>Formato requerido:</strong> El archivo debe tener 7 columnas en este orden:
+                                        </p>
+                                        <ul className="mb-0 text-muted" style={{ fontSize: "0.85rem" }}>
+                                            <li><strong>A:</strong> Almacén</li>
+                                            <li><strong>B:</strong> Clave del Artículo</li>
+                                            <li><strong>C:</strong> Descripción</li>
+                                            <li><strong>D:</strong> Línea</li>
+                                            <li><strong>E:</strong> Familia</li>
+                                            <li><strong>F:</strong> Cantidad</li>
+                                            <li><strong>G:</strong> Costo</li>
+                                        </ul>
+                                    </div>
+                                    <input 
+                                        type="file" 
+                                        accept=".xlsx, .xls"
+                                        ref={fileInputRef}
+                                        onChange={handleFileUpload}
+                                        style={{ display: 'none' }}
                                     />
                                 </div>
                                 
                                 <button 
-                                    className="btn btn-success w-100" 
-                                    onClick={procesarExcel}
-                                    disabled={loading || !proveedor || !datosExcel.trim()}
+                                    className="btn btn-success w-100 py-3 fs-5 shadow-sm d-flex justify-content-center align-items-center gap-2" 
+                                    onClick={handleProcesarClick}
+                                    disabled={loading || !proveedor}
                                 >
-                                    Procesar Datos
+                                    <BiUpload size={24} /> Subir Archivo Excel
                                 </button>
                             </div>
                         </>
@@ -262,50 +295,82 @@ const reset = () => {
         );
     }
 
-    // Si hay partidas, mostrar tabla de previsualización
+    const partidasFiltradas = partidas.filter(item => item.claveProveedor.toLowerCase().includes(filtroClave.toLowerCase()));
+
     return (
-        <div className="factura-reutilizable">
+        <div className="factura-reutilizable mt-0">
             <div className="header-factura">
                 <div className="header-item">
                     <strong>Proveedor</strong>
-                    <span>{getProveedorName(proveedor)}</span>
+                    <span style={{ color: '#198754', fontSize: '1.2rem', fontWeight: 'bold' }}>{getProveedorName(proveedor)}</span>
                 </div>
-                <div className="header-item" style={{ border: 'none' }}>
+                <div className="header-item">
+                    <strong>Archivo</strong>
+                    <span>{fileName}</span>
+                </div>
+                <div className="header-item">
                     <strong>Total Partidas</strong>
                     <span>{partidas.length}</span>
                 </div>
+                <div className="header-item" style={{ border: 'none' }}>
+                    <strong>Total Unidades</strong>
+                    <span>{totalCantidad}</span>
+                </div>
                 <button className="btn btn-outline-danger btn-cancelar-top" onClick={reset}>
-                    <BiXCircle /> Cancelar
+                    <BiXCircle className="me-1" /> Cancelar
                 </button>
             </div>
 
-            <div className="tabla-factura-container">
-                <table className="tabla-factura">
-                    <thead>
+            <div className="tabla-factura-container shadow-sm border mt-3 rounded" style={{ height: "50vh" }}>
+                <table className="tabla-factura mb-0">
+                    <thead className="bg-light">
                         <tr>
-                            <th style={{ width: "8%" }}>Almacén</th>
-                            <th style={{ width: "20%" }}>Clave</th>
-                            <th style={{ width: "30%" }}>Descripción</th>
-                            <th style={{ width: "12%" }}>Línea</th>
+                            <th style={{ width: "8%", textAlign: 'center' }}>Almacén</th>
+                            <th style={{ width: "20%" }}>
+                                <div className="d-flex align-items-center">
+                                    <span>Clave</span>
+                                    <div className="position-relative ms-2">
+                                        <input 
+                                            type="text" 
+                                            className="form-control form-control-sm" 
+                                            placeholder="🔍 Buscar..." 
+                                            value={filtroClave}
+                                            onChange={(e) => setFiltroClave(e.target.value)}
+                                            style={{ width: "120px", padding: "2px 25px 2px 10px", fontSize: "0.85rem", borderRadius: "15px", border: "1px solid #ced4da" }}
+                                        />
+                                        {filtroClave && (
+                                            <BiXCircle 
+                                                className="position-absolute" 
+                                                style={{ right: '6px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', color: '#6c757d', fontSize: '1rem' }} 
+                                                onClick={() => setFiltroClave('')} 
+                                                title="Limpiar búsqueda"
+                                            />
+                                        )}
+                                    </div>
+                                </div>
+                            </th>
+                            <th style={{ width: "26%" }}>Descripción</th>
+                            <th style={{ width: "10%" }}>Línea</th>
                             <th style={{ width: "10%" }}>Familia</th>
-                            <th style={{ width: "8%" }}>Cant.</th>
-                            <th style={{ width: "5%" }}></th>
+                            <th style={{ width: "10%", textAlign: 'right' }}>Costo</th>
+                            <th style={{ width: "8%", textAlign: 'center' }}>Cant.</th>
+                            <th style={{ width: "8%", textAlign: 'center' }}>Acción</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {partidas.map((item) => (
-                            <tr key={item.id}>
-                                <td>{item.almacen}</td>
-                                <td>{item.claveProveedor}</td>
+                        {partidasFiltradas.map((item) => (
+                            <tr key={item.id} className="align-middle">
+                                <td className="text-center">{item.almacen}</td>
+                                <td className="fw-bold">{item.claveProveedor}</td>
                                 <td>{item.descripcion}</td>
                                 <td>{item.lineaProd}</td>
                                 <td>{item.familia}</td>
-                                <td>{item.cantidad}</td>
-                                <td>
-                                    <BiTrash 
-                                        style={{ cursor: 'pointer', color: '#dc3545' }} 
-                                        onClick={() => eliminarPartida(item.id)}
-                                    />
+                                <td className="text-end fw-bold">${item.costo.toFixed(2)}</td>
+                                <td className="text-center"><span className="badge bg-success fs-6">{item.cantidad}</span></td>
+                                <td className="text-center">
+                                    <button className="btn btn-sm btn-outline-danger" onClick={() => eliminarPartida(item.id)}>
+                                        <BiTrash />
+                                    </button>
                                 </td>
                             </tr>
                         ))}
@@ -313,29 +378,19 @@ const reset = () => {
                 </table>
             </div>
 
-            <div className="footer-acciones">
-                <div className="msg-validacion">
-                    <div className="status-label status-ok">
-                        <span>✓ Listo para exportar</span>
-                    </div>
+            <div className="footer-acciones mt-3 d-flex justify-content-between align-items-center w-100">
+                <div className="status-label status-ok px-3 py-2 rounded shadow-sm m-0">
+                    <span>✓ Listo para exportar orden de compra</span>
                 </div>
                 
-                <div className="resumen-horizontal">
-                    <div className="resumen-item">
-                        <label>Total Unidades</label>
-                        <span>{totalCantidad}</span>
-                    </div>
-                    <div className="resumen-item">
-                        <label>Total Partidas</label>
-                        <span>{partidas.length}</span>
-                    </div>
-                    <button className="btn btn-primary btn-finalizar-main" onClick={generarMOD}>
-                        <BiCheckDouble size={20} /> Generar .MOD
-                    </button>
-                </div>
+                <button className="btn btn-success btn-finalizar-main px-4 shadow-sm text-nowrap" onClick={generarMOD}>
+                    <BiCheckDouble size={20} className="me-1" /> Generar .MOD
+                </button>
             </div>
         </div>
     );
 };
 
 export default OrdenCompraInicial;
+
+

@@ -10,6 +10,8 @@ const GeneradorPedidos = () => {
     const [mostrarPreview, setMostrarPreview] = useState(false);
     const [loading, setLoading] = useState(false);
     const [fileName, setFileName] = useState("");
+    const [dividirPorLotes, setDividirPorLotes] = useState(false);
+    const [filtroClave, setFiltroClave] = useState('');
     const isFirstRender = useRef(true);
     const fileInputRef = useRef(null);
 
@@ -121,6 +123,7 @@ const GeneradorPedidos = () => {
         setPartidas([]);
         setFileName("");
         setMostrarPreview(false);
+        setFiltroClave("");
         if (fileInputRef.current) fileInputRef.current.value = "";
     };
 
@@ -133,7 +136,7 @@ const GeneradorPedidos = () => {
     };
 
     const generarMOD = () => {
-        const chunkSize = 300;
+        const chunkSize = dividirPorLotes ? 300 : Math.max(partidas.length, 1);
         const chunks = [];
         
         for (let i = 0; i < partidas.length; i += chunkSize) {
@@ -186,7 +189,7 @@ const GeneradorPedidos = () => {
 
     if (!mostrarPreview) {
         return (
-            <div className="factura-reutilizable">
+            <div className="factura-reutilizable mt-0">
                 <div className="upload-section">
                     {loading ? (
                         <div className="py-4">
@@ -249,8 +252,10 @@ const GeneradorPedidos = () => {
         );
     }
 
+    const partidasFiltradas = partidas.filter(item => item.claveArticulo.toLowerCase().includes(filtroClave.toLowerCase()));
+
     return (
-        <div className="factura-reutilizable">
+        <div className="factura-reutilizable mt-0">
             <div className="header-factura">
                 <div className="header-item">
                     <strong>Cliente</strong>
@@ -260,27 +265,66 @@ const GeneradorPedidos = () => {
                     <strong>Archivo</strong>
                     <span>{fileName}</span>
                 </div>
-                <div className="header-item" style={{ border: 'none' }}>
+                <div className="header-item">
                     <strong>Total Partidas</strong>
                     <span>{partidas.length}</span>
+                </div>
+                <div className="header-item">
+                    <strong>Total Unidades</strong>
+                    <span>{calcularTotales()}</span>
+                </div>
+                <div className="header-item" style={{ border: 'none' }} title="Activa para dividir y generar múltiples archivos modelo de 300 productos máximo cada uno">
+                    <strong>Lotes de 300</strong>
+                    <div className="form-check form-switch mt-1 ms-2 d-flex justify-content-center">
+                        <input 
+                            className="form-check-input mt-0" 
+                            type="checkbox" 
+                            checked={dividirPorLotes}
+                            disabled={partidas.length <= 300}
+                            onChange={(e) => setDividirPorLotes(e.target.checked)}
+                            style={{ cursor: partidas.length <= 300 ? 'not-allowed' : 'pointer', height: '1.2em', width: '2.5em' }}
+                        />
+                    </div>
                 </div>
                 <button className="btn btn-outline-danger btn-cancelar-top" onClick={reset}>
                     <BiXCircle className="me-1" /> Cancelar
                 </button>
             </div>
 
-            <div className="tabla-factura-container shadow-sm border mt-3 rounded">
+            <div className="tabla-factura-container shadow-sm border mt-3 rounded" style={{ height: "50vh" }}>
                 <table className="tabla-factura mb-0">
                     <thead className="bg-light">
                         <tr>
-                            <th style={{ width: "35%" }}>Clave Artículo</th>
+                                                        <th style={{ width: "35%" }}>
+                                <div className="d-flex align-items-center">
+                                    <span>Clave Artículo</span>
+                                    <div className="position-relative ms-3">
+                                        <input 
+                                            type="text" 
+                                            className="form-control form-control-sm" 
+                                            placeholder="🔍 Buscar..." 
+                                            value={filtroClave}
+                                            onChange={(e) => setFiltroClave(e.target.value)}
+                                            style={{ width: "200px", padding: "2px 25px 2px 10px", fontSize: "0.85rem", borderRadius: "15px", border: "1px solid #ced4da" }}
+                                        />
+                                        {filtroClave && (
+                                            <BiXCircle 
+                                                className="position-absolute" 
+                                                style={{ right: '6px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', color: '#6c757d', fontSize: '1rem' }} 
+                                                onClick={() => setFiltroClave('')} 
+                                                title="Limpiar búsqueda"
+                                            />
+                                        )}
+                                    </div>
+                                </div>
+                            </th>
                             <th style={{ width: "25%", textAlign: 'center' }}>Almacén</th>
                             <th style={{ width: "25%", textAlign: 'center' }}>Cantidad</th>
                             <th style={{ width: "15%", textAlign: 'center' }}>Acción</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {partidas.map((item) => (
+                        {partidasFiltradas.map((item) => (
                             <tr key={item.id} className="align-middle">
                                 <td className="fw-bold">{item.claveArticulo}</td>
                                 <td className="text-center">{item.almacen}</td>
@@ -296,30 +340,34 @@ const GeneradorPedidos = () => {
                 </table>
             </div>
 
-            <div className="footer-acciones mt-4">
-                <div className="msg-validacion">
-                    <div className="status-label status-ok px-3 py-2 rounded shadow-sm">
-                        <span>✓ Listo para exportar modelo de Ventas</span>
-                    </div>
+            <div className="footer-acciones mt-3 d-flex justify-content-between align-items-center w-100">
+                <div className="status-label status-ok px-3 py-2 rounded shadow-sm m-0">
+                    <span>✓ Listo para exportar modelo de Pedidos</span>
                 </div>
                 
-                <div className="resumen-horizontal">
-                    <div className="resumen-item">
-                        <label>Unidades</label>
-                        <span className="fs-5">{calcularTotales()}</span>
-                    </div>
-                    <div className="resumen-item">
-                        <label>Partidas</label>
-                        <span className="fs-5">{partidas.length}</span>
-                    </div>
-                    <button className="btn btn-primary btn-finalizar-main px-4 py-2 fs-5 shadow" onClick={generarMOD}>
-                        <BiCheckDouble size={24} className="me-2" /> Descargar Modelo (.MOD)
-                    </button>
-                </div>
+                <button className="btn btn-primary btn-finalizar-main px-4 shadow-sm text-nowrap" onClick={generarMOD}>
+                    <BiCheckDouble size={20} className="me-1" /> Descargar Modelo (.MOD)
+                </button>
             </div>
         </div>
     );
 };
 
 export default GeneradorPedidos;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
