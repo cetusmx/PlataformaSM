@@ -27,36 +27,15 @@ const GestorDocumentos = () => {
 
     const renderContenidoProveedores = () => {
         if (flujoSeleccionado === 'factura') {
-            return (
-                <div>
-                    <button className="btn btn-outline-secondary mb-3" onClick={() => setFlujoSeleccionado(null)}>
-                        <BiArrowBack className="me-2" /> Volver a Opciones
-                    </button>
-                    <FacturaXMLEditable storageKey="reposiciones_progress" />
-                </div>
-            );
+            return <FacturaXMLEditable storageKey="reposiciones_progress" />;
         }
 
         if (flujoSeleccionado === 'inicial') {
-            return (
-                <div>
-                    <button className="btn btn-outline-secondary mb-3" onClick={() => setFlujoSeleccionado(null)}>
-                        <BiArrowBack className="me-2" /> Volver a Opciones
-                    </button>
-                    <OrdenCompraInicial onVolver={() => setFlujoSeleccionado(null)} />
-                </div>
-            );
+            return <OrdenCompraInicial onVolver={() => setFlujoSeleccionado(null)} />;
         }
 
         if (flujoSeleccionado === 'especial') {
-            return (
-                <div>
-                    <button className="btn btn-outline-secondary mb-3" onClick={() => setFlujoSeleccionado(null)}>
-                        <BiArrowBack className="me-2" /> Volver a Opciones
-                    </button>
-                    <FacturaXMLReutilizable storageKey="pedidos_especiales_progress" />
-                </div>
-            );
+            return <FacturaXMLReutilizable storageKey="pedidos_especiales_progress" />;
         }
 
         return (
@@ -107,9 +86,16 @@ const GestorDocumentos = () => {
 
     return (
         <div className="container-fluid p-3">
-            <h2 className="mb-2 text-dark" style={{ fontWeight: '600' }}>
-                {activeTab === 'compras' ? 'Compras' : 'Ventas'}
-            </h2>
+            <div className="d-flex justify-content-between align-items-center mb-2">
+                <h2 className="text-dark mb-0" style={{ fontWeight: '600' }}>
+                    {activeTab === 'compras' ? 'Compras' : 'Ventas'}
+                </h2>
+                {activeTab === 'compras' && flujoSeleccionado && (
+                    <button className="btn btn-outline-secondary btn-sm px-3 shadow-sm" onClick={() => setFlujoSeleccionado(null)}>
+                        <BiArrowBack className="me-2" /> Volver a Opciones
+                    </button>
+                )}
+            </div>
             
             <div className="bg-white p-3 rounded shadow-sm border-0">
                 {activeTab === 'compras' && renderContenidoProveedores()}
@@ -120,5 +106,6 @@ const GestorDocumentos = () => {
 };
 
 export default GestorDocumentos;
+
 
 

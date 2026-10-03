@@ -8,12 +8,13 @@
 }
 
 .upload-section {
-    border: 2px dashed #007bff;
+    border: 1px solid #dee2e6;
     padding: 20px;
     text-align: center;
     border-radius: 10px;
     background-color: #fff;
     margin-bottom: 15px;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
 }
 
 .header-factura {

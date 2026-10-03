@@ -234,8 +234,11 @@ const FacturaXMLReutilizable = ({ storageKey = "factura_progress" }) => {
 
     if (!facturaData) {
         return (
-            <div className="factura-reutilizable">
-                <div className="upload-section">
+            <div className="factura-reutilizable mt-0">
+                <div className="header-factura" style={{ justifyContent: 'center', backgroundColor: '#f8f9fa' }}>
+                    <h5 className="mb-0 py-2">Pedidos Especiales</h5>
+                </div>
+                <div className="upload-section mt-3">
                     {loading ? (
                         <div className="py-4">
                             <Spinner animation="border" variant="primary" />
@@ -396,3 +399,6 @@ const FacturaXMLReutilizable = ({ storageKey = "factura_progress" }) => {
 };
 
 export default FacturaXMLReutilizable;
+
+
+

@@ -216,16 +216,11 @@ const OrdenCompraInicial = ({ onVolver }) => {
     if (!mostrarPreview) {
         return (
             <div className="factura-reutilizable mt-0">
-                <div className="header-factura" style={{ justifyContent: 'space-between' }}>
-                    <div className="d-flex align-items-center gap-3">
-                        <button className="btn btn-outline-secondary btn-volver" onClick={onVolver}>
-                            <BiArrowBack /> Volver
-                        </button>
-                        <h5 className="mb-0">Generar OC Inicial</h5>
-                    </div>
+                <div className="header-factura" style={{ justifyContent: 'center', backgroundColor: '#f8f9fa' }}>
+                    <h5 className="mb-0 py-2">Generar OC Inicial</h5>
                 </div>
                 
-                <div className="upload-section">
+                <div className="upload-section mt-3">
                     {loading ? (
                         <div className="py-4">
                             <div className="spinner-border text-primary" role="status">
@@ -243,7 +238,7 @@ const OrdenCompraInicial = ({ onVolver }) => {
                                 <div className="mb-4 text-start">
                                     <label className="form-label fw-bold">Proveedor</label>
                                     <select 
-                                        className="form-select form-select-lg" 
+                                        className="form-select" 
                                         value={proveedor || ""} 
                                         onChange={(e) => setProveedor(e.target.value)}
                                     >
@@ -257,20 +252,6 @@ const OrdenCompraInicial = ({ onVolver }) => {
                                 </div>
                                 
                                 <div className="mb-3">
-                                    <div className="alert alert-light border shadow-sm text-start">
-                                        <p className="mb-2" style={{ fontSize: "0.9rem" }}>
-                                            <strong>Formato requerido:</strong> El archivo debe tener 7 columnas en este orden:
-                                        </p>
-                                        <ul className="mb-0 text-muted" style={{ fontSize: "0.85rem" }}>
-                                            <li><strong>A:</strong> Almacén</li>
-                                            <li><strong>B:</strong> Clave del Artículo</li>
-                                            <li><strong>C:</strong> Descripción</li>
-                                            <li><strong>D:</strong> Línea</li>
-                                            <li><strong>E:</strong> Familia</li>
-                                            <li><strong>F:</strong> Cantidad</li>
-                                            <li><strong>G:</strong> Costo</li>
-                                        </ul>
-                                    </div>
                                     <input 
                                         type="file" 
                                         accept=".xlsx, .xls"
@@ -278,15 +259,22 @@ const OrdenCompraInicial = ({ onVolver }) => {
                                         onChange={handleFileUpload}
                                         style={{ display: 'none' }}
                                     />
+                                    <button 
+                                        className="btn btn-success w-100 py-3 fs-5 shadow-sm d-flex justify-content-center align-items-center gap-2" 
+                                        onClick={handleProcesarClick}
+                                        disabled={loading || !proveedor}
+                                    >
+                                        <BiUpload size={24} /> Subir Archivo Excel
+                                    </button>
                                 </div>
-                                
-                                <button 
-                                    className="btn btn-success w-100 py-3 fs-5 shadow-sm d-flex justify-content-center align-items-center gap-2" 
-                                    onClick={handleProcesarClick}
-                                    disabled={loading || !proveedor}
-                                >
-                                    <BiUpload size={24} /> Subir Archivo Excel
-                                </button>
+
+                                <div className="mb-3">
+                                    <div className="alert alert-light border shadow-sm text-center mb-0 py-2">
+                                        <p className="mb-0 text-muted" style={{ fontSize: "0.85rem" }}>
+                                            <strong>Formato requerido:</strong> Almacén | Clave | Descripción | Línea | Familia | Cantidad | Costo
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </>
                     )}
@@ -302,19 +290,21 @@ const OrdenCompraInicial = ({ onVolver }) => {
             <div className="header-factura">
                 <div className="header-item">
                     <strong>Proveedor</strong>
-                    <span style={{ color: '#198754', fontSize: '1.2rem', fontWeight: 'bold' }}>{getProveedorName(proveedor)}</span>
+                    <span>{getProveedorName(proveedor)}</span>
+                </div>
+                <div className="header-item">
+                    <strong>Almacén</strong>
+                    <span>
+                        {partidas.length > 0 ? Array.from(new Set(partidas.map(p => p.almacen))).join(', ') : '-'}
+                    </span>
                 </div>
                 <div className="header-item">
                     <strong>Archivo</strong>
                     <span>{fileName}</span>
                 </div>
-                <div className="header-item">
+                <div className="header-item" style={{ border: 'none' }}>
                     <strong>Total Partidas</strong>
                     <span>{partidas.length}</span>
-                </div>
-                <div className="header-item" style={{ border: 'none' }}>
-                    <strong>Total Unidades</strong>
-                    <span>{totalCantidad}</span>
                 </div>
                 <button className="btn btn-outline-danger btn-cancelar-top" onClick={reset}>
                     <BiXCircle className="me-1" /> Cancelar
@@ -325,8 +315,8 @@ const OrdenCompraInicial = ({ onVolver }) => {
                 <table className="tabla-factura mb-0">
                     <thead className="bg-light">
                         <tr>
-                            <th style={{ width: "8%", textAlign: 'center' }}>Almacén</th>
-                            <th style={{ width: "20%" }}>
+                            <th style={{ width: "8%", textAlign: 'center' }}>Cant.</th>
+                            <th style={{ width: "29%" }}>
                                 <div className="d-flex align-items-center">
                                     <span>Clave</span>
                                     <div className="position-relative ms-2">
@@ -336,7 +326,7 @@ const OrdenCompraInicial = ({ onVolver }) => {
                                             placeholder="🔍 Buscar..." 
                                             value={filtroClave}
                                             onChange={(e) => setFiltroClave(e.target.value)}
-                                            style={{ width: "120px", padding: "2px 25px 2px 10px", fontSize: "0.85rem", borderRadius: "15px", border: "1px solid #ced4da" }}
+                                            style={{ width: "200px", padding: "2px 25px 2px 10px", fontSize: "0.85rem", borderRadius: "15px", border: "1px solid #ced4da" }}
                                         />
                                         {filtroClave && (
                                             <BiXCircle 
@@ -349,24 +339,26 @@ const OrdenCompraInicial = ({ onVolver }) => {
                                     </div>
                                 </div>
                             </th>
-                            <th style={{ width: "26%" }}>Descripción</th>
-                            <th style={{ width: "10%" }}>Línea</th>
-                            <th style={{ width: "10%" }}>Familia</th>
+                            <th style={{ width: "34%" }}>Descripción</th>
+                            <th style={{ width: "11%" }}>Línea</th>
                             <th style={{ width: "10%", textAlign: 'right' }}>Costo</th>
-                            <th style={{ width: "8%", textAlign: 'center' }}>Cant.</th>
                             <th style={{ width: "8%", textAlign: 'center' }}>Acción</th>
                         </tr>
                     </thead>
                     <tbody>
                         {partidasFiltradas.map((item) => (
                             <tr key={item.id} className="align-middle">
-                                <td className="text-center">{item.almacen}</td>
+                                <td className="text-center">
+                                    <span className="badge bg-success" style={{ fontSize: 'inherit', fontWeight: 'normal' }}>
+                                        {item.cantidad}
+                                    </span>
+                                </td>
                                 <td className="fw-bold">{item.claveProveedor}</td>
                                 <td>{item.descripcion}</td>
-                                <td>{item.lineaProd}</td>
-                                <td>{item.familia}</td>
+                                <td title={`Familia: ${item.familia}`} style={{ cursor: 'help' }}>
+                                    {item.lineaProd}
+                                </td>
                                 <td className="text-end fw-bold">${item.costo.toFixed(2)}</td>
-                                <td className="text-center"><span className="badge bg-success fs-6">{item.cantidad}</span></td>
                                 <td className="text-center">
                                     <button className="btn btn-sm btn-outline-danger" onClick={() => eliminarPartida(item.id)}>
                                         <BiTrash />
@@ -392,5 +384,14 @@ const OrdenCompraInicial = ({ onVolver }) => {
 };
 
 export default OrdenCompraInicial;
+
+
+
+
+
+
+
+
+
 
 
