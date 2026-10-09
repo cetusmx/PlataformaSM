@@ -160,24 +160,24 @@ const CodigoBarras = () => {
       //console.log(e.producto))
 
       if (
-        clavesProveedor.some((partida) => partida.claveprove === e.producto)
+        clavesProveedor.some((partida) => partida.clave_proveedor === e.producto)
       ) {
-        //Checa si existe el producto de la factura en la BD. Campos... (clave, claveprovedor)
+        //Checa si existe el producto de la factura en la BD. Campos... (clave, clave_proveedor)
         //console.log("Sí encontrado");
         const found = clavesProveedor.find(
-          (element) => element.claveprove === e.producto
+          (element) => element.clave_proveedor === e.producto
         );
 
         /* const result = clavesProveedor.find(    //clavesproveedor son todos los productos de ese proveedor
-        (claveProv) => claveProv.claveprovedor === e.producto
+        (claveProv) => claveProv.clave_proveedor === e.producto
       ); */
 
-        e.clave = found.clave;
+        e.clave = found.nuestra_clave;
 
         let partida = {
           cantidad: e.cantidad,
           producto: e.producto,
-          clave: found.clave,
+          clave: found.nuestra_clave,
         };
         temp.push(partida);
       } else {
@@ -194,13 +194,18 @@ const CodigoBarras = () => {
 
   let getClaves = () => {
     if (listaProductos.length > 0) {
-      Axios.get(urlServidorAPI + `/getclaves`, {
-        params: {
-          /* productos: listaProductos, */
-          rfc: rfc,
-        },
+      const claves_proveedor = listaProductos.map(p => p.producto);
+      Axios.post(urlServidorAPI + `/recepcion/productos`, {
+        rfc: rfc,
+        claves_proveedor: claves_proveedor
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       }).then((response) => {
-        setClavesProveedor(response.data);
+        setClavesProveedor(response.data.resultados || []);
+      }).catch((error) => {
+        console.error("Error al obtener claves del proveedor:", error);
       });
     }
   };
