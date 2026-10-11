@@ -32,9 +32,7 @@ const ModalIncidencias = ({ show, onHide, recepcionId, onGenerarOC }) => {
 
     const partidasConIncidencia = detalle?.partidas?.filter(p => 
         Number(p.cantidad_facturada) !== Number(p.cantidad_recibida) ||
-        p.estatus_partida === "INCOMPLETA" ||
-        p.estatus_partida === "DANADA" ||
-        p.estatus_partida === "NO_RECIBIDA" ||
+        (p.estatus_partida && !['PENDIENTE', 'COMPLETA'].includes(p.estatus_partida)) ||
         (p.observacion && p.observacion.trim().length > 0)
     ) || [];
 
@@ -66,14 +64,12 @@ const ModalIncidencias = ({ show, onHide, recepcionId, onGenerarOC }) => {
                                 <Badge bg="dark">{detalle.sucursal_destino}</Badge>
                             </div>
                             <div>
-                                <span className="text-muted small d-block">RECIBIDO POR</span>
-                                <span>{detalle.recibido_por || "Operador"}</span>
+                                <span className="text-muted small d-block">SUBIDO POR</span>
+                                <span>{detalle.subido_por || "Compras"}</span>
                             </div>
                             <div>
-                                <span className="text-muted small d-block">RESUMEN PIEZAS</span>
-                                <span className="text-danger fw-bold">
-                                    {detalle.total_piezas_recibidas} recibidas de {detalle.total_piezas_facturadas} facturadas
-                                </span>
+                                <span className="text-muted small d-block">RECIBIDO POR</span>
+                                <span>{detalle.recibido_por || "Operador"}</span>
                             </div>
                         </div>
 
@@ -125,7 +121,14 @@ const ModalIncidencias = ({ show, onHide, recepcionId, onGenerarOC }) => {
                                                     </Badge>
                                                 </td>
                                                 <td>
-                                                    <span className="badge bg-danger mb-1">{p.estatus_partida}</span>
+                                                    <span className="badge bg-danger mb-1">
+                                                        {p.estatus_partida === 'INCORRECTO' ? 'Incorrecto' :
+                                                         p.estatus_partida === 'DANADA' ? 'Dañado' :
+                                                         p.estatus_partida === 'INCOMPLETA' ? 'Faltante' :
+                                                         p.estatus_partida === 'OTRA' ? 'Otra' :
+                                                         p.estatus_partida === 'NO_RECIBIDA' ? 'No Recibida' :
+                                                         p.estatus_partida || 'Incidencia'}
+                                                    </span>
                                                     {p.observacion && (
                                                         <span className="d-block text-danger small fst-italic">
                                                             "{p.observacion}"
@@ -149,11 +152,11 @@ const ModalIncidencias = ({ show, onHide, recepcionId, onGenerarOC }) => {
                 )}
             </Modal.Body>
 
-            <Modal.Footer className="py-2">
+            <Modal.Footer className="py-2 d-flex justify-content-between align-items-center">
                 <Button variant="outline-secondary" size="sm" onClick={onHide}>
                     Cerrar
                 </Button>
-                {detalle && (
+                {detalle && detalle.estatus !== "OC_GENERADA" ? (
                     <Button 
                         variant="success" 
                         size="sm" 
@@ -164,6 +167,12 @@ const ModalIncidencias = ({ show, onHide, recepcionId, onGenerarOC }) => {
                     >
                         <BiCheckDouble className="me-1" /> Proceder a Generar OC (.MOD)
                     </Button>
+                ) : (
+                    detalle && detalle.estatus === "OC_GENERADA" && (
+                        <span className="badge bg-light text-muted border px-2 py-1 small">
+                            <BiCheckDouble className="text-success me-1" /> Orden de Compra ya generada
+                        </span>
+                    )
                 )}
             </Modal.Footer>
         </Modal>

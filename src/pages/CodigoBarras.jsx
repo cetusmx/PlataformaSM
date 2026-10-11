@@ -157,18 +157,46 @@ const CodigoBarras = () => {
     if (!recepcionId) return;
     try {
       const payloadPartidas = [
-        ...(recibidos || []).map((p) => ({
-          id: p.id,
-          cantidad_recibida: p.cantidad,
-          estatus_partida: p.observacion ? (p.tipoAnomalia === 'Dañado' ? 'DANADA' : 'INCOMPLETA') : 'COMPLETA',
-          observacion: p.observacion || null
-        })),
-        ...(pendientes || []).map((p) => ({
-          id: p.id,
-          cantidad_recibida: 0,
-          estatus_partida: 'PENDIENTE',
-          observacion: p.observacion || null
-        }))
+        ...(recibidos || []).map((p) => {
+          const tieneObs = p.observacion && p.observacion.trim() !== "";
+          let estatus = "COMPLETA";
+          if (tieneObs) {
+            if (p.tipoAnomalia === "Dañado") estatus = "DANADA";
+            else if (p.tipoAnomalia === "Faltante") estatus = "INCOMPLETA";
+            else if (p.tipoAnomalia === "Incorrecto") estatus = "INCORRECTO";
+            else if (p.tipoAnomalia === "Otra") estatus = "OTRA";
+            else estatus = "INCIDENCIA";
+          }
+          const notaCompleta = tieneObs
+            ? (p.tipoAnomalia ? `[${p.tipoAnomalia}] ${p.observacion}` : p.observacion)
+            : null;
+          return {
+            id: p.id,
+            cantidad_recibida: p.cantidad,
+            estatus_partida: estatus,
+            observacion: notaCompleta
+          };
+        }),
+        ...(pendientes || []).map((p) => {
+          const tieneObs = p.observacion && p.observacion.trim() !== "";
+          let estatus = "PENDIENTE";
+          if (tieneObs) {
+            if (p.tipoAnomalia === "Dañado") estatus = "DANADA";
+            else if (p.tipoAnomalia === "Faltante") estatus = "INCOMPLETA";
+            else if (p.tipoAnomalia === "Incorrecto") estatus = "INCORRECTO";
+            else if (p.tipoAnomalia === "Otra") estatus = "OTRA";
+            else estatus = "INCIDENCIA";
+          }
+          const notaCompleta = tieneObs
+            ? (p.tipoAnomalia ? `[${p.tipoAnomalia}] ${p.observacion}` : p.observacion)
+            : null;
+          return {
+            id: p.id,
+            cantidad_recibida: 0,
+            estatus_partida: estatus,
+            observacion: notaCompleta
+          };
+        })
       ];
 
       await Axios.put(`${urlServidorAPI}/api/v1/recepcion/${recepcionId}/progreso`, {
@@ -211,18 +239,47 @@ const CodigoBarras = () => {
       setNombreProveedor(data.nombre_proveedor || factura.nombre_proveedor);
       setRfc(data.rfc_proveedor || factura.rfc_proveedor);
 
-      const todasPartidas = (data.partidas || []).map((p) => ({
-        id: p.id,
-        recepcion_id: p.recepcion_id,
-        numero_partida: p.numero_partida,
-        cantidad: parseFloat(p.cantidad_facturada),
-        cantidad_recibida: parseFloat(p.cantidad_recibida || 0),
-        producto: p.clave_proveedor,
-        clave: p.clave_interna || "No-registrada",
-        descripcion: p.descripcion || "",
-        observacion: p.observacion || "",
-        tipoAnomalia: p.observacion ? (p.estatus_partida === 'DANADA' ? 'Dañado' : 'Faltante') : ""
-      }));
+      const todasPartidas = (data.partidas || []).map((p) => {
+        let obsTexto = p.observacion || "";
+        let tipo = "";
+        if (obsTexto) {
+          const match = obsTexto.match(/^\[(.*?)\]\s*(.*)$/);
+          if (match) {
+            tipo = match[1];
+            obsTexto = match[2];
+          } else if (p.estatus_partida === 'DANADA') {
+            tipo = 'Dañado';
+          } else if (p.estatus_partida === 'INCOMPLETA') {
+            tipo = 'Faltante';
+          } else if (p.estatus_partida === 'INCORRECTO') {
+            tipo = 'Incorrecto';
+          } else if (p.estatus_partida === 'OTRA' || p.estatus_partida === 'INCIDENCIA') {
+            tipo = 'Otra';
+          }
+        } else if (p.estatus_partida === 'DANADA') {
+          tipo = 'Dañado';
+        } else if (p.estatus_partida === 'INCOMPLETA') {
+          tipo = 'Faltante';
+        } else if (p.estatus_partida === 'INCORRECTO') {
+          tipo = 'Incorrecto';
+        } else if (p.estatus_partida === 'OTRA' || p.estatus_partida === 'INCIDENCIA') {
+          tipo = 'Otra';
+        }
+
+        return {
+          id: p.id,
+          recepcion_id: p.recepcion_id,
+          numero_partida: p.numero_partida,
+          cantidad: parseFloat(p.cantidad_facturada),
+          cantidad_recibida: parseFloat(p.cantidad_recibida || 0),
+          producto: p.clave_proveedor,
+          clave: p.clave_interna || "No-registrada",
+          descripcion: p.descripcion || "",
+          observacion: obsTexto,
+          tipoAnomalia: tipo,
+          estatus_partida: p.estatus_partida
+        };
+      });
 
       // 1. Revisar si hay progreso local guardado para esta factura específica
       const keyProgreso = `recepcion_progreso_${data.id || factura.id}`;
@@ -245,7 +302,7 @@ const CodigoBarras = () => {
       // 2. Si no había progreso en localStorage, verificar si en BD ya había partidas con cantidad_recibida > 0 o estatus no pendiente
       if (itemsPendientes.length === 0 && itemsRecibidos.length === 0) {
         itemsRecibidos = todasPartidas.filter(
-          (p) => p.cantidad_recibida > 0 || ['COMPLETA', 'DANADA', 'INCOMPLETA', 'NO_RECIBIDA'].includes(p.estatus_partida)
+          (p) => p.cantidad_recibida > 0 || ['COMPLETA', 'DANADA', 'INCOMPLETA', 'NO_RECIBIDA', 'INCORRECTO', 'OTRA', 'INCIDENCIA'].includes(p.estatus_partida)
         );
         const idsRecibidos = new Set(itemsRecibidos.map((r) => r.id));
         itemsPendientes = todasPartidas.filter((p) => !idsRecibidos.has(p.id));
@@ -432,6 +489,10 @@ const CodigoBarras = () => {
             estatus = "DANADA";
           } else if (p.tipoAnomalia === "Faltante") {
             estatus = "INCOMPLETA";
+          } else if (p.tipoAnomalia === "Incorrecto") {
+            estatus = "INCORRECTO";
+          } else if (p.tipoAnomalia === "Otra") {
+            estatus = "OTRA";
           } else {
             estatus = "INCIDENCIA";
           }
@@ -473,11 +534,11 @@ const CodigoBarras = () => {
 
       if (res.data?.success || res.status === 200) {
         const tieneIncidencias =
-          partidasPayload.some((p) => p.observacion) ||
-          (observacionesGenerales && observacionesGenerales.trim() !== "");
+          partidasPayload.some((p) => p.observacion || !['PENDIENTE', 'COMPLETA'].includes(p.estatus_partida)) ||
+          Boolean(observacionesGenerales && observacionesGenerales.trim() !== "");
 
         Swal.fire({
-          title: "¡Recepción Finalizada!",
+          title: tieneIncidencias ? "¡Recepción con Incidencia Registrada!" : "¡Recepción Finalizada!",
           html: `
             <p>La factura <strong>${folioFactura}</strong> ha sido registrada como <strong>${
               tieneIncidencias ? "RECIBIDA CON INCIDENCIA" : "RECIBIDA COMPLETA"
@@ -631,7 +692,7 @@ const CodigoBarras = () => {
   const totalPendientes = facturasPendientes.filter(f => ["PENDIENTE", "EN_RECEPCION"].includes(f.estatus)).length;
   const totalRecibidas = facturasPendientes.filter(f => ["RECIBIDO_COMPLETO", "RECIBIDO_CON_INCIDENCIA", "OC_GENERADA"].includes(f.estatus)).length;
 
-  const renderBadgeEstatus = (estatus) => {
+  const renderBadgeEstatus = (estatus, tieneIncidencias) => {
     switch (estatus) {
       case "PENDIENTE":
         return <Badge bg="warning" text="dark">Pendiente</Badge>;
@@ -642,6 +703,14 @@ const CodigoBarras = () => {
       case "RECIBIDO_CON_INCIDENCIA":
         return <Badge bg="danger">Con Incidencias</Badge>;
       case "OC_GENERADA":
+        if (tieneIncidencias) {
+          return (
+            <div className="d-flex flex-column align-items-center gap-1">
+              <Badge bg="secondary">OC Generada</Badge>
+              <Badge bg="danger">Con Incidencias</Badge>
+            </div>
+          );
+        }
         return <Badge bg="secondary">OC Generada</Badge>;
       default:
         return <Badge bg="secondary">{estatus}</Badge>;
@@ -799,7 +868,7 @@ const CodigoBarras = () => {
                           {f.fecha_factura ? new Date(f.fecha_factura).toLocaleDateString() : "-"}
                         </td>
                         <td className="text-center">
-                          {renderBadgeEstatus(f.estatus)}
+                          {renderBadgeEstatus(f.estatus, f.tiene_incidencias === 1)}
                         </td>
                         <td className="text-center text-muted small">
                           {esFinalizada && f.fecha_recepcion ? (
@@ -1218,7 +1287,7 @@ const CodigoBarras = () => {
       <Modal 
         show={facturaResumen !== null} 
         onHide={() => setFacturaResumen(null)} 
-        size="lg" 
+        size="xl" 
         centered
       >
         <Modal.Header closeButton className="py-2 bg-light">
@@ -1250,17 +1319,27 @@ const CodigoBarras = () => {
                       <div className="text-secondary small">{facturaResumen.rfc_receptor}</div>
                     )}
                   </div>
-                  <div className="col-md-4 mt-2">
+                  <div className="col-md mt-2">
                     <span className="text-muted small d-block">ESTATUS</span>
-                    {renderBadgeEstatus(facturaResumen.estatus)}
+                    {renderBadgeEstatus(facturaResumen.estatus, facturaResumen.tiene_incidencias === 1)}
                   </div>
-                  <div className="col-md-4 mt-2">
+                  <div className="col-md mt-2">
+                    <span className="text-muted small d-block">FECHA SUBIDA</span>
+                    <span className="fw-semibold text-dark">
+                      {facturaResumen.fecha_subida ? new Date(facturaResumen.fecha_subida).toLocaleString() : "-"}
+                    </span>
+                  </div>
+                  <div className="col-md mt-2">
+                    <span className="text-muted small d-block">SUBIDO POR</span>
+                    <span className="text-dark">{facturaResumen.subido_por || "Compras"}</span>
+                  </div>
+                  <div className="col-md mt-2">
                     <span className="text-muted small d-block">FECHA RECEPCIÓN</span>
                     <span className="fw-semibold text-dark">
                       {facturaResumen.fecha_recepcion ? new Date(facturaResumen.fecha_recepcion).toLocaleString() : "-"}
                     </span>
                   </div>
-                  <div className="col-md-4 mt-2">
+                  <div className="col-md mt-2">
                     <span className="text-muted small d-block">RECIBIDO POR</span>
                     <span className="text-dark">{facturaResumen.recibido_por || "Operador"}</span>
                   </div>
@@ -1313,6 +1392,10 @@ const CodigoBarras = () => {
                               <span className="badge bg-danger">Dañado</span>
                             ) : p.estatus_partida === "INCOMPLETA" ? (
                               <span className="badge bg-warning text-dark">Faltante</span>
+                            ) : p.estatus_partida === "INCORRECTO" ? (
+                              <span className="badge bg-danger">Incorrecto</span>
+                            ) : (p.estatus_partida === "OTRA" || p.estatus_partida === "INCIDENCIA" || p.observacion) ? (
+                              <span className="badge bg-warning text-dark">Incidencia</span>
                             ) : (
                               <span className="badge bg-success">Completa</span>
                             )}

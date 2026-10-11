@@ -81,8 +81,8 @@ const TableroReposiciones = ({ onVistaChange }) => {
     const facturasFiltradas = facturas.filter(f => {
         // Filtro por estatus
         if (filtroEstatus === "EN_SUCURSAL" && !["PENDIENTE", "EN_RECEPCION"].includes(f.estatus)) return false;
-        if (filtroEstatus === "LISTAS_OC" && f.estatus !== "RECIBIDO_COMPLETO") return false;
-        if (filtroEstatus === "INCIDENCIAS" && f.estatus !== "RECIBIDO_CON_INCIDENCIA") return false;
+        if (filtroEstatus === "LISTAS_OC" && (f.estatus !== "RECIBIDO_COMPLETO" || f.tiene_incidencias === 1)) return false;
+        if (filtroEstatus === "INCIDENCIAS" && (f.estatus !== "RECIBIDO_CON_INCIDENCIA" && f.tiene_incidencias !== 1)) return false;
         if (filtroEstatus === "OC_GENERADA" && f.estatus !== "OC_GENERADA") return false;
 
         // Filtro de texto
@@ -101,11 +101,50 @@ const TableroReposiciones = ({ onVistaChange }) => {
 
     // Contadores para badges
     const totalEnSucursal = facturas.filter(f => ["PENDIENTE", "EN_RECEPCION"].includes(f.estatus)).length;
-    const totalListasOC = facturas.filter(f => f.estatus === "RECIBIDO_COMPLETO").length;
-    const totalIncidencias = facturas.filter(f => f.estatus === "RECIBIDO_CON_INCIDENCIA").length;
+    const totalListasOC = facturas.filter(f => f.estatus === "RECIBIDO_COMPLETO" && !f.tiene_incidencias).length;
+    const totalIncidencias = facturas.filter(f => f.estatus === "RECIBIDO_CON_INCIDENCIA" || f.tiene_incidencias === 1).length;
     const totalCerradas = facturas.filter(f => f.estatus === "OC_GENERADA").length;
 
     const renderBadgeEstatus = (estatus, tieneIncidencias, facturaId) => {
+        if (estatus === "OC_GENERADA") {
+            if (tieneIncidencias) {
+                return (
+                    <div className="d-flex flex-column align-items-center gap-1">
+                        <span className="badge-estatus oc_generada">
+                            <BiCheckDouble /> OC Generada
+                        </span>
+                        <button 
+                            type="button"
+                            className="badge-estatus recibido_con_incidencia"
+                            onClick={() => setIncidenciaId(facturaId)}
+                            title="Factura con incidencias físicas. Clic para ver reporte de hallazgos."
+                            style={{ fontSize: "0.65rem", padding: "1px 6px" }}
+                        >
+                            <BiErrorCircle /> Con Incidencias
+                        </button>
+                    </div>
+                );
+            }
+            return (
+                <span className="badge-estatus oc_generada">
+                    <BiCheckDouble /> OC Generada
+                </span>
+            );
+        }
+
+        if (estatus === "RECIBIDO_CON_INCIDENCIA" || tieneIncidencias) {
+            return (
+                <button 
+                    type="button"
+                    className="badge-estatus recibido_con_incidencia"
+                    onClick={() => setIncidenciaId(facturaId)}
+                    title="Clic para ver hallazgos e incidencias reportadas por sucursal"
+                >
+                    <BiErrorCircle /> Con Incidencias
+                </button>
+            );
+        }
+
         switch (estatus) {
             case "PENDIENTE":
                 return (
@@ -123,23 +162,6 @@ const TableroReposiciones = ({ onVistaChange }) => {
                 return (
                     <span className="badge-estatus recibido_completo">
                         <BiCheckCircle /> Recibida 100% OK
-                    </span>
-                );
-            case "RECIBIDO_CON_INCIDENCIA":
-                return (
-                    <button 
-                        type="button"
-                        className="badge-estatus recibido_con_incidencia"
-                        onClick={() => setIncidenciaId(facturaId)}
-                        title="Clic para ver hallazgos e incidencias reportadas por sucursal"
-                    >
-                        <BiErrorCircle /> Con Incidencias
-                    </button>
-                );
-            case "OC_GENERADA":
-                return (
-                    <span className="badge-estatus oc_generada">
-                        <BiCheckDouble /> OC Generada (.MOD)
                     </span>
                 );
             default:

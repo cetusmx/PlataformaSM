@@ -240,19 +240,21 @@ const FacturaXMLEditable = ({ storageKey = "factura_progress", recepcionData = n
     // Extraer únicamente las clasificaciones elegidas por el operador para incidencias
     const clasificacionesIncidencia = Array.from(new Set(
         (recepcionData?.partidas || [])
-            .filter(p => p.observacion || ['DANADA', 'INCOMPLETA', 'NO_RECIBIDA', 'INCIDENCIA'].includes(p.estatus_partida))
+            .filter(p => p.observacion || (p.estatus_partida && !['PENDIENTE', 'COMPLETA'].includes(p.estatus_partida)))
             .map(p => {
                 const match = (p.observacion || '').match(/^\[(.*?)\]/);
                 if (match && match[1]) return match[1].trim();
                 if (p.tipoAnomalia) return p.tipoAnomalia.trim();
                 if (p.estatus_partida === 'DANADA') return 'Dañado';
                 if (p.estatus_partida === 'INCOMPLETA') return 'Faltante';
+                if (p.estatus_partida === 'INCORRECTO') return 'Incorrecto';
+                if (p.estatus_partida === 'OTRA') return 'Otra';
                 if (p.estatus_partida === 'NO_RECIBIDA') return 'No Recibida';
                 return 'Incidencia';
             })
     ));
 
-    if (recepcionData?.tiene_incidencias === 1 && clasificacionesIncidencia.length === 0) {
+    if ((recepcionData?.tiene_incidencias === 1 || recepcionData?.estatus === 'RECIBIDO_CON_INCIDENCIA') && clasificacionesIncidencia.length === 0) {
         clasificacionesIncidencia.push("Incidencia reportada");
     }
 
@@ -350,7 +352,7 @@ const FacturaXMLEditable = ({ storageKey = "factura_progress", recepcionData = n
                     <p className="mt-2 fw-bold">Buscando claves en el sistema...</p>
                 </div>
             )}
-            {recepcionData?.tiene_incidencias === 1 && (
+            {(recepcionData?.tiene_incidencias === 1 || recepcionData?.estatus === 'RECIBIDO_CON_INCIDENCIA' || clasificacionesIncidencia.length > 0) && (
                 <div className="banner-aviso-oc">
                     <div className="d-flex align-items-center flex-wrap gap-2">
                         <span className="fw-bold text-danger">

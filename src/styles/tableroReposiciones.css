@@ -105,6 +105,7 @@
     border-radius: 12px;
     font-size: 0.68rem;
     font-weight: 600;
+    white-space: nowrap;
 }
 
 .badge-estatus.pendiente {
