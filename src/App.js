@@ -75,17 +75,25 @@ function App() {
 
     function setUserWithFirebaseAndRol(usuarioFirebase) {
         getRol(usuarioFirebase.uid).then((docSnap) => {
+            const nombreCalculado = 
+                docSnap?.nombre || 
+                docSnap?.name || 
+                docSnap?.usuario || 
+                usuarioFirebase?.displayName || 
+                (usuarioFirebase?.email ? usuarioFirebase.email.split("@")[0] : "");
+
             const userData = {
                 uid: usuarioFirebase.uid,
                 email: usuarioFirebase.email,
-                rol: docSnap.rol,
-                sucursal: docSnap.sucursal
+                nombre: nombreCalculado,
+                displayName: usuarioFirebase?.displayName || nombreCalculado,
+                rol: docSnap?.rol,
+                sucursal: docSnap?.sucursal,
+                ...(docSnap || {})
             };
             setUser(userData);
             setContextData(userData);
             setContextSidebarNav("Inicio");
-            //console.log("App => setContextData ", {contextData});
-            //console.log("App => userData final ", userData);
         });
     }
 

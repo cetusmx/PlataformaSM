@@ -737,7 +737,7 @@
   z-index: 1000;
 }
 
-.modal-content {
+.modal-overlay .modal-content {
   background-color: #fff;
   padding: 25px 30px;
   border-radius: 8px;
@@ -747,13 +747,13 @@
   text-align: center;
 }
 
-.modal-content h4 {
+.modal-overlay .modal-content h4 {
   margin-top: 0;
   margin-bottom: 15px;
   color: #333;
 }
 
-.modal-content p {
+.modal-overlay .modal-content p {
   color: #666;
   margin-bottom: 25px;
   line-height: 1.5;

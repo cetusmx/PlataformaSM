@@ -5,6 +5,7 @@ import FacturaXMLEditable from '../components/FacturaXMLEditable';
 import OrdenCompraInicial from '../components/OrdenCompraInicial';
 import FacturaXMLReutilizable from '../components/FacturaXMLReutilizable';
 import GeneradorPedidos from '../components/GeneradorPedidos';
+import TableroReposiciones from '../components/reposiciones/TableroReposiciones';
 import { DataContext } from '../contexts/dataContext';
 
 const GestorDocumentos = () => {
@@ -13,6 +14,7 @@ const GestorDocumentos = () => {
     const activeTab = seccion === 'ventas' ? 'ventas' : 'compras';
     
     const [flujoSeleccionado, setFlujoSeleccionado] = useState(null);
+    const [estadoVistaTablero, setEstadoVistaTablero] = useState({ enDetalle: false, volverABandeja: null });
 
     const { valor2 } = useContext(DataContext);
     const { setContextSidebarNav } = valor2;
@@ -23,11 +25,12 @@ const GestorDocumentos = () => {
 
     useEffect(() => {
         setFlujoSeleccionado(null);
+        setEstadoVistaTablero({ enDetalle: false, volverABandeja: null });
     }, [activeTab]);
 
     const renderContenidoProveedores = () => {
         if (flujoSeleccionado === 'factura') {
-            return <FacturaXMLEditable storageKey="reposiciones_progress" />;
+            return <TableroReposiciones onVistaChange={setEstadoVistaTablero} />;
         }
 
         if (flujoSeleccionado === 'inicial') {
@@ -91,13 +94,31 @@ const GestorDocumentos = () => {
                     {activeTab === 'compras' ? 'Compras' : 'Ventas'}
                 </h2>
                 {activeTab === 'compras' && flujoSeleccionado && (
-                    <button className="btn btn-outline-secondary btn-sm px-3 shadow-sm" onClick={() => setFlujoSeleccionado(null)}>
-                        <BiArrowBack className="me-2" /> Volver a Opciones
-                    </button>
+                    estadoVistaTablero?.enDetalle ? (
+                        <button 
+                            className="btn btn-outline-secondary btn-sm px-3 shadow-sm" 
+                            onClick={() => {
+                                if (estadoVistaTablero.volverABandeja) {
+                                    estadoVistaTablero.volverABandeja();
+                                }
+                            }}
+                            title="Regresar a la bandeja de facturas"
+                        >
+                            <BiArrowBack className="me-2" /> Volver a Bandeja de Entrada
+                        </button>
+                    ) : (
+                        <button 
+                            className="btn btn-outline-secondary btn-sm px-3 shadow-sm" 
+                            onClick={() => setFlujoSeleccionado(null)}
+                            title="Regresar a opciones de compra"
+                        >
+                            <BiArrowBack className="me-2" /> Volver a Opciones
+                        </button>
+                    )
                 )}
             </div>
             
-            <div className="bg-white p-3 rounded shadow-sm border-0">
+            <div className="bg-white px-3 pb-3 rounded shadow-sm border-0" style={{ paddingTop: '5px' }}>
                 {activeTab === 'compras' && renderContenidoProveedores()}
                 {activeTab === 'ventas' && renderContenidoClientes()}
             </div>

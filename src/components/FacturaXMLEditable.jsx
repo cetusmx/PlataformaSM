@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "../styles/facturaReutilizable.css";
-import { BiXCircle, BiUpload, BiRefresh, BiCheckDouble, BiTrash } from "react-icons/bi";
+import { BiXCircle, BiUpload, BiRefresh, BiCheckDouble, BiTrash, BiArrowBack } from "react-icons/bi";
 import { show_alerta } from "../functions";
 import Axios from "axios";
 import { Spinner } from "react-bootstrap";
 
-const FacturaXMLEditable = ({ storageKey = "factura_progress" }) => {
+const FacturaXMLEditable = ({ storageKey = "factura_progress", recepcionData = null, onVolver = null }) => {
     const [facturaData, setFacturaData] = useState(null);
     const [partidas, setPartidas] = useState([]);
     const [almacenes, setAlmacenes] = useState([]);
@@ -24,8 +24,51 @@ const FacturaXMLEditable = ({ storageKey = "factura_progress" }) => {
         CONDICION: "CONTADO"
     };
 
-    // Cargar datos guardados al iniciar
+    // Cargar datos guardados al iniciar o desde recepcionData
     useEffect(() => {
+        if (recepcionData) {
+            const header = {
+                id: recepcionData.id,
+                proveedor: recepcionData.nombre_proveedor,
+                rfc: recepcionData.rfc_proveedor,
+                folio: recepcionData.folio_factura,
+                fecha: (recepcionData.fecha_factura || "").split("T")[0]
+            };
+            setFacturaData(header);
+            setAlmacenSeleccionado(String(recepcionData.almacen_sae || ""));
+
+            const items = (recepcionData.partidas || []).map((p, index) => {
+                const canti = parseFloat(p.cantidad_facturada || 0);
+                const valorUnit = parseFloat(p.precio_unitario || 0);
+                return {
+                    id: p.id || index,
+                    descripcion: p.descripcion || "Sin descripción",
+                    cantidad: canti,
+                    cantidad_facturada: parseFloat(p.cantidad_facturada || 0),
+                    cantidad_recibida: parseFloat(p.cantidad_recibida || 0),
+                    valorUnitario: valorUnit,
+                    importe: canti * valorUnit,
+                    claveProveedor: p.clave_proveedor,
+                    claveInterna: p.clave_interna && p.clave_interna !== "No-registrada" ? p.clave_interna : null,
+                    origen: null,
+                    descuento: parseFloat(p.descuento_porcentaje || 0),
+                    observacion: p.observacion
+                };
+            });
+            setPartidas(items);
+
+            if (header.rfc === "ROSA7504083F6" || header.rfc === "SAHR520527U29") {
+                setClaveProvSistema(header.rfc === "ROSA7504083F6" ? "8" : "46");
+            } else if (header.rfc === "SRS080522T77") {
+                setClaveProvSistema("35");
+                getClavesMasivas(header.rfc, items);
+            } else {
+                getClavesMasivas(header.rfc, items);
+            }
+            fetchAlmacenes();
+            return;
+        }
+
         const saved = localStorage.getItem(storageKey);
         if (saved) {
             try {
@@ -41,11 +84,11 @@ const FacturaXMLEditable = ({ storageKey = "factura_progress" }) => {
             }
         }
         fetchAlmacenes();
-    }, [storageKey]);
+    }, [storageKey, recepcionData]);
 
-    // Guardar datos automáticamente ante cualquier cambio
+    // Guardar datos automáticamente ante cualquier cambio (solo si no es recepcionData)
     useEffect(() => {
-        if (facturaData) {
+        if (facturaData && !recepcionData) {
             const dataToSave = {
                 facturaData,
                 partidas,
@@ -54,7 +97,7 @@ const FacturaXMLEditable = ({ storageKey = "factura_progress" }) => {
             };
             localStorage.setItem(storageKey, JSON.stringify(dataToSave));
         }
-    }, [facturaData, partidas, almacenSeleccionado, claveProvSistema, storageKey]);
+    }, [facturaData, partidas, almacenSeleccionado, claveProvSistema, storageKey, recepcionData]);
 
     const fetchAlmacenes = () => {
         Axios.get(`${urlServidorAPI}/compras/getalmacenes`)
@@ -75,7 +118,8 @@ const FacturaXMLEditable = ({ storageKey = "factura_progress" }) => {
         Axios.post(`${urlServidorAPI}/compras/getclavesproveedor`, { rfc, claves: clavesUnicas })
             .then((response) => {
                 const { cve_clpv, partidas: clavesServidor } = response.data;
-                setClaveProvSistema(cve_clpv || "NO ENCONTRADO");
+                const claveFinalProv = rfc === "SRS080522T77" ? "35" : (cve_clpv || "NO ENCONTRADO");
+                setClaveProvSistema(claveFinalProv);
                 const partidasActualizadas = items.map(item => {
                     const coincidencia = (clavesServidor || response.data).find(c => 
                         c.claveprove?.trim().toUpperCase() === item.claveProveedor?.trim().toUpperCase()
@@ -161,6 +205,9 @@ const FacturaXMLEditable = ({ storageKey = "factura_progress" }) => {
                     claveInterna: item.claveProveedor,
                     origen: null
                 })));
+            } else if (header.rfc === "SRS080522T77") {
+                setClaveProvSistema("35");
+                getClavesMasivas(header.rfc, items);
             } else {
                 getClavesMasivas(header.rfc, items);
             }
@@ -190,6 +237,25 @@ const FacturaXMLEditable = ({ storageKey = "factura_progress" }) => {
     const tienePendientes = partidas.some(p => p.claveInterna === "No-registrada" || !p.claveInterna);
     const faltaAlmacen = !almacenSeleccionado;
 
+    // Extraer únicamente las clasificaciones elegidas por el operador para incidencias
+    const clasificacionesIncidencia = Array.from(new Set(
+        (recepcionData?.partidas || [])
+            .filter(p => p.observacion || ['DANADA', 'INCOMPLETA', 'NO_RECIBIDA', 'INCIDENCIA'].includes(p.estatus_partida))
+            .map(p => {
+                const match = (p.observacion || '').match(/^\[(.*?)\]/);
+                if (match && match[1]) return match[1].trim();
+                if (p.tipoAnomalia) return p.tipoAnomalia.trim();
+                if (p.estatus_partida === 'DANADA') return 'Dañado';
+                if (p.estatus_partida === 'INCOMPLETA') return 'Faltante';
+                if (p.estatus_partida === 'NO_RECIBIDA') return 'No Recibida';
+                return 'Incidencia';
+            })
+    ));
+
+    if (recepcionData?.tiene_incidencias === 1 && clasificacionesIncidencia.length === 0) {
+        clasificacionesIncidencia.push("Incidencia reportada");
+    }
+
     const reset = () => {
         localStorage.removeItem(storageKey); // Limpieza física del almacenamiento
         setFacturaData(null);
@@ -212,10 +278,21 @@ const FacturaXMLEditable = ({ storageKey = "factura_progress" }) => {
             window.URL.revokeObjectURL(url);
             document.body.removeChild(a);
             
-            show_alerta("Archivo .MOD generado", "success");
-            
-            // Opcional: ¿Deseas que se limpie todo automáticamente al terminar?
-            // reset(); 
+            if (recepcionData?.id) {
+                Axios.put(`${urlServidorAPI}/api/v1/recepcion/${recepcionData.id}/cerrar-oc`)
+                    .then(() => {
+                        show_alerta("Archivo .MOD generado y estatus actualizado en el sistema", "success");
+                        if (onVolver) {
+                            setTimeout(() => onVolver(), 1500);
+                        }
+                    })
+                    .catch((err) => {
+                        console.error("Error al actualizar estatus de OC en backend:", err);
+                        show_alerta("Archivo .MOD generado con éxito", "success");
+                    });
+            } else {
+                show_alerta("Archivo .MOD generado", "success");
+            }
         } catch (error) {
             show_alerta("Error al generar archivo", "error");
         }
@@ -273,6 +350,27 @@ const FacturaXMLEditable = ({ storageKey = "factura_progress" }) => {
                     <p className="mt-2 fw-bold">Buscando claves en el sistema...</p>
                 </div>
             )}
+            {recepcionData?.tiene_incidencias === 1 && (
+                <div className="banner-aviso-oc">
+                    <div className="d-flex align-items-center flex-wrap gap-2">
+                        <span className="fw-bold text-danger">
+                            ⚠️ Factura con incidencias reportadas en {recepcionData.sucursal_destino}:
+                        </span>
+                        <div className="d-flex align-items-center gap-1">
+                            {clasificacionesIncidencia.map((clasif, idx) => (
+                                <span 
+                                    key={idx} 
+                                    className="badge bg-danger px-2 py-1"
+                                    style={{ fontSize: "0.78rem", fontWeight: "600" }}
+                                >
+                                    {clasif}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="header-factura">
                 <div className="header-item">
                     <strong>Proveedor</strong>
@@ -301,9 +399,6 @@ const FacturaXMLEditable = ({ storageKey = "factura_progress" }) => {
                         {almacenes.map(alm => <option key={alm.id} value={alm.id}>{alm.id} - {alm.nombre}</option>)}
                     </select>
                 </div>
-                <button className="btn btn-outline-danger btn-cancelar-top" onClick={reset}>
-                    <BiXCircle /> Cancelar
-                </button>
             </div>
 
             <div className="tabla-factura-container">

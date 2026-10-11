@@ -20,7 +20,6 @@ const ContentHeader = () => {
   const hoy = new Date(fecha);
 
   const infoUsuario = contextData;
-  console.log("ContentHeader=> contextsideBarNav " + contextsideBarNav);
 
   const nombre = () => {
     const correoUser = infoUsuario.email;
