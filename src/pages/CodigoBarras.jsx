@@ -524,12 +524,14 @@ const CodigoBarras = () => {
         payloadFinalizar
       );
 
-      // Sincronización secundaria con API2 legado para historial
+      // Sincronización secundaria con API2 legado para historial (Desactivada)
+      /*
       if (productosRecepcionados.length > 0) {
         grabaProductosRecepcionadosEnAPI2(productosRecepcionados).catch((err) => {
           console.warn("Advertencia al sincronizar API2 legado:", err);
         });
       }
+      */
 
       setGuardandoFinalizacion(false);
       setShowModalFinalizar(false);
@@ -584,7 +586,8 @@ const CodigoBarras = () => {
     }
   };
 
-  // Sincronización en API2 legado
+  // Sincronización en API2 legado (Desactivada)
+  /*
   const grabaProductosRecepcionadosEnAPI2 = async (items) => {
     try {
       const payload = items.map((obj) => ({
@@ -607,6 +610,7 @@ const CodigoBarras = () => {
       console.warn("Error secundario en API2 legado:", error);
     }
   };
+  */
 
   // Impresión de etiqueta de código de barras
   const printCodeBar = (val) => {
