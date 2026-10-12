@@ -24,6 +24,8 @@ const ModalSubirFactura = ({ show, onHide, onSuccess }) => {
     const [cargandoClaves, setCargandoClaves] = useState(false);
     const [filasCargando, setFilasCargando] = useState({});
     const [guardando, setGuardando] = useState(false);
+    const [facturaDuplicada, setFacturaDuplicada] = useState(null);
+    const [validandoDuplicado, setValidandoDuplicado] = useState(false);
 
     useEffect(() => {
         if (show) {
@@ -44,6 +46,8 @@ const ModalSubirFactura = ({ show, onHide, onSuccess }) => {
         setCargandoClaves(false);
         setFilasCargando({});
         setGuardando(false);
+        setFacturaDuplicada(null);
+        setValidandoDuplicado(false);
     };
 
     const handleDescuentoChange = (index, value) => {
@@ -178,6 +182,9 @@ const ModalSubirFactura = ({ show, onHide, onSuccess }) => {
             setPartidas(items);
             setLoading(false);
 
+            // Validar si la factura ya existe en el sistema para evitar duplicados
+            verificarDuplicado(header);
+
             // Cruce de claves con el backend
             consultarClavesProveedor(header.rfc, items);
 
@@ -185,6 +192,43 @@ const ModalSubirFactura = ({ show, onHide, onSuccess }) => {
             console.error("Error al procesar XML:", error);
             setLoading(false);
             Swal.fire("Error al parsear", "Hubo un problema al leer el contenido del XML.", "error");
+        }
+    };
+
+    const verificarDuplicado = async (header) => {
+        if (!header) return;
+        setValidandoDuplicado(true);
+        setFacturaDuplicada(null);
+        try {
+            const params = new URLSearchParams();
+            if (header.uuid) params.append("uuid", header.uuid);
+            if (header.folio) params.append("folio", header.folio);
+            if (header.rfc) params.append("rfc", header.rfc);
+
+            const res = await Axios.get(`${urlServidorAPI}/api/v1/recepcion/validar-existente?${params.toString()}`);
+            if (res.data?.existe && res.data?.factura) {
+                const fac = res.data.factura;
+                setFacturaDuplicada(fac);
+                Swal.fire({
+                    title: "⚠️ Factura Ya Registrada",
+                    html: `
+                        <p class="mb-2">La factura con Folio <strong>${fac.folio_factura}</strong> del proveedor <strong>${fac.nombre_proveedor}</strong> ya existe en el sistema.</p>
+                        <div class="text-start bg-light p-2 rounded border small">
+                            <div><strong>Sucursal asignada:</strong> ${fac.sucursal_destino}</div>
+                            <div><strong>Estatus actual:</strong> <span class="badge bg-secondary">${fac.estatus}</span></div>
+                            ${fac.fecha_subida ? `<div><strong>Fecha de registro:</strong> ${new Date(fac.fecha_subida).toLocaleString()}</div>` : ""}
+                            ${fac.subido_por ? `<div><strong>Registrado por:</strong> ${fac.subido_por}</div>` : ""}
+                        </div>
+                        <p class="text-danger small mt-2 mb-0 fw-semibold">No es posible registrar la misma factura más de una vez.</p>
+                    `,
+                    icon: "warning",
+                    confirmButtonText: "Entendido"
+                });
+            }
+        } catch (e) {
+            console.warn("No se pudo verificar existencia previa de la factura:", e);
+        } finally {
+            setValidandoDuplicado(false);
         }
     };
 
@@ -352,6 +396,15 @@ const ModalSubirFactura = ({ show, onHide, onSuccess }) => {
     };
 
     const handleRegistrar = async () => {
+        if (facturaDuplicada) {
+            Swal.fire({
+                title: "Factura Duplicada",
+                text: `Esta factura (Folio ${facturaDuplicada.folio_factura}) ya se encuentra registrada en el sistema y no puede ser enviada de nuevo.`,
+                icon: "warning"
+            });
+            return;
+        }
+
         if (!almacenSeleccionado) {
             Swal.fire("Atención", "Debe seleccionar la Sucursal / Almacén de destino.", "warning");
             return;
@@ -413,6 +466,26 @@ const ModalSubirFactura = ({ show, onHide, onSuccess }) => {
         } catch (error) {
             setGuardando(false);
             console.error("Error al registrar recepción:", error);
+            if (error.response?.status === 409) {
+                const fac = error.response.data?.facturaExistente;
+                Swal.fire({
+                    title: "⚠️ Factura Ya Registrada",
+                    html: `
+                        <p class="mb-2">${error.response.data?.error || "Esta factura ya fue registrada previamente."}</p>
+                        ${fac ? `
+                        <div class="text-start bg-light p-2 rounded border small">
+                            <div><strong>Folio:</strong> ${fac.folio_factura || "S/F"}</div>
+                            <div><strong>Sucursal:</strong> ${fac.sucursal_destino || "N/A"}</div>
+                            <div><strong>Estatus:</strong> <span class="badge bg-secondary">${fac.estatus || "N/A"}</span></div>
+                            ${fac.subido_por ? `<div><strong>Registrado por:</strong> ${fac.subido_por}</div>` : ""}
+                        </div>
+                        ` : ""}
+                    `,
+                    icon: "warning",
+                    confirmButtonText: "Entendido"
+                });
+                return;
+            }
             const msg = error.response?.data?.details || error.response?.data?.error || "Error al conectar con el servidor.";
             Swal.fire("Error al registrar", msg, "error");
         }
@@ -468,6 +541,25 @@ const ModalSubirFactura = ({ show, onHide, onSuccess }) => {
                     </div>
                 ) : (
                     <div>
+                        {/* Alerta de Factura Duplicada */}
+                        {facturaDuplicada && (
+                            <div className="alert alert-danger py-2 px-3 mb-3 d-flex align-items-center justify-content-between flex-wrap gap-2" style={{ fontSize: "0.85rem" }}>
+                                <div className="d-flex align-items-center">
+                                    <BiErrorCircle className="me-2 text-danger flex-shrink-0" size={24} />
+                                    <div>
+                                        <strong>⚠️ Factura Duplicada:</strong> Esta factura ya se encuentra registrada en el sistema.
+                                        <div className="small mt-1 text-dark">
+                                            Asignada a: <strong>{facturaDuplicada.sucursal_destino}</strong> | 
+                                            Estatus: <span className="badge bg-secondary ms-1">{facturaDuplicada.estatus}</span>
+                                            {facturaDuplicada.fecha_subida ? ` | Fecha registro: ${new Date(facturaDuplicada.fecha_subida).toLocaleString()}` : ""}
+                                            {facturaDuplicada.subido_por ? ` | Registrado por: ${facturaDuplicada.subido_por}` : ""}
+                                        </div>
+                                    </div>
+                                </div>
+                                <span className="badge bg-danger text-uppercase px-2 py-1">Envío Bloqueado</span>
+                            </div>
+                        )}
+
                         {/* Cabecera resumen de la factura */}
                         <div className="bg-light p-2 rounded border mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
                             <div>
@@ -715,15 +807,29 @@ const ModalSubirFactura = ({ show, onHide, onSuccess }) => {
                 </Button>
                 {facturaData && (
                     <Button 
-                        variant="primary" 
+                        variant={facturaDuplicada ? "danger" : "primary"} 
                         size="sm" 
                         onClick={handleRegistrar} 
-                        disabled={guardando || !almacenSeleccionado || tieneNoRegistradas || cargandoClaves}
-                        title={tieneNoRegistradas ? `Debe vincular las ${cantNoRegistradas} clave(s) no registradas antes de enviar a sucursal` : ""}
+                        disabled={guardando || !almacenSeleccionado || tieneNoRegistradas || cargandoClaves || Boolean(facturaDuplicada) || validandoDuplicado}
+                        title={
+                            facturaDuplicada 
+                                ? `Esta factura ya existe en el sistema (Folio ${facturaDuplicada.folio_factura})` 
+                                : tieneNoRegistradas 
+                                    ? `Debe vincular las ${cantNoRegistradas} clave(s) no registradas antes de enviar a sucursal` 
+                                    : ""
+                        }
                     >
                         {guardando ? (
                             <>
                                 <Spinner animation="border" size="sm" className="me-1" /> Asignando...
+                            </>
+                        ) : validandoDuplicado ? (
+                            <>
+                                <Spinner animation="border" size="sm" className="me-1" /> Verificando duplicados...
+                            </>
+                        ) : facturaDuplicada ? (
+                            <>
+                                <BiErrorCircle className="me-1" /> Factura Ya Registrada
                             </>
                         ) : (
                             <>
