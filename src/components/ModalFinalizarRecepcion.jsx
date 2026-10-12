@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Button, Form, Alert, Spinner } from "react-bootstrap";
 import { BiCheckDouble, BiErrorCircle, BiCheckCircle } from "react-icons/bi";
 
@@ -13,6 +13,12 @@ const ModalFinalizarRecepcion = ({
     guardando 
 }) => {
     const [obsGenerales, setObsGenerales] = useState("");
+
+    useEffect(() => {
+        if (show) {
+            setObsGenerales(factura?.observaciones_generales || "");
+        }
+    }, [show, factura]);
 
     if (!show) return null;
 
@@ -73,7 +79,7 @@ const ModalFinalizarRecepcion = ({
 
                 <Form.Group className="mb-2">
                     <Form.Label className="small fw-bold">
-                        Observaciones generales de la entrega (Opcional):
+                        Observaciones generales de la entrega / factura (Opcional):
                     </Form.Label>
                     <Form.Control
                         as="textarea"

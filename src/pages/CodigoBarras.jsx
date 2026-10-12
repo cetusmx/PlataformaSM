@@ -511,23 +511,11 @@ const CodigoBarras = () => {
         };
       });
 
-      // Identificar si existen anomalías o incidencias en las partidas
-      const partidasConIncidencia = partidasPayload.filter(
-        (p) => p.observacion || !['PENDIENTE', 'COMPLETA'].includes(p.estatus_partida)
-      );
-
-      // Si hay anomalías en partidas pero el usuario no ingresó observaciones generales en el modal,
-      // sintetizamos un resumen de las incidencias para garantizar que la cabecera marque tiene_incidencias = 1
-      let obsGeneralesFinal = observacionesGenerales?.trim() || null;
-      if (!obsGeneralesFinal && partidasConIncidencia.length > 0) {
-        obsGeneralesFinal = partidasConIncidencia
-          .map((p) => p.observacion || `Partida ${p.id}: ${p.estatus_partida}`)
-          .join(" | ");
-      }
-
+      // El input de observaciones generales de la entrega / factura viaja directamente a la cabecera
+      // (sin mezclar ni duplicar las observaciones individuales de cada partida).
       const payloadFinalizar = {
         recibido_por: infoUsuario?.email || "Sin email",
-        observaciones_generales: obsGeneralesFinal,
+        observaciones_generales: observacionesGenerales?.trim() || null,
         partidas: partidasPayload
       };
 
