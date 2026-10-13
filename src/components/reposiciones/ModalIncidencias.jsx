@@ -36,7 +36,6 @@ const ModalIncidencias = ({ show, onHide, recepcionId, onGenerarOC, onActualizad
     const [montoNotaCredito, setMontoNotaCredito] = useState("");
     const [comentariosResolucion, setComentariosResolucion] = useState("");
     const [resueltoPor, setResueltoPor] = useState("");
-    const [partidasEdit, setPartidasEdit] = useState([]);
     const [guardandoSeguimiento, setGuardandoSeguimiento] = useState(false);
 
     // Formulario de Bitácora
@@ -75,23 +74,6 @@ const ModalIncidencias = ({ show, onHide, recepcionId, onGenerarOC, onActualizad
             );
             setComentariosResolucion(data.comentarios_resolucion || "");
             setResueltoPor(data.resuelto_por || nombreUsuario);
-
-            setPartidasEdit(
-                (data.partidas || []).map((p) => ({
-                    id: p.id,
-                    numero_partida: p.numero_partida,
-                    clave_proveedor: p.clave_proveedor,
-                    clave_interna: p.clave_interna || "",
-                    descripcion: p.descripcion,
-                    cantidad_facturada: p.cantidad_facturada,
-                    cantidad_recibida: p.cantidad_recibida,
-                    estatus_partida: p.estatus_partida,
-                    observacion: p.observacion,
-                    estatus_resolucion: p.estatus_resolucion || "",
-                    comentarios_comprador: p.comentarios_comprador || "",
-                    fotos: p.fotos || []
-                }))
-            );
         } catch (error) {
             console.error("Error al cargar detalle de incidencias:", error);
             Swal.fire("Error", "No se pudo cargar el detalle de la recepción.", "error");
@@ -116,13 +98,6 @@ const ModalIncidencias = ({ show, onHide, recepcionId, onGenerarOC, onActualizad
 
     // Total de fotos registradas en esta recepción
     const totalFotos = (detalle?.evidencias || []).length;
-
-    // Manejar cambios en las partidas editables
-    const handlePartidaChange = (id, campo, valor) => {
-        setPartidasEdit((prev) =>
-            prev.map((p) => (p.id === id ? { ...p, [campo]: valor } : p))
-        );
-    };
 
     // Guardar resolución comercial del reclamo
     const handleGuardarSeguimiento = async (e) => {
@@ -150,13 +125,7 @@ const ModalIncidencias = ({ show, onHide, recepcionId, onGenerarOC, onActualizad
                 folio_nota_credito: folioNotaCredito.trim() || null,
                 monto_nota_credito: montoNotaCredito !== "" ? parseFloat(montoNotaCredito) : null,
                 comentarios_resolucion: comentariosResolucion.trim() || null,
-                resuelto_por: resueltoPor.trim() || nombreUsuario,
-                partidas: partidasEdit.map((p) => ({
-                    id: p.id,
-                    clave_interna: p.clave_interna?.trim() || null,
-                    estatus_resolucion: p.estatus_resolucion?.trim() || null,
-                    comentarios_comprador: p.comentarios_comprador?.trim() || null
-                }))
+                resuelto_por: resueltoPor.trim() || nombreUsuario
             };
 
             const res = await Axios.put(
@@ -540,73 +509,6 @@ const ModalIncidencias = ({ show, onHide, recepcionId, onGenerarOC, onActualizad
                                             </div>
                                         </div>
                                     </div>
-
-                                    {/* Ajustes opcionales en partidas con incidencia */}
-                                    {partidasEdit.length > 0 && (
-                                        <div className="card shadow-sm mb-3">
-                                            <div className="card-header bg-white py-2 d-flex justify-content-between align-items-center">
-                                                <strong className="text-secondary small">
-                                                    Ajuste de Claves Internas y Notas por Partida (Opcional)
-                                                </strong>
-                                                <span className="text-muted" style={{ fontSize: "0.72rem" }}>
-                                                    Útil si enviaron un producto erróneo y deseas corregir la clave interna asignada
-                                                </span>
-                                            </div>
-                                            <div className="card-body p-2 table-responsive">
-                                                <table className="table table-sm table-bordered mb-0" style={{ fontSize: "0.78rem" }}>
-                                                    <thead className="table-light">
-                                                        <tr>
-                                                            <th style={{ width: "5%" }}>#</th>
-                                                            <th style={{ width: "20%" }}>Clave Prov</th>
-                                                            <th style={{ width: "25%" }}>Clave Interna (SAE)</th>
-                                                            <th style={{ width: "25%" }}>Estatus Partida</th>
-                                                            <th style={{ width: "25%" }}>Nota de Compras</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {partidasEdit.map((p) => (
-                                                            <tr key={p.id}>
-                                                                <td className="align-middle text-center">{p.numero_partida}</td>
-                                                                <td className="align-middle">
-                                                                    <strong>{p.clave_proveedor}</strong>
-                                                                    <div className="text-truncate text-muted small" style={{ maxWidth: "180px" }}>
-                                                                        {p.descripcion}
-                                                                    </div>
-                                                                </td>
-                                                                <td className="align-middle">
-                                                                    <input
-                                                                        type="text"
-                                                                        className="form-control form-control-sm"
-                                                                        value={p.clave_interna}
-                                                                        placeholder="Clave interna..."
-                                                                        onChange={(e) => handlePartidaChange(p.id, "clave_interna", e.target.value)}
-                                                                    />
-                                                                </td>
-                                                                <td className="align-middle">
-                                                                    <input
-                                                                        type="text"
-                                                                        className="form-control form-control-sm"
-                                                                        value={p.estatus_resolucion}
-                                                                        placeholder="Ej: Aceptado / En NC"
-                                                                        onChange={(e) => handlePartidaChange(p.id, "estatus_resolucion", e.target.value)}
-                                                                    />
-                                                                </td>
-                                                                <td className="align-middle">
-                                                                    <input
-                                                                        type="text"
-                                                                        className="form-control form-control-sm"
-                                                                        value={p.comentarios_comprador}
-                                                                        placeholder="Nota del comprador..."
-                                                                        onChange={(e) => handlePartidaChange(p.id, "comentarios_comprador", e.target.value)}
-                                                                    />
-                                                                </td>
-                                                            </tr>
-                                                        ))}
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    )}
 
                                     <div className="d-flex justify-content-end">
                                         <Button
