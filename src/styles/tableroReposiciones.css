@@ -132,6 +132,18 @@
     border: 1px solid #f5c2c7;
 }
 
+.badge-estatus.en_aclaracion {
+    background-color: #fff3cd;
+    color: #997404;
+    border: 1px solid #ffe69c;
+}
+
+.badge-estatus.incidencia_resuelta {
+    background-color: #d1e7dd;
+    color: #0f5132;
+    border: 1px solid #a3cfbb;
+}
+
 button.badge-estatus {
     cursor: pointer;
     transition: all 0.2s ease;
@@ -153,6 +165,50 @@ button.badge-estatus:active {
     background-color: #e2d9f3;
     color: #432874;
     border: 1px solid #d1c2eb;
+}
+
+.foto-evidencia-thumb {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.foto-evidencia-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    border-color: #0d6efd;
+}
+
+.bitacora-timeline {
+    position: relative;
+    padding-left: 20px;
+    border-left: 2px solid #dee2e6;
+    margin-left: 10px;
+}
+
+.bitacora-item {
+    position: relative;
+    margin-bottom: 14px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 8px 12px;
+}
+
+.bitacora-item::before {
+    content: "";
+    position: absolute;
+    left: -27px;
+    top: 12px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #0d6efd;
+    border: 2px solid #fff;
 }
 
 .btn-accion-sm {

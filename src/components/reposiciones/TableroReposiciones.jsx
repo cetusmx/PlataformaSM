@@ -169,7 +169,11 @@ const TableroReposiciones = ({ onVistaChange }) => {
     const totalIncidencias = facturas.filter(f => f.estatus === "RECIBIDO_CON_INCIDENCIA" || f.tiene_incidencias === 1).length;
     const totalCerradas = facturas.filter(f => f.estatus === "OC_GENERADA").length;
 
-    const renderBadgeEstatus = (estatus, tieneIncidencias, facturaId) => {
+    const renderBadgeEstatus = (f) => {
+        const estatus = f.estatus;
+        const tieneIncidencias = f.tiene_incidencias === 1 || estatus === "RECIBIDO_CON_INCIDENCIA";
+        const estIncidencia = f.estatus_incidencia || (tieneIncidencias ? "PENDIENTE" : "SIN_INCIDENCIA");
+
         if (estatus === "OC_GENERADA") {
             if (tieneIncidencias) {
                 return (
@@ -177,15 +181,37 @@ const TableroReposiciones = ({ onVistaChange }) => {
                         <span className="badge-estatus oc_generada">
                             <BiCheckDouble /> OC Generada
                         </span>
-                        <button 
-                            type="button"
-                            className="badge-estatus recibido_con_incidencia"
-                            onClick={() => setIncidenciaId(facturaId)}
-                            title="Factura con incidencias físicas. Clic para ver reporte de hallazgos."
-                            style={{ fontSize: "0.65rem", padding: "1px 6px" }}
-                        >
-                            <BiErrorCircle /> Con Incidencias
-                        </button>
+                        {estIncidencia === "INCIDENCIA_RESUELTA" ? (
+                            <button 
+                                type="button"
+                                className="badge-estatus incidencia_resuelta"
+                                onClick={() => setIncidenciaId(f.id)}
+                                title={`Incidencia resuelta${f.folio_nota_credito ? ` (NC: ${f.folio_nota_credito})` : ""}. Clic para ver detalles.`}
+                                style={{ fontSize: "0.65rem", padding: "1px 6px" }}
+                            >
+                                <BiCheckCircle /> Resuelta {f.folio_nota_credito ? `(${f.folio_nota_credito})` : ""}
+                            </button>
+                        ) : estIncidencia === "EN_ACLARACION" ? (
+                            <button 
+                                type="button"
+                                className="badge-estatus en_aclaracion"
+                                onClick={() => setIncidenciaId(f.id)}
+                                title="Incidencia en aclaración con el proveedor. Clic para dar seguimiento."
+                                style={{ fontSize: "0.65rem", padding: "1px 6px" }}
+                            >
+                                <BiErrorCircle /> En Aclaración
+                            </button>
+                        ) : (
+                            <button 
+                                type="button"
+                                className="badge-estatus recibido_con_incidencia"
+                                onClick={() => setIncidenciaId(f.id)}
+                                title="Factura con incidencias físicas pendientes. Clic para ver reporte y evidencias."
+                                style={{ fontSize: "0.65rem", padding: "1px 6px" }}
+                            >
+                                <BiErrorCircle /> Con Incidencias
+                            </button>
+                        )}
                     </div>
                 );
             }
@@ -197,12 +223,36 @@ const TableroReposiciones = ({ onVistaChange }) => {
         }
 
         if (estatus === "RECIBIDO_CON_INCIDENCIA" || tieneIncidencias) {
+            if (estIncidencia === "INCIDENCIA_RESUELTA") {
+                return (
+                    <button 
+                        type="button"
+                        className="badge-estatus incidencia_resuelta"
+                        onClick={() => setIncidenciaId(f.id)}
+                        title={`Incidencia resuelta${f.folio_nota_credito ? ` (NC: ${f.folio_nota_credito})` : ""}. Clic para ver detalles.`}
+                    >
+                        <BiCheckCircle /> Resuelta {f.folio_nota_credito ? `(${f.folio_nota_credito})` : ""}
+                    </button>
+                );
+            }
+            if (estIncidencia === "EN_ACLARACION") {
+                return (
+                    <button 
+                        type="button"
+                        className="badge-estatus en_aclaracion"
+                        onClick={() => setIncidenciaId(f.id)}
+                        title="Incidencia en aclaración con proveedor. Clic para dar seguimiento comercial."
+                    >
+                        <BiErrorCircle /> En Aclaración
+                    </button>
+                );
+            }
             return (
                 <button 
                     type="button"
                     className="badge-estatus recibido_con_incidencia"
-                    onClick={() => setIncidenciaId(facturaId)}
-                    title="Clic para ver hallazgos e incidencias reportadas por sucursal"
+                    onClick={() => setIncidenciaId(f.id)}
+                    title="Clic para ver hallazgos, evidencias fotográficas y dar seguimiento"
                 >
                     <BiErrorCircle /> Con Incidencias
                 </button>
@@ -382,7 +432,7 @@ const TableroReposiciones = ({ onVistaChange }) => {
                                             </div>
                                         </td>
                                         <td style={{ textAlign: "center" }}>
-                                            {renderBadgeEstatus(f.estatus, tieneIncidencias, f.id)}
+                                            {renderBadgeEstatus(f)}
                                         </td>
                                         <td className="text-muted text-center" style={{ fontSize: "0.72rem" }}>
                                             {fechaLimpia}
@@ -479,6 +529,7 @@ const TableroReposiciones = ({ onVistaChange }) => {
                 show={incidenciaId !== null}
                 onHide={() => setIncidenciaId(null)}
                 recepcionId={incidenciaId}
+                onActualizado={cargarFacturas}
                 onGenerarOC={(detalle) => {
                     setIncidenciaId(null);
                     setFacturaParaOC(detalle);

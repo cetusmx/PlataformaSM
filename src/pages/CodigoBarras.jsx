@@ -434,14 +434,15 @@ const CodigoBarras = () => {
     setShowModalObservacion(true);
   };
 
-  const guardarObservacionPartida = (partidaId, tipoAnomalia, observacion) => {
+  const guardarObservacionPartida = (partidaId, tipoAnomalia, observacion, fotos) => {
     setClavesunificadas((prev) =>
       prev.map((item) => {
         if (item.id === partidaId) {
           return {
             ...item,
             tipoAnomalia: tipoAnomalia,
-            observacion: observacion
+            observacion: observacion,
+            fotos: fotos || []
           };
         }
         return item;
@@ -454,7 +455,8 @@ const CodigoBarras = () => {
           return {
             ...item,
             tipoAnomalia: tipoAnomalia,
-            observacion: observacion
+            observacion: observacion,
+            fotos: fotos || []
           };
         }
         return item;
@@ -507,7 +509,8 @@ const CodigoBarras = () => {
           cantidad_facturada: p.cantidad,
           cantidad_recibida: p.cantidad,
           estatus_partida: estatus,
-          observacion: notaCompleta
+          observacion: notaCompleta,
+          fotos: p.fotos || []
         };
       });
 
