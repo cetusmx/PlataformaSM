@@ -11,8 +11,10 @@ import {
     BiTimeFive, 
     BiFile, 
     BiCheckDouble,
-    BiFolderPlus
+    BiFolderPlus,
+    BiTrash
 } from "react-icons/bi";
+import Swal from "sweetalert2";
 import ModalSubirFactura from "./ModalSubirFactura";
 import ModalIncidencias from "./ModalIncidencias";
 import FacturaXMLEditable from "../FacturaXMLEditable";
@@ -31,6 +33,7 @@ const TableroReposiciones = ({ onVistaChange }) => {
     const [incidenciaId, setIncidenciaId] = useState(null);
     const [facturaParaOC, setFacturaParaOC] = useState(null);
     const [cargandoDetalleOC, setCargandoDetalleOC] = useState(false);
+    const [eliminandoId, setEliminandoId] = useState(null);
 
     useEffect(() => {
         cargarFacturas();
@@ -74,6 +77,57 @@ const TableroReposiciones = ({ onVistaChange }) => {
         } catch (error) {
             console.error("Error al cargar detalle de factura para OC:", error);
             setCargandoDetalleOC(false);
+        }
+    };
+
+    const handleEliminarFactura = async (factura) => {
+        const result = await Swal.fire({
+            title: "¿Eliminar Factura?",
+            html: `
+                <div class="text-start">
+                    <p class="mb-2">¿Está seguro de que desea eliminar la factura <strong>${factura.folio_factura}</strong> del proveedor <strong>${factura.nombre_proveedor}</strong>?</p>
+                    <div class="bg-light p-2 rounded border small mb-2">
+                        <div><strong>Sucursal asignada:</strong> ${factura.sucursal_destino}</div>
+                        <div><strong>Estatus:</strong> <span class="badge bg-secondary">${factura.estatus}</span></div>
+                        ${factura.total_partidas ? `<div><strong>Partidas:</strong> ${factura.total_partidas}</div>` : ""}
+                    </div>
+                    <p class="text-danger small mb-0 fw-semibold">
+                        ⚠️ Esta acción borrará la recepción y sus partidas de forma permanente. Podrá volver a cargarla si fue asignada por error.
+                    </p>
+                </div>
+            `,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#dc3545",
+            cancelButtonColor: "#6c757d",
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar",
+            focusCancel: true
+        });
+
+        if (!result.isConfirmed) return;
+
+        setEliminandoId(factura.id);
+        try {
+            const res = await Axios.delete(`${urlServidorAPI}/api/v1/recepcion/${factura.id}`);
+            if (res.status === 200 || res.data?.success) {
+                Swal.fire({
+                    title: "¡Factura Eliminada!",
+                    text: `La factura ${factura.folio_factura} ha sido eliminada del sistema.`,
+                    icon: "success",
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                cargarFacturas();
+            } else {
+                Swal.fire("Error", "No se pudo eliminar la factura.", "error");
+            }
+        } catch (error) {
+            console.error("Error al eliminar factura:", error);
+            const msg = error.response?.data?.details || error.response?.data?.error || "Error al conectar con el servidor.";
+            Swal.fire("Error al eliminar", msg, "error");
+        } finally {
+            setEliminandoId(null);
         }
     };
 
@@ -324,34 +378,52 @@ const TableroReposiciones = ({ onVistaChange }) => {
                                             {fechaLimpia}
                                         </td>
                                         <td style={{ textAlign: "center" }}>
-                                            {listaParaOC && (
-                                                <div className="d-flex justify-content-center align-items-center">
+                                            <div className="d-flex justify-content-center align-items-center gap-1">
+                                                {listaParaOC && (
                                                     <button 
                                                         className="btn btn-success btn-accion-sm fw-bold"
                                                         onClick={() => iniciarGeneracionOC(f)}
-                                                        disabled={cargandoDetalleOC}
+                                                        disabled={cargandoDetalleOC || eliminandoId === f.id}
                                                         title="Generar archivo .MOD para SAE"
                                                     >
                                                         <BiCheckDouble /> Generar OC
                                                     </button>
-                                                </div>
-                                            )}
+                                                )}
 
-                                            {yaProcesada && (
+                                                {yaProcesada && (
+                                                    <button 
+                                                        className="btn btn-outline-secondary btn-accion-sm"
+                                                        onClick={() => iniciarGeneracionOC(f)}
+                                                        disabled={eliminandoId === f.id}
+                                                        title="Re-abrir o re-descargar archivo .MOD"
+                                                    >
+                                                        <BiFile /> Re-descargar
+                                                    </button>
+                                                )}
+
+                                                {["PENDIENTE", "EN_RECEPCION"].includes(f.estatus) && (
+                                                    <span className="text-muted small fst-italic me-1" style={{ fontSize: "0.72rem" }}>
+                                                        En espera
+                                                    </span>
+                                                )}
+
                                                 <button 
-                                                    className="btn btn-outline-secondary btn-accion-sm"
-                                                    onClick={() => iniciarGeneracionOC(f)}
-                                                    title="Re-abrir o re-descargar archivo .MOD"
+                                                    type="button"
+                                                    className="btn btn-outline-danger btn-accion-sm"
+                                                    onClick={() => handleEliminarFactura(f)}
+                                                    disabled={eliminandoId === f.id}
+                                                    title={`Eliminar factura ${f.folio_factura}`}
                                                 >
-                                                    <BiFile /> Re-descargar
+                                                    {eliminandoId === f.id ? (
+                                                        <Spinner animation="border" size="sm" style={{ width: "10px", height: "10px" }} />
+                                                    ) : (
+                                                        <>
+                                                            <BiTrash size={13} />
+                                                            {["PENDIENTE", "EN_RECEPCION"].includes(f.estatus) && <span>Borrar</span>}
+                                                        </>
+                                                    )}
                                                 </button>
-                                            )}
-
-                                            {["PENDIENTE", "EN_RECEPCION"].includes(f.estatus) && (
-                                                <span className="text-muted small fst-italic" style={{ fontSize: "0.72rem" }}>
-                                                    En espera de recepción
-                                                </span>
-                                            )}
+                                            </div>
                                         </td>
                                     </tr>
                                 );
