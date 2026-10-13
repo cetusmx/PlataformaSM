@@ -81,6 +81,16 @@ const TableroReposiciones = ({ onVistaChange }) => {
     };
 
     const handleEliminarFactura = async (factura) => {
+        if (String(factura?.estatus || "").toUpperCase() === "OC_GENERADA") {
+            Swal.fire({
+                title: "Acción No Permitida",
+                text: `No es posible eliminar la factura ${factura.folio_factura} porque ya cuenta con Orden de Compra generada (estatus OC_GENERADA).`,
+                icon: "warning",
+                confirmButtonText: "Entendido"
+            });
+            return;
+        }
+
         const result = await Swal.fire({
             title: "¿Eliminar Factura?",
             html: `
@@ -407,22 +417,32 @@ const TableroReposiciones = ({ onVistaChange }) => {
                                                     </span>
                                                 )}
 
-                                                <button 
-                                                    type="button"
-                                                    className="btn btn-outline-danger btn-accion-sm"
-                                                    onClick={() => handleEliminarFactura(f)}
-                                                    disabled={eliminandoId === f.id}
-                                                    title={`Eliminar factura ${f.folio_factura}`}
-                                                >
-                                                    {eliminandoId === f.id ? (
-                                                        <Spinner animation="border" size="sm" style={{ width: "10px", height: "10px" }} />
-                                                    ) : (
-                                                        <>
-                                                            <BiTrash size={13} />
-                                                            {["PENDIENTE", "EN_RECEPCION"].includes(f.estatus) && <span>Borrar</span>}
-                                                        </>
-                                                    )}
-                                                </button>
+                                                {(() => {
+                                                    const esOCGenerada = String(f.estatus || "").toUpperCase() === "OC_GENERADA";
+                                                    return (
+                                                        <button 
+                                                            type="button"
+                                                            className={`btn btn-accion-sm ${esOCGenerada ? "btn-outline-secondary opacity-50" : "btn-outline-danger"}`}
+                                                            onClick={() => handleEliminarFactura(f)}
+                                                            disabled={eliminandoId === f.id || esOCGenerada}
+                                                            style={esOCGenerada ? { cursor: "not-allowed" } : {}}
+                                                            title={
+                                                                esOCGenerada 
+                                                                    ? "No se puede eliminar: la Orden de Compra ya fue generada para esta factura" 
+                                                                    : `Eliminar factura ${f.folio_factura}`
+                                                            }
+                                                        >
+                                                            {eliminandoId === f.id ? (
+                                                                <Spinner animation="border" size="sm" style={{ width: "10px", height: "10px" }} />
+                                                            ) : (
+                                                                <>
+                                                                    <BiTrash size={13} />
+                                                                    {["PENDIENTE", "EN_RECEPCION"].includes(f.estatus) && <span>Borrar</span>}
+                                                                </>
+                                                            )}
+                                                        </button>
+                                                    );
+                                                })()}
                                             </div>
                                         </td>
                                     </tr>
