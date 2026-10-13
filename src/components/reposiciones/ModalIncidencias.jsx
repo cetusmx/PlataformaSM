@@ -478,7 +478,6 @@ const ModalIncidencias = ({ show, onHide, recepcionId, onGenerarOC, onActualizad
                                                         <option value="">-- Seleccionar Solución --</option>
                                                         <option value="NOTA_CREDITO">Nota de Crédito (Proveedor bonifica o descuenta)</option>
                                                         <option value="REPOSICION_FISICA">Reposición Física (Proveedor reenvía mercancía)</option>
-                                                        <option value="CANCELACION_PARTIDA">Cancelación de Partida</option>
                                                         <option value="CANCELACION_FACTURA">Cancelación de Factura</option>
                                                         <option value="ACEPTADO_SIN_ACCION">Aceptado por SM sin Reclamo</option>
                                                         <option value="OTRO">Otro Acuerdo Comercial</option>
