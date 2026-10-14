@@ -211,6 +211,24 @@ button.badge-estatus:active {
     border: 2px solid #fff;
 }
 
+.bitacora-item.evento-inicio {
+    border-left: 4px solid #ffc107;
+    background-color: #fffdf5;
+}
+
+.bitacora-item.evento-inicio::before {
+    background-color: #ffc107;
+}
+
+.bitacora-item.evento-resolucion {
+    border-left: 4px solid #198754;
+    background-color: #f6fcf8;
+}
+
+.bitacora-item.evento-resolucion::before {
+    background-color: #198754;
+}
+
 .btn-accion-sm {
     padding: 2px 7px;
     font-size: 0.70rem;

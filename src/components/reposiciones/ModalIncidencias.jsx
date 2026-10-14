@@ -99,9 +99,22 @@ const ModalIncidencias = ({ show, onHide, recepcionId, onGenerarOC, onActualizad
     // Total de fotos registradas en esta recepción
     const totalFotos = (detalle?.evidencias || []).length;
 
+    // Validación de estatus resuelto (modo solo consulta)
+    const esIncidenciaResuelta = detalle?.estatus_incidencia === "INCIDENCIA_RESUELTA";
+
     // Guardar resolución comercial del reclamo
     const handleGuardarSeguimiento = async (e) => {
         if (e) e.preventDefault();
+
+        if (esIncidenciaResuelta) {
+            Swal.fire({
+                title: "Acción No Permitida",
+                text: "Esta incidencia ya se encuentra RESUELTA y no puede ser modificada. Se encuentra en modo de solo consulta.",
+                icon: "info",
+                confirmButtonText: "Entendido"
+            });
+            return;
+        }
 
         if (estatusIncidencia === "INCIDENCIA_RESUELTA" && tipoResolucion === "NOTA_CREDITO" && !folioNotaCredito.trim()) {
             const confirm = await Swal.fire({
@@ -158,6 +171,17 @@ const ModalIncidencias = ({ show, onHide, recepcionId, onGenerarOC, onActualizad
     // Agregar nueva nota rápida a la bitácora
     const handleAgregarNotaBitacora = async (e) => {
         if (e) e.preventDefault();
+
+        if (esIncidenciaResuelta) {
+            Swal.fire({
+                title: "Acción No Permitida",
+                text: "No es posible agregar notas porque la incidencia ya ha sido RESUELTA.",
+                icon: "info",
+                confirmButtonText: "Entendido"
+            });
+            return;
+        }
+
         if (!nuevaNotaBitacora.trim()) return;
 
         setGuardandoBitacora(true);
@@ -412,11 +436,30 @@ const ModalIncidencias = ({ show, onHide, recepcionId, onGenerarOC, onActualizad
                             {/* Contenido Pestaña 2: Gestión Comercial y Solución */}
                             {activeTab === "resolucion" && (
                                 <form onSubmit={handleGuardarSeguimiento}>
+                                    {esIncidenciaResuelta && (
+                                        <div className="alert alert-success py-2 px-3 mb-3 d-flex align-items-center gap-2" style={{ fontSize: "0.85rem" }}>
+                                            <BiCheckCircle size={22} className="text-success flex-shrink-0" />
+                                            <div>
+                                                <strong>Incidencia Resuelta:</strong> Esta incidencia ya fue resuelta comercialmente. La información se encuentra en modo de <strong>solo consulta</strong> y no permite modificaciones.
+                                                {detalle.fecha_resolucion && (
+                                                    <span className="d-block text-muted small mt-1">
+                                                        Fecha de resolución: <strong>{new Date(detalle.fecha_resolucion).toLocaleString("es-MX")}</strong> {detalle.resuelto_por ? `— Registrado por: ${detalle.resuelto_por}` : ""}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+
                                     <div className="card shadow-sm mb-3">
-                                        <div className="card-header bg-white py-2">
+                                        <div className="card-header bg-white py-2 d-flex justify-content-between align-items-center">
                                             <strong className="text-primary small">
                                                 Acuerdo Comercial y Solución con Proveedor
                                             </strong>
+                                            {esIncidenciaResuelta && (
+                                                <Badge bg="success" style={{ fontSize: "0.70rem" }}>
+                                                    Solo Lectura
+                                                </Badge>
+                                            )}
                                         </div>
                                         <div className="card-body p-3">
                                             <div className="row g-2 mb-3">
@@ -428,6 +471,7 @@ const ModalIncidencias = ({ show, onHide, recepcionId, onGenerarOC, onActualizad
                                                         className="form-select form-select-sm"
                                                         value={estatusIncidencia}
                                                         onChange={(e) => setEstatusIncidencia(e.target.value)}
+                                                        disabled={esIncidenciaResuelta}
                                                     >
                                                         <option value="PENDIENTE">🔴 PENDIENTE (Sin gestionar / Por reclamar)</option>
                                                         <option value="EN_ACLARACION">🟡 EN ACLARACIÓN (En negociación con proveedor)</option>
@@ -443,6 +487,7 @@ const ModalIncidencias = ({ show, onHide, recepcionId, onGenerarOC, onActualizad
                                                         className="form-select form-select-sm"
                                                         value={tipoResolucion}
                                                         onChange={(e) => setTipoResolucion(e.target.value)}
+                                                        disabled={esIncidenciaResuelta}
                                                     >
                                                         <option value="">-- Seleccionar Solución --</option>
                                                         <option value="NOTA_CREDITO">Nota de Crédito (Proveedor bonifica o descuenta)</option>
@@ -465,6 +510,7 @@ const ModalIncidencias = ({ show, onHide, recepcionId, onGenerarOC, onActualizad
                                                         placeholder="Ej: NC-88492"
                                                         value={folioNotaCredito}
                                                         onChange={(e) => setFolioNotaCredito(e.target.value)}
+                                                        disabled={esIncidenciaResuelta}
                                                     />
                                                 </div>
 
@@ -479,6 +525,7 @@ const ModalIncidencias = ({ show, onHide, recepcionId, onGenerarOC, onActualizad
                                                         placeholder="0.00"
                                                         value={montoNotaCredito}
                                                         onChange={(e) => setMontoNotaCredito(e.target.value)}
+                                                        disabled={esIncidenciaResuelta}
                                                     />
                                                 </div>
 
@@ -491,6 +538,7 @@ const ModalIncidencias = ({ show, onHide, recepcionId, onGenerarOC, onActualizad
                                                         className="form-control form-control-sm"
                                                         value={resueltoPor}
                                                         onChange={(e) => setResueltoPor(e.target.value)}
+                                                        disabled={esIncidenciaResuelta}
                                                     />
                                                 </div>
                                             </div>
@@ -505,69 +553,82 @@ const ModalIncidencias = ({ show, onHide, recepcionId, onGenerarOC, onActualizad
                                                     placeholder="Describe el acuerdo pactado con el proveedor (ej. El proveedor reconoce 2 piezas dañadas y envía la nota de crédito NC-88492 por $1,250.00)..."
                                                     value={comentariosResolucion}
                                                     onChange={(e) => setComentariosResolucion(e.target.value)}
+                                                    disabled={esIncidenciaResuelta}
                                                 />
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="d-flex justify-content-end">
-                                        <Button
-                                            type="submit"
-                                            variant="primary"
-                                            size="sm"
-                                            disabled={guardandoSeguimiento}
-                                            className="d-flex align-items-center gap-1 fw-bold shadow-sm"
-                                        >
-                                            {guardandoSeguimiento ? (
-                                                <>
-                                                    <Spinner animation="border" size="sm" />
-                                                    <span>Guardando...</span>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <BiSave size={16} />
-                                                    <span>Guardar Gestión Comercial</span>
-                                                </>
-                                            )}
-                                        </Button>
-                                    </div>
+                                    {!esIncidenciaResuelta && (
+                                        <div className="d-flex justify-content-end">
+                                            <Button
+                                                type="submit"
+                                                variant="primary"
+                                                size="sm"
+                                                disabled={guardandoSeguimiento}
+                                                className="d-flex align-items-center gap-1 fw-bold shadow-sm"
+                                            >
+                                                {guardandoSeguimiento ? (
+                                                    <>
+                                                        <Spinner animation="border" size="sm" />
+                                                        <span>Guardando...</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <BiSave size={16} />
+                                                        <span>Guardar Gestión Comercial</span>
+                                                    </>
+                                                )}
+                                            </Button>
+                                        </div>
+                                    )}
                                 </form>
                             )}
 
                             {/* Contenido Pestaña 3: Bitácora de Seguimiento */}
                             {activeTab === "bitacora" && (
                                 <div>
-                                    {/* Formulario para agregar nueva nota */}
-                                    <div className="card shadow-sm mb-3">
-                                        <div className="card-body p-3">
-                                            <label className="form-label small fw-bold mb-1 d-flex align-items-center gap-1">
-                                                <BiMessageSquareDetail className="text-primary" size={16} />
-                                                Registrar Nueva Nota o Avance con Proveedor:
-                                            </label>
-                                            <div className="d-flex gap-2">
-                                                <textarea
-                                                    className="form-control form-control-sm"
-                                                    rows="2"
-                                                    placeholder="Escribe un avance (ej: Se llamó al proveedor, confirmaron que mandan nota de crédito el viernes)..."
-                                                    value={nuevaNotaBitacora}
-                                                    onChange={(e) => setNuevaNotaBitacora(e.target.value)}
-                                                />
-                                                <Button
-                                                    variant="primary"
-                                                    size="sm"
-                                                    onClick={handleAgregarNotaBitacora}
-                                                    disabled={guardandoBitacora || !nuevaNotaBitacora.trim()}
-                                                    className="d-flex align-items-center px-3"
-                                                >
-                                                    {guardandoBitacora ? (
-                                                        <Spinner animation="border" size="sm" />
-                                                    ) : (
-                                                        <span>Registrar</span>
-                                                    )}
-                                                </Button>
+                                    {/* Si la incidencia ya fue resuelta, mostrar alerta de solo consulta */}
+                                    {esIncidenciaResuelta ? (
+                                        <div className="alert alert-secondary py-2 px-3 mb-3 d-flex align-items-center gap-2" style={{ fontSize: "0.85rem" }}>
+                                            <BiCheckCircle size={20} className="text-success flex-shrink-0" />
+                                            <div>
+                                                <strong>Bitácora cerrada:</strong> La incidencia ha sido resuelta. No se permite agregar nuevas notas o avances; el historial se conserva como registro histórico de solo consulta.
                                             </div>
                                         </div>
-                                    </div>
+                                    ) : (
+                                        /* Formulario para agregar nueva nota si sigue abierta */
+                                        <div className="card shadow-sm mb-3">
+                                            <div className="card-body p-3">
+                                                <label className="form-label small fw-bold mb-1 d-flex align-items-center gap-1">
+                                                    <BiMessageSquareDetail className="text-primary" size={16} />
+                                                    Registrar Nueva Nota o Avance con Proveedor:
+                                                </label>
+                                                <div className="d-flex gap-2">
+                                                    <textarea
+                                                        className="form-control form-control-sm"
+                                                        rows="2"
+                                                        placeholder="Escribe un avance (ej: Se llamó al proveedor, confirmaron que mandan nota de crédito el viernes)..."
+                                                        value={nuevaNotaBitacora}
+                                                        onChange={(e) => setNuevaNotaBitacora(e.target.value)}
+                                                    />
+                                                    <Button
+                                                        variant="primary"
+                                                        size="sm"
+                                                        onClick={handleAgregarNotaBitacora}
+                                                        disabled={guardandoBitacora || !nuevaNotaBitacora.trim()}
+                                                        className="d-flex align-items-center px-3"
+                                                    >
+                                                        {guardandoBitacora ? (
+                                                            <Spinner animation="border" size="sm" />
+                                                        ) : (
+                                                            <span>Registrar</span>
+                                                        )}
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
 
                                     {/* Timeline de notas registradas */}
                                     <h6 className="fw-bold small text-secondary mb-3">Historial Cronológico de Seguimiento:</h6>
@@ -578,21 +639,45 @@ const ModalIncidencias = ({ show, onHide, recepcionId, onGenerarOC, onActualizad
                                         </div>
                                     ) : (
                                         <div className="bitacora-timeline pe-2">
-                                            {detalle.bitacora.map((item, idx) => (
-                                                <div key={item.id || idx} className="bitacora-item">
-                                                    <div className="d-flex justify-content-between align-items-center mb-1">
-                                                        <Badge bg="primary" style={{ fontSize: "0.72rem" }}>
-                                                            {item.usuario || "Comprador"}
-                                                        </Badge>
-                                                        <span className="text-muted" style={{ fontSize: "0.70rem" }}>
-                                                            {item.fecha ? new Date(item.fecha).toLocaleString("es-MX") : ""}
-                                                        </span>
+                                            {detalle.bitacora.map((item, idx) => {
+                                                const esInicio = (item.comentario || "").includes("[EVENTO: INICIO DE GESTIÓN]");
+                                                const esResolucion = (item.comentario || "").includes("[EVENTO: INCIDENCIA RESUELTA]");
+
+                                                return (
+                                                    <div 
+                                                        key={item.id || idx} 
+                                                        className={`bitacora-item ${esInicio ? "evento-inicio" : esResolucion ? "evento-resolucion" : ""}`}
+                                                    >
+                                                        <div className="d-flex justify-content-between align-items-center mb-1">
+                                                            <div className="d-flex align-items-center gap-1">
+                                                                <Badge 
+                                                                    bg={esResolucion ? "success" : esInicio ? "warning" : "primary"} 
+                                                                    text={esInicio ? "dark" : "white"} 
+                                                                    style={{ fontSize: "0.72rem" }}
+                                                                >
+                                                                    {item.usuario || "Comprador"}
+                                                                </Badge>
+                                                                {esInicio && (
+                                                                    <span className="badge bg-warning text-dark border" style={{ fontSize: "0.65rem" }}>
+                                                                        Inicio de Gestión
+                                                                    </span>
+                                                                )}
+                                                                {esResolucion && (
+                                                                    <span className="badge bg-success border" style={{ fontSize: "0.65rem" }}>
+                                                                        Resolución
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            <span className="text-muted" style={{ fontSize: "0.70rem" }}>
+                                                                {item.fecha ? new Date(item.fecha).toLocaleString("es-MX") : ""}
+                                                            </span>
+                                                        </div>
+                                                        <p className="mb-0 text-dark" style={{ fontSize: "0.82rem", whiteSpace: "pre-wrap" }}>
+                                                            {item.comentario}
+                                                        </p>
                                                     </div>
-                                                    <p className="mb-0 text-dark" style={{ fontSize: "0.82rem", whiteSpace: "pre-wrap" }}>
-                                                        {item.comentario}
-                                                    </p>
-                                                </div>
-                                            ))}
+                                                );
+                                            })}
                                         </div>
                                     )}
                                 </div>
