@@ -81,10 +81,10 @@ const TableroReposiciones = ({ onVistaChange }) => {
     };
 
     const handleEliminarFactura = async (factura) => {
-        if (String(factura?.estatus || "").toUpperCase() === "OC_GENERADA") {
+        if (String(factura?.estatus || "").toUpperCase() !== "PENDIENTE") {
             Swal.fire({
                 title: "Acción No Permitida",
-                text: `No es posible eliminar la factura ${factura.folio_factura} porque ya cuenta con Orden de Compra generada (estatus OC_GENERADA).`,
+                text: `No es posible eliminar la factura ${factura.folio_factura} porque ya ha iniciado o completado su recepción física en sucursal (estatus actual: ${factura.estatus}). Solo se permite eliminar facturas recién dadas de alta con estatus PENDIENTE.`,
                 icon: "warning",
                 confirmButtonText: "Entendido"
             });
@@ -468,17 +468,17 @@ const TableroReposiciones = ({ onVistaChange }) => {
                                                 )}
 
                                                 {(() => {
-                                                    const esOCGenerada = String(f.estatus || "").toUpperCase() === "OC_GENERADA";
+                                                    const esPendiente = String(f.estatus || "").toUpperCase() === "PENDIENTE";
                                                     return (
                                                         <button 
                                                             type="button"
-                                                            className={`btn btn-accion-sm ${esOCGenerada ? "btn-outline-secondary opacity-50" : "btn-outline-danger"}`}
+                                                            className={`btn btn-accion-sm ${!esPendiente ? "btn-outline-secondary opacity-50" : "btn-outline-danger"}`}
                                                             onClick={() => handleEliminarFactura(f)}
-                                                            disabled={eliminandoId === f.id || esOCGenerada}
-                                                            style={esOCGenerada ? { cursor: "not-allowed" } : {}}
+                                                            disabled={eliminandoId === f.id || !esPendiente}
+                                                            style={!esPendiente ? { cursor: "not-allowed" } : {}}
                                                             title={
-                                                                esOCGenerada 
-                                                                    ? "No se puede eliminar: la Orden de Compra ya fue generada para esta factura" 
+                                                                !esPendiente 
+                                                                    ? `No se puede eliminar: la factura ya ha iniciado o completado su recepción física en sucursal (estatus: ${f.estatus}). Solo se permite eliminar en estatus PENDIENTE.` 
                                                                     : `Eliminar factura ${f.folio_factura}`
                                                             }
                                                         >
@@ -487,7 +487,7 @@ const TableroReposiciones = ({ onVistaChange }) => {
                                                             ) : (
                                                                 <>
                                                                     <BiTrash size={13} />
-                                                                    {["PENDIENTE", "EN_RECEPCION"].includes(f.estatus) && <span>Borrar</span>}
+                                                                    {esPendiente && <span>Borrar</span>}
                                                                 </>
                                                             )}
                                                         </button>
