@@ -9,6 +9,7 @@ import LogisticaTable from "./LogisticaTable";
 import LogisticaPreview from "./LogisticaPreview";
 import PartidasTable from "./PartidasTable";
 import PreviewPanel from "./PreviewPanel";
+import EtiquetasCajaTab from "./EtiquetasCajaTab";
 import ModalImportacionLogistica from "../../components/ModalImportacionLogistica";
 
 const CodigoBarrasManual = () => {
@@ -37,11 +38,19 @@ const CodigoBarrasManual = () => {
         <div className="encabezado-cb">
           <h6>Herramienta para la generación de códigos de barras</h6>
           <p style={{ fontSize: "0.8rem" }}>
-            Ingrese la cantidad de etiquetas que desee imprimir y la clave del producto.
+            {activeTab === "cajas"
+              ? "Configure el almacén, línea, ordenamiento dimensional y capacidad por caja para imprimir etiquetas tamaño carta (4 por hoja)."
+              : "Ingrese la cantidad de etiquetas que desee imprimir y la clave del producto."}
           </p>
         </div>
-        <div className="captura">
-          <div className="btn-group-custom mb-3" role="group">
+
+        <div className={activeTab === "cajas" ? "captura-full-width" : "captura"}>
+          <div
+            className={`btn-group-custom mb-3 ${
+              activeTab === "cajas" ? "btn-group-custom-wide" : ""
+            }`}
+            role="group"
+          >
             <button
               type="button"
               className={`btn ${activeTab === "barcode" ? "btn-primary" : "btn-outline-primary"}`}
@@ -63,83 +72,98 @@ const CodigoBarrasManual = () => {
             >
               Logística
             </button>
+            <button
+              type="button"
+              className={`btn ${activeTab === "cajas" ? "btn-primary" : "btn-outline-primary"}`}
+              onClick={() => handleTabChange("cajas")}
+            >
+              Etiquetas de Caja
+            </button>
           </div>
 
-          <div className="tab-content">
-            {activeTab === "barcode" && (
-              <BarcodeTab
-                qty={qty}
-                value={value}
-                sugerencias={sugerencias}
-                setDescripcion={setDescripcion}
-                onQtyChange={setQty}
-                onValueChange={handleChange}
-                onSearch={onSearch}
-                onAgregar={() => agregarPartida("barcode")}
-                onLimpiar={limpiarTodo}
-              />
-            )}
-            {activeTab === "text" && (
-              <SoloTextoTab
-                qty={qty}
-                value={value}
-                sugerencias={sugerencias}
-                descripcion={descripcion}
-                onQtyChange={setQty}
-                onValueChange={handleChange}
-                onDescripcionChange={setDescripcion}
-                onSearch={onSearch}
-                onAgregar={() => agregarPartida("text")}
-                onLimpiar={limpiarTodo}
-              />
-            )}
-            {activeTab === "logistica" && (
-              <LogisticaTab
-                logisticaImported={logisticaImported}
-                onOpenModal={() => setShowLogisticaModal(true)}
-              />
-            )}
-          </div>
-
-          {(activeTab !== "logistica" || logisticaImported) && (
+          {activeTab === "cajas" ? (
+            <EtiquetasCajaTab />
+          ) : (
             <>
-              {activeTab === "logistica" ? (
+              <div className="tab-content">
+                {activeTab === "barcode" && (
+                  <BarcodeTab
+                    qty={qty}
+                    value={value}
+                    sugerencias={sugerencias}
+                    setDescripcion={setDescripcion}
+                    onQtyChange={setQty}
+                    onValueChange={handleChange}
+                    onSearch={onSearch}
+                    onAgregar={() => agregarPartida("barcode")}
+                    onLimpiar={limpiarTodo}
+                  />
+                )}
+                {activeTab === "text" && (
+                  <SoloTextoTab
+                    qty={qty}
+                    value={value}
+                    sugerencias={sugerencias}
+                    descripcion={descripcion}
+                    onQtyChange={setQty}
+                    onValueChange={handleChange}
+                    onDescripcionChange={setDescripcion}
+                    onSearch={onSearch}
+                    onAgregar={() => agregarPartida("text")}
+                    onLimpiar={limpiarTodo}
+                  />
+                )}
+                {activeTab === "logistica" && (
+                  <LogisticaTab
+                    logisticaImported={logisticaImported}
+                    onOpenModal={() => setShowLogisticaModal(true)}
+                  />
+                )}
+              </div>
+
+              {(activeTab !== "logistica" || logisticaImported) && (
                 <>
-                  <LogisticaTable partidas={partidas} onBorrar={borrar} />
-                  <div className="div-boton-generar">
-                    <button
-                      id="boton-nueva-importacion"
-                      type="button"
-                      className="btn btn-outline-secondary"
-                      onClick={limpiarTodo}
-                    >
-                      Nueva importación
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <PartidasTable partidas={partidas} onBorrar={borrar} />
-                  <div className="div-boton-generar">
-                    <button
-                      id="boton-print"
-                      type="button"
-                      className="btn btn-outline-secondary"
-                      data-bs-toggle="modal"
-                      data-bs-target="#myModal"
-                      disabled={activeTab !== "barcode"}
-                    >
-                      Pegar por Lote
-                    </button>
-                  </div>
+                  {activeTab === "logistica" ? (
+                    <>
+                      <LogisticaTable partidas={partidas} onBorrar={borrar} />
+                      <div className="div-boton-generar">
+                        <button
+                          id="boton-nueva-importacion"
+                          type="button"
+                          className="btn btn-outline-secondary"
+                          onClick={limpiarTodo}
+                        >
+                          Nueva importación
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <PartidasTable partidas={partidas} onBorrar={borrar} />
+                      <div className="div-boton-generar">
+                        <button
+                          id="boton-print"
+                          type="button"
+                          className="btn btn-outline-secondary"
+                          data-bs-toggle="modal"
+                          data-bs-target="#myModal"
+                          disabled={activeTab !== "barcode"}
+                        >
+                          Pegar por Lote
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </>
               )}
             </>
           )}
         </div>
 
-        {(activeTab !== "logistica" || logisticaImported) && partidas.length > 0 && (
-          activeTab === "logistica" ? (
+        {activeTab !== "cajas" &&
+          (activeTab !== "logistica" || logisticaImported) &&
+          partidas.length > 0 &&
+          (activeTab === "logistica" ? (
             <LogisticaPreview
               partidasPrint={partidasPrint}
               componentRef={componentRef}
@@ -153,8 +177,7 @@ const CodigoBarrasManual = () => {
               partidas={partidas}
               onPrint={handlePrint}
             />
-          )
-        )}
+          ))}
       </div>
 
       <div className="modal" id="myModal">

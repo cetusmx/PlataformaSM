@@ -374,3 +374,851 @@
 .logistica-preview {
   margin-top: -15px !important;
 }
+
+
+/* ==========================================================================
+   PESTAÑA: ETIQUETAS DE CAJA (FLUJO POR PASOS + IMPRESIÓN HOJA CARTA 2x2)
+   ========================================================================== */
+
+.btn-group-custom {
+  width: 82%;
+  max-width: 640px;
+}
+
+.btn-group-custom-wide {
+  width: 100%;
+  max-width: 680px;
+}
+
+.captura-full-width {
+  width: 100%;
+  float: left;
+  clear: both;
+  padding-bottom: 24px;
+}
+
+.etiquetas-caja-workspace {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ec-config-grid {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 14px;
+  align-items: stretch;
+}
+
+@media (max-width: 1150px) {
+  .ec-config-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ec-card {
+  background: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+}
+
+.ec-card-header {
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.ec-step-badge {
+  background: #0d6efd;
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  margin-right: 4px;
+}
+
+.ec-card-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #212529;
+  display: inline-flex;
+  align-items: center;
+}
+
+.ec-field-label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #334155;
+}
+
+.ec-control-sm {
+  font-size: 0.78rem !important;
+  font-weight: 400;
+}
+
+.ec-helper-text {
+  font-size: 0.76rem;
+  font-weight: 400;
+}
+
+.ec-empty-title {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #212529;
+  margin-bottom: 4px;
+}
+
+.ec-card-body {
+  padding: 12px 16px;
+  flex: 1;
+}
+
+/* Paso 2: Controles desahogados y barra de secuencia en el header */
+.ec-pipeline-pills {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.ec-order-chip {
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+.ec-chip-sec {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+.ec-chip-main {
+  background: #dbeafe;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.ec-chip-fixed {
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+}
+
+.ec-chip-arrow {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.ec-step2-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.ec-seccion-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ec-sec-status {
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 10px;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+}
+
+.ec-sec-detected {
+  background: #cff4fc;
+  color: #055160;
+}
+
+.ec-sec-empty {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.ec-diam-selector {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 5px 12px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ec-segmented-control {
+  display: inline-flex;
+  background: #e2e8f0;
+  padding: 3px;
+  border-radius: 6px;
+  gap: 2px;
+}
+
+.ec-segmented-item {
+  border: none;
+  background: transparent;
+  color: #475569;
+  font-size: 0.76rem;
+  font-weight: 400;
+  padding: 3px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.ec-segmented-item:hover:not(:disabled):not(.active) {
+  color: #0f172a;
+}
+
+.ec-segmented-item.active {
+  background: #ffffff;
+  color: #0f172a;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.12);
+}
+
+.ec-segmented-item:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ec-pipeline-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 2px;
+}
+
+.ec-diam-label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #334155;
+  white-space: nowrap;
+}
+
+.ec-empty-state {
+  background: #f8f9fa;
+  border: 2px dashed #ced4da;
+  border-radius: 10px;
+  padding: 48px 20px;
+  text-align: center;
+}
+
+/* Split principal Paso 3: Panel de Reglas + Vista Previa con la misma altura exacta */
+.ec-main-split {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 14px;
+  align-items: stretch;
+}
+
+.ec-rules-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.ec-rules-panel > .ec-card {
+  flex: 1;
+  height: 100%;
+}
+
+@media (max-width: 1150px) {
+  .ec-main-split {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ec-metrics-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.ec-metric-pill {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 6px 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.ec-metric-num {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.1;
+}
+
+.ec-metric-lbl {
+  font-size: 0.65rem;
+  color: #64748b;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* Lista de Tramos Dinámicos */
+.ec-tramos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 290px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.ec-tramo-item {
+  border: 1px solid #cbd5e1;
+  border-left: 4px solid #0d6efd;
+  border-radius: 6px;
+  padding: 8px 10px;
+  background: #ffffff;
+}
+
+.ec-tramo-inactivo {
+  opacity: 0.65;
+  border-left-color: #f59e0b;
+  background: #fffbeb;
+}
+
+.ec-tramo-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.ec-tramo-tag {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #0d6efd;
+  text-transform: uppercase;
+}
+
+.ec-tramo-range {
+  font-size: 0.76rem;
+  color: #334155;
+}
+
+.ec-btn-del-tramo {
+  padding: 1px 6px;
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+
+.ec-tramo-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ec-input-num {
+  width: 68px;
+  text-align: center;
+  padding: 2px 6px;
+}
+
+.ec-add-rule-box {
+  background: #f0f7ff;
+  border: 1px dashed #93c5fd;
+  border-radius: 6px;
+  padding: 10px;
+}
+
+/* Panel Derecho: Lienzo de Hojas Carta (misma altura que el panel izquierdo) */
+.ec-preview-panel {
+  background: #e2e8f0;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  height: 100%;
+  min-height: 560px;
+}
+
+.ec-preview-toolbar {
+  background: #ffffff;
+  border-bottom: 1px solid #cbd5e1;
+  padding: 10px 16px;
+  height: 49px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.ec-sheets-scroll {
+  position: absolute;
+  top: 49px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 8px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+@media (max-width: 1150px) {
+  .ec-sheets-scroll {
+    position: static;
+    max-height: 78vh;
+  }
+}
+
+.ec-print-root {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 20px;
+}
+
+/* Hoja Tamaño Carta en Vista Previa: ocupa todo el ancho disponible del contenedor */
+.ec-letter-sheet {
+  width: 100%;
+  max-width: 100%;
+  background: #ffffff;
+  padding: 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.ec-sheet-badge {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 8px;
+  text-align: right;
+}
+
+/* Cuadrícula 2x2 de etiquetas por hoja carta con columnas estrictamente iguales (50%/50%) */
+.ec-sheet-grid-2x2 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: 485px 485px;
+  gap: 12px;
+  width: 100%;
+}
+
+/* Tarjeta individual de Etiqueta de Caja */
+.ec-box-label {
+  border: 1.5px solid #222222;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  position: relative;
+  color: #000000;
+  font-family: Arial, Helvetica, sans-serif;
+  overflow: hidden;
+}
+
+.ec-box-tramo-start {
+  box-shadow: inset 0 0 0 1.5px rgba(13, 110, 253, 0.35);
+}
+
+/* Botón contextual en cada etiqueta (Solo en pantalla) */
+.ec-inline-rule-trigger {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 15;
+}
+
+.ec-tramo-pill {
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+  font-size: 0.63rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 10px;
+}
+
+.ec-gear-btn {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  padding: 1px 6px;
+  cursor: pointer;
+  color: #334155;
+  transition: all 0.15s ease;
+}
+
+.ec-gear-btn:hover {
+  background: #0d6efd;
+  color: #ffffff;
+  border-color: #0d6efd;
+}
+
+.ec-inline-popover {
+  position: absolute;
+  top: 24px;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #94a3b8;
+  border-radius: 6px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+  padding: 8px;
+  width: 215px;
+  z-index: 30;
+}
+
+.ec-popover-title {
+  font-size: 0.72rem;
+  color: #1e293b;
+  margin-bottom: 6px;
+}
+
+.ec-popover-btns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+
+/* Encabezado interno de la Etiqueta (LINEA, SECCION, FAMILIA, caja N) */
+.ec-label-header {
+  width: 100%;
+  flex-shrink: 0;
+  border-bottom: 1.5px solid #111111;
+  padding-bottom: 8px;
+  margin-bottom: 0;
+}
+
+.ec-header-row-1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  line-height: 1.15;
+  padding-right: 78px; /* Espacio para el botón en pantalla */
+}
+
+.ec-linea-block {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ec-lbl {
+  font-size: 8pt;
+  font-weight: 700;
+  color: #333333;
+  letter-spacing: 0.3px;
+}
+
+.ec-linea-val {
+  font-size: 15pt;
+  font-weight: 800;
+  color: #000000;
+  letter-spacing: 0.3px;
+}
+
+.ec-seccion-block {
+  min-width: 85px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ec-seccion-val {
+  font-size: 9.5pt;
+  font-weight: 700;
+  color: #000000;
+}
+
+.ec-header-row-2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+  line-height: 1.15;
+}
+
+.ec-familia-block {
+  max-width: 74%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ec-familia-val {
+  font-size: 8.5pt;
+  font-weight: 700;
+  color: #000000;
+  text-transform: uppercase;
+}
+
+.ec-caja-num {
+  font-size: 11pt;
+  font-weight: 800;
+  color: #000000;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border: 1px solid #222222;
+  border-radius: 5px;
+  padding: 2px 8px;
+  line-height: 1.1;
+  letter-spacing: 0.3px;
+}
+
+.ec-header-row-3 {
+  margin-top: 3px;
+  margin-bottom: 0;
+  padding-left: 16%;
+  line-height: 1;
+}
+
+.ec-claves-title {
+  font-size: 7.5pt;
+  font-weight: 700;
+  color: #333333;
+  letter-spacing: 0.6px;
+}
+
+/* Cuerpo de productos dentro de la Etiqueta (tamaños fijos, aprovecha el espacio vertical inferior hasta 6 productos) */
+.ec-label-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 15px;
+  width: 100%;
+  padding: 12px 0 6px 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+.ec-product-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+  page-break-inside: avoid;
+}
+
+.ec-barcode-col {
+  flex: 1 1 50%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.ec-barcode-svg-wrap {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  overflow: hidden;
+}
+
+.ec-barcode-svg-wrap svg {
+  width: 100%;
+  max-width: 182px;
+  height: 34px;
+  display: block;
+}
+
+.ec-info-col {
+  flex: 0 0 auto;
+  min-width: 44%;
+  max-width: 52%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  text-align: right;
+  padding-left: 2px;
+  overflow: visible;
+}
+
+.ec-prod-clave {
+  font-size: 12pt;
+  font-weight: 500;
+  color: #000000;
+  line-height: 1.05;
+  white-space: nowrap;
+  letter-spacing: -0.2px;
+}
+
+.ec-prod-medida {
+  font-size: 10pt;
+  font-weight: 400;
+  color: #000000;
+  line-height: 1.1;
+  margin-top: 1px;
+  white-space: nowrap;
+}
+
+/* Pie de Etiqueta (LOGO + MARCA y PERFIL) con línea divisoria superior */
+.ec-label-footer {
+  width: 100%;
+  flex-shrink: 0;
+  border-top: 1.5px solid #111111;
+  padding-top: 5px;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 7.5pt;
+  line-height: 1.3;
+}
+
+.ec-footer-logo {
+  width: 45px;
+  height: auto;
+  flex-shrink: 0;
+  object-fit: contain;
+  box-sizing: content-box;
+  padding-right: 8px;
+  border-right: 1px solid #94a3b8;
+}
+
+.ec-footer-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+}
+
+.ec-footer-line {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ec-footer-line strong {
+  font-weight: 700;
+  color: #333333;
+  letter-spacing: 0.2px;
+}
+
+.ec-footer-line span {
+  font-weight: 700;
+  color: #000000;
+}
+
+/* ==========================================================================
+   ESTILOS DE IMPRESIÓN OFICIAL (@media print) - HOJA CARTA 2x2
+   ========================================================================== */
+@media print {
+  @page {
+    size: letter portrait;
+    margin: 4.8mm 6.5mm 4mm 6.5mm;
+  }
+
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .ec-print-root {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .ec-letter-sheet {
+    width: 100% !important;
+    max-width: none !important;
+    height: 261mm !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    page-break-after: always;
+    break-after: page;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .ec-letter-sheet:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+
+  .ec-sheet-grid-2x2 {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    grid-template-rows: 128.5mm 128.5mm !important;
+    gap: 4mm !important;
+    width: 100% !important;
+    height: 261mm !important;
+  }
+
+  .ec-box-label {
+    border: 1.5px solid #000000 !important;
+    border-radius: 10px !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    height: 128.5mm !important;
+    padding: 2.8mm 3mm !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .ec-header-row-1 {
+    padding-right: 0 !important;
+  }
+}
