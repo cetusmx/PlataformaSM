@@ -66,10 +66,94 @@ const inferirMarcaDesdeDescripcion = (descr = "") => {
 const ALMACENES_FALLBACK = {
   "1": "Durango",
   "3": "Fresnillo",
+  "4": "Torreón",
   "5": "Mazatlán",
   "6": "Zacatecas",
   "7": "Querétaro",
   "10": "Fresnillo",
+};
+
+const normalizarTexto = (txt) =>
+  String(txt || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
+
+/**
+ * Extrae la existencia numérica correspondiente al almacén seleccionado
+ * a partir del objeto EXISTENCIA devuelto por /inventario/productos-etiquetas-caja
+ * (ej. { Durango: 67, Mazatlán: 29, Zacatecas: 77, Querétaro: 47, Fresnillo: 42 })
+ */
+const obtenerExistenciaEnAlmacen = (existenciaObj, almacenId, mapaNombres) => {
+  if (!existenciaObj || typeof existenciaObj !== "object") return 0;
+  const nombreAlmacen =
+    mapaNombres?.[String(almacenId).trim()] ||
+    ALMACENES_FALLBACK[String(almacenId).trim()] ||
+    "";
+  if (!nombreAlmacen) return 0;
+
+  const targetNorm = normalizarTexto(nombreAlmacen);
+  for (const [key, val] of Object.entries(existenciaObj)) {
+    if (normalizarTexto(key) === targetNorm) {
+      const num = parseFloat(val);
+      return Number.isNaN(num) ? 0 : num;
+    }
+  }
+  return 0;
+};
+
+/**
+ * Consulta el endpoint POST /inventario/productos-etiquetas-caja
+ * Acepta un arreglo de claves o un objeto { productos, linea }
+ */
+const consultarProductosEtiquetasCaja = async (param = []) => {
+  let payload = {};
+
+  if (Array.isArray(param)) {
+    const limpias = Array.from(
+      new Set(
+        param
+          .map((c) => String(c ?? "").trim())
+          .filter(Boolean)
+      )
+    );
+    if (limpias.length === 0) return [];
+    payload = { productos: limpias };
+  } else if (param && typeof param === "object") {
+    if (param.linea) {
+      payload = { linea: String(param.linea).trim().toUpperCase() };
+    } else if (Array.isArray(param.productos)) {
+      payload = { productos: param.productos };
+    } else {
+      return [];
+    }
+  } else {
+    return [];
+  }
+
+  try {
+    const res = await Axios.post(
+      `${URL_API1}/inventario/productos-etiquetas-caja`,
+      payload,
+      { headers: { "Content-Type": "application/json" } }
+    );
+    return Array.isArray(res.data) ? res.data : res.data?.data || res.data?.body || [];
+  } catch (errApi1) {
+    const resFallback = await Axios.post(
+      `${URL_API3}/inventario/productos-etiquetas-caja`,
+      payload,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          ...API3_HEADERS,
+        },
+      }
+    );
+    return Array.isArray(resFallback.data)
+      ? resFallback.data
+      : resFallback.data?.data || resFallback.data?.body || [];
+  }
 };
 
 /**
@@ -158,8 +242,6 @@ const BoxBarcode = ({ value, width, height }) => {
 const EtiquetasCajaTab = () => {
   // Catálogos base
   const [catalogoProductosApi3, setCatalogoProductosApi3] = useState([]);
-  const [catalogoProductosApi2, setCatalogoProductosApi2] = useState([]);
-  const [detallesLineaApi3, setDetallesLineaApi3] = useState({});
   const [stocksAlmacen, setStocksAlmacen] = useState([]);
   const [nombresAlmacenes, setNombresAlmacenes] = useState(ALMACENES_FALLBACK);
   const [almacenesDisponibles, setAlmacenesDisponibles] = useState([]);
@@ -201,55 +283,18 @@ const EtiquetasCajaTab = () => {
     documentTitle: `Etiquetas_Caja_${lineaSeleccionada || "Linea"}_Alm${almacenSeleccionado}`,
   });
 
-  // 1. Carga inicial: Catálogo maestro en vivo desde Firebird (vía backend API1 para evitar bloqueo CORS de Nginx en localhost, con fallback directo a API3), respaldo API2, almacenes en stocks y nombres de almacenes
+  // 1. Carga inicial: Almacenes registrados en stocks_almacenes y catálogo de nombres de almacenes
   useEffect(() => {
     let cancelado = false;
     const cargarBase = async () => {
       setCargandoInicial(true);
       try {
-        const [resProdsFirebird, resProdsApi2, resStocksAll, resAlmCat] =
-          await Promise.allSettled([
-            Axios.get(`${URL_API1}/compras/getcatalogo-firebird`).catch(() =>
-              Axios.get(`${URL_API3}/productos-detallado`, {
-                headers: API3_HEADERS,
-              })
-            ),
-            Axios.get(`${URL_API2}/productos`),
-            Axios.get(`${URL_API2}/stocks-almacenes`),
-            Axios.get(`${URL_API1}/compras/getalmacenes`),
-          ]);
+        const [resStocksAll, resAlmCat] = await Promise.allSettled([
+          Axios.get(`${URL_API2}/stocks-almacenes`),
+          Axios.get(`${URL_API1}/compras/getalmacenes`),
+        ]);
 
         if (cancelado) return;
-
-        if (
-          resProdsFirebird.status === "fulfilled" &&
-          Array.isArray(resProdsFirebird.value.data)
-        ) {
-          console.log(
-            "[DEBUG /productos-detallado] Total registros:",
-            resProdsFirebird.value.data.length,
-            "Muestra (primeros 5):",
-            resProdsFirebird.value.data.slice(0, 5),
-            "Datos completos:",
-            resProdsFirebird.value.data
-          );
-          setCatalogoProductosApi3(resProdsFirebird.value.data);
-        } else {
-          console.warn(
-            "No se pudo cargar /productos-detallado desde Firebird, usando respaldo API2."
-          );
-        }
-
-        if (resProdsApi2.status === "fulfilled") {
-          setCatalogoProductosApi2(resProdsApi2.value.data?.body || []);
-        }
-
-        if (
-          resProdsFirebird.status !== "fulfilled" &&
-          resProdsApi2.status !== "fulfilled"
-        ) {
-          show_alerta("No se pudo cargar el catálogo de productos.", "error");
-        }
 
         if (resAlmCat.status === "fulfilled" && Array.isArray(resAlmCat.value.data)) {
           const mapa = { ...ALMACENES_FALLBACK };
@@ -290,7 +335,8 @@ const EtiquetasCajaTab = () => {
     };
   }, []);
 
-  // 2. Cuando cambia el almacén seleccionado, consultamos sus stocks en el mismo endpoint de Visualización de Stocks
+  // 2. Cuando cambia el almacén seleccionado, consultamos sus stocks (max > 0)
+  // y enriquecemos sus claves mediante POST /inventario/productos-etiquetas-caja
   useEffect(() => {
     if (!almacenSeleccionado) {
       setStocksAlmacen([]);
@@ -306,16 +352,45 @@ const EtiquetasCajaTab = () => {
         );
         if (cancelado) return;
         const lista = res.data?.body || [];
-        // Regla de negocio: solo productos cuyo max sea mayor a 0
+        // Regla de negocio base: productos cuyo max sea mayor a 0
         const conPresencia = lista.filter((r) => {
           const maxNum = parseFloat(r.max);
           return !Number.isNaN(maxNum) && maxNum > 0;
         });
         setStocksAlmacen(conPresencia);
+
+        const clavesAlmacen = conPresencia
+          .map((r) => String(r.clave ?? "").trim())
+          .filter(Boolean);
+
+        if (clavesAlmacen.length > 0) {
+          const datosEtiquetas = await consultarProductosEtiquetasCaja(clavesAlmacen);
+          if (cancelado) return;
+
+          console.log(
+            "[DEBUG /inventario/productos-etiquetas-caja] Total recibidos:",
+            datosEtiquetas.length,
+            "Muestra (primeros 5):",
+            datosEtiquetas.slice(0, 5)
+          );
+
+          setCatalogoProductosApi3((prev) => {
+            const mapaPrev = new Map();
+            prev.forEach((item) => {
+              const c = String(item.CVE_ART ?? item.clave ?? "").trim().toUpperCase();
+              if (c) mapaPrev.set(c, item);
+            });
+            datosEtiquetas.forEach((item) => {
+              const c = String(item.CVE_ART ?? item.clave ?? "").trim().toUpperCase();
+              if (c) mapaPrev.set(c, { ...(mapaPrev.get(c) || {}), ...item });
+            });
+            return Array.from(mapaPrev.values());
+          });
+        }
       } catch (err) {
         if (!cancelado) {
-          console.error("Error al consultar stocks del almacén:", err);
-          show_alerta("Error al cargar los stocks del almacén seleccionado.", "error");
+          console.error("Error al consultar stocks o detalles del almacén:", err);
+          show_alerta("Error al cargar los productos del almacén seleccionado.", "error");
         }
       } finally {
         if (!cancelado) setCargandoStocks(false);
@@ -328,60 +403,41 @@ const EtiquetasCajaTab = () => {
     };
   }, [almacenSeleccionado]);
 
-  // Mapa unificado de catálogo de productos por clave (priorizando REACT_APP_URL_API3 en vivo para clave/línea/descripción y enriqueciendo con API2)
+  // Mapa de catálogo de productos por clave enriquecido desde POST /inventario/productos-etiquetas-caja
   const mapaProductosPorClave = useMemo(() => {
     const map = new Map();
 
-    // 1. Primero cargamos respaldo de API2 (tiene marca y dimensiones históricas)
-    catalogoProductosApi2.forEach((p) => {
-      const cve = String(p.clave ?? "").trim().toUpperCase();
-      if (!cve) return;
-      map.set(cve, {
-        clave: String(p.clave ?? "").trim(),
-        descripcion: String(p.descripcion ?? "").trim(),
-        linea: String(p.linea ?? "").trim().toUpperCase(),
-        diametrointerior: String(p.diametrointerior ?? "").trim(),
-        diametroexterior: String(p.diametroexterior ?? "").trim(),
-        altura: String(p.altura ?? "").trim(),
-        seccion: String(p.seccion ?? "").trim(),
-        perfil: String(p.perfil ?? "").trim(),
-        marca: String(p.marca ?? "").trim() || inferirMarcaDesdeDescripcion(p.descripcion),
-        familia: "",
-      });
-    });
-
-    // 2. Sobrescribimos/insertamos con el catálogo maestro activo de REACT_APP_URL_API3 (SAE Firebird)
-    // Esto garantiza que el 100% de las claves y líneas de stocks_almacenes estén presentes y actualizadas
     catalogoProductosApi3.forEach((p) => {
       const cve = String(p.CVE_ART ?? p.clave ?? "").trim().toUpperCase();
       if (!cve) return;
-      const previo = map.get(cve) || {};
-      const descr = String(p.DESCR ?? p.descripcion ?? previo.descripcion ?? "").trim();
-      const lin = String(p.LIN_PROD ?? p.linea ?? previo.linea ?? "").trim().toUpperCase();
+      const descr = String(p.DESCR ?? p.descripcion ?? "").trim();
+      const lin = String(p.LIN_PROD ?? p.linea ?? "").trim().toUpperCase();
+      const marcaDirecta = String(p.MARCA ?? p.marca ?? "").trim();
 
       map.set(cve, {
-        ...previo,
-        clave: String(p.CVE_ART ?? p.clave ?? previo.clave ?? cve).trim(),
+        clave: String(p.CVE_ART ?? p.clave ?? cve).trim(),
         descripcion: descr,
         linea: lin,
         diametrointerior: String(
-          p["Diámetro Interior"] ?? p.DIAM_INT ?? previo.diametrointerior ?? ""
+          p.DIAM_INT ?? p["Diámetro Interior"] ?? p.diametrointerior ?? ""
         ).trim(),
         diametroexterior: String(
-          p["Diámetro Exterior"] ?? p.DIAM_EXT ?? previo.diametroexterior ?? ""
+          p.DIAM_EXT ?? p["Diámetro Exterior"] ?? p.diametroexterior ?? ""
         ).trim(),
-        altura: String(p.Altura ?? p.ALTURA ?? previo.altura ?? "").trim(),
-        seccion: String(p.Seccion ?? p.SECCION ?? previo.seccion ?? "").trim(),
-        perfil: String(p.Perfil ?? p.PERFIL ?? previo.perfil ?? "").trim(),
-        marca: previo.marca || inferirMarcaDesdeDescripcion(descr),
-        familia: String(p.Familia ?? p.CAT_ECOMM ?? p.FAMILIA ?? previo.familia ?? "").trim(),
+        altura: String(p.ALTURA ?? p.Altura ?? p.altura ?? "").trim(),
+        seccion: String(p.SECCION ?? p.Seccion ?? p.seccion ?? "").trim(),
+        perfil: String(p.PERFIL ?? p.Perfil ?? p.perfil ?? "").trim(),
+        marca: marcaDirecta || inferirMarcaDesdeDescripcion(descr),
+        familia: String(p.FAMILIA ?? p.Familia ?? p.CAT_ECOMM ?? p.familia ?? "").trim(),
+        existenciasPorAlmacen:
+          p.EXISTENCIA && typeof p.EXISTENCIA === "object" ? p.EXISTENCIA : null,
       });
     });
 
     return map;
-  }, [catalogoProductosApi3, catalogoProductosApi2]);
+  }, [catalogoProductosApi3]);
 
-  // Productos del almacén seleccionado enriquecidos con sus datos de catálogo
+  // Productos del almacén seleccionado (desde stocks_almacenes con max > 0) enriquecidos con /inventario/productos-etiquetas-caja
   const productosEnAlmacen = useMemo(() => {
     const resultado = [];
     const clavesVistas = new Set();
@@ -425,30 +481,46 @@ const EtiquetasCajaTab = () => {
     return lineasDisponibles.filter((item) => item.linea.includes(q));
   }, [lineasDisponibles, busquedaLinea]);
 
-  // Productos crudos de la línea y almacén seleccionados (enriquecidos con el detalle en vivo de REACT_APP_URL_API3)
+  // Productos de la línea y almacén seleccionados:
+  // 1) Todos los productos de la línea que están en stocks_almacenes (max > 0)
+  // 2) Más cualquier producto adicional de la misma línea que no esté en stocks_almacenes pero tenga EXISTENCIA > 0 en este almacén
   const productosLineaCrudos = useMemo(() => {
     if (!lineaSeleccionada) return [];
     const base = productosEnAlmacen.filter((p) => p.linea === lineaSeleccionada);
-    const mapaDetalleLinea = detallesLineaApi3[lineaSeleccionada];
-    if (!mapaDetalleLinea) return base;
+    const clavesEnBase = new Set(
+      base.map((p) => String(p.clave || "").trim().toUpperCase())
+    );
 
-    return base.map((p) => {
-      const cve = String(p.clave || "").trim().toUpperCase();
-      const det = mapaDetalleLinea[cve];
-      if (!det) return p;
-      return {
-        ...p,
-        descripcion: det.descripcion || p.descripcion,
-        diametrointerior: det.diametrointerior !== "" ? det.diametrointerior : p.diametrointerior,
-        diametroexterior: det.diametroexterior !== "" ? det.diametroexterior : p.diametroexterior,
-        altura: det.altura !== "" ? det.altura : p.altura,
-        seccion: det.seccion !== "" ? det.seccion : p.seccion,
-        perfil: det.perfil !== "" ? det.perfil : p.perfil,
-        marca: p.marca || det.marca || inferirMarcaDesdeDescripcion(det.descripcion || p.descripcion),
-        familia: det.familia || p.familia,
-      };
+    const extrasConExistencia = [];
+    mapaProductosPorClave.forEach((prodCat, cve) => {
+      if (prodCat.linea !== lineaSeleccionada || clavesEnBase.has(cve)) return;
+      const existEnAlmacen = obtenerExistenciaEnAlmacen(
+        prodCat.existenciasPorAlmacen,
+        almacenSeleccionado,
+        nombresAlmacenes
+      );
+      if (existEnAlmacen > 0) {
+        clavesEnBase.add(cve);
+        extrasConExistencia.push({
+          ...prodCat,
+          existenciaActual: existEnAlmacen,
+        });
+      }
     });
-  }, [productosEnAlmacen, lineaSeleccionada, detallesLineaApi3]);
+
+    console.log(
+      `[EXCEPCIONES - Línea ${lineaSeleccionada} | Almacén ${almacenSeleccionado}] Productos con existencia fuera de stocks_almacenes (${extrasConExistencia.length}):`,
+      extrasConExistencia
+    );
+
+    return [...base, ...extrasConExistencia];
+  }, [
+    productosEnAlmacen,
+    lineaSeleccionada,
+    mapaProductosPorClave,
+    almacenSeleccionado,
+    nombresAlmacenes,
+  ]);
 
   // Detectar automáticamente si la línea seleccionada maneja la dimensión "sección"
   const infoSeccionLinea = useMemo(() => {
@@ -465,8 +537,8 @@ const EtiquetasCajaTab = () => {
   }, [productosLineaCrudos]);
 
   // Al cambiar de línea:
-  // 1) Reiniciar reglas de capacidad a 4 por caja por defecto
-  // 2) Consultar en REACT_APP_URL_API3 (/api/productos y /clavesalternas/filter) todas las medidas, sección, perfil y familia de la línea
+  // 1) Reiniciar reglas de capacidad a 4 por caja y tomar de inmediato FAMILIA y SECCIÓN desde los datos ya cargados por /inventario/productos-etiquetas-caja
+  // 2) Buscar si existen claves adicionales en esa línea fuera de stocks_almacenes y consultarlas en /inventario/productos-etiquetas-caja para incluir las que tengan existencia > 0
   useEffect(() => {
     if (!lineaSeleccionada) {
       setFamiliaTexto("");
@@ -474,144 +546,59 @@ const EtiquetasCajaTab = () => {
       return;
     }
 
-    // Reiniciar reglas al estándar de 4 productos por caja
     setReglasCapacidad([{ id: "base-1", desdeCaja: 1, productosPorCaja: 4 }]);
     setCajaEditandoInline(null);
 
+    // Con la mejora en /inventario/productos-etiquetas-caja, ya tenemos FAMILIA y SECCION en memoria de inmediato
+    const prodsBaseLinea = productosEnAlmacen.filter(
+      (p) => p.linea === lineaSeleccionada
+    );
+    const tieneSec = prodsBaseLinea.some(
+      (p) => String(p.seccion || "").trim() !== ""
+    );
+    setIncluirSeccion(tieneSec);
+
+    const famDirecta =
+      prodsBaseLinea.find((p) => String(p.familia || "").trim() !== "")?.familia ||
+      lineaSeleccionada;
+    setFamiliaTexto(famDirecta.toUpperCase());
+
     let cancelado = false;
 
-    const cargarDetalleLineaDesdeApi3 = async () => {
+    // Paso 3: Consultar en POST /inventario/productos-etiquetas-caja enviando { linea: lineaSeleccionada }
+    // para recibir el universo completo de productos de esa línea y unificar en frontend:
+    // (claves en stocks_almacenes con max > 0) + (claves fuera de stocks_almacenes con EXISTENCIA > 0 en el almacén seleccionado)
+    const cargarUniversoDeLinea = async () => {
       setCargandoFamilia(true);
       try {
-        let mapaLinea = {};
-        let familiaDetectada = "";
-
-        // 1. Intentamos primero vía nuestro backend API1 (servcotiza -> FIREBIRD_API_URL)
-        // para evitar el bloqueo CORS de Nginx cuando se ejecuta desde http://localhost:3000
-        try {
-          const resProxy = await Axios.get(`${URL_API1}/compras/getproductos-linea`, {
-            params: { linea: lineaSeleccionada },
-          });
-          if (cancelado) return;
-          if (resProxy.data && resProxy.data.productos) {
-            mapaLinea = resProxy.data.productos;
-            familiaDetectada = resProxy.data.familia || "";
-          }
-        } catch (proxyErr) {
-          console.warn(
-            "Fallback directo a URL_API3 para detalle de línea:",
-            proxyErr.message
-          );
-          const PAGE_LIMIT = 500;
-          const [resApiProductos, resFilterPag1] = await Promise.allSettled([
-            Axios.get(`${URL_API3}/api/productos`, {
-              headers: API3_HEADERS,
-              params: { linea: lineaSeleccionada, page: 1, limit: PAGE_LIMIT },
-            }),
-            Axios.get(`${URL_API3}/clavesalternas/filter`, {
-              headers: API3_HEADERS,
-              params: { linea: lineaSeleccionada, limit: PAGE_LIMIT, offset: 0 },
-            }),
-          ]);
-
-          if (cancelado) return;
-
-          const registrarItem = (raw) => {
-            const cve = String(raw.CVE_ART ?? raw.clave ?? "").trim().toUpperCase();
-            if (!cve) return;
-            const prev = mapaLinea[cve] || {};
-            const descr = String(
-              raw.DESCR ?? raw.descripcion ?? prev.descripcion ?? ""
-            ).trim();
-            const di = String(
-              raw["Diámetro Interior"] ?? raw.DIAM_INT ?? prev.diametrointerior ?? ""
-            ).trim();
-            const de = String(
-              raw["Diámetro Exterior"] ?? raw.DIAM_EXT ?? prev.diametroexterior ?? ""
-            ).trim();
-            const alt = String(raw.Altura ?? raw.ALTURA ?? prev.altura ?? "").trim();
-            const sec = String(
-              raw.Seccion ?? raw.SECCION ?? prev.seccion ?? ""
-            ).trim();
-            const perf = String(raw.Perfil ?? raw.PERFIL ?? prev.perfil ?? "").trim();
-            const fam = String(
-              raw.Familia ?? raw.CAT_ECOMM ?? raw.FAMILIA ?? prev.familia ?? ""
-            ).trim();
-
-            if (!familiaDetectada && fam) {
-              familiaDetectada = fam;
-            }
-
-            mapaLinea[cve] = {
-              descripcion: descr,
-              diametrointerior: di,
-              diametroexterior: de,
-              altura: alt,
-              seccion: sec,
-              perfil: perf,
-              familia: fam,
-              marca: inferirMarcaDesdeDescripcion(descr),
-            };
-          };
-
-          if (resApiProductos.status === "fulfilled") {
-            const dataProd = Array.isArray(resApiProductos.value.data?.data)
-              ? resApiProductos.value.data.data
-              : Array.isArray(resApiProductos.value.data)
-              ? resApiProductos.value.data
-              : [];
-            dataProd.forEach(registrarItem);
-          }
-
-          if (resFilterPag1.status === "fulfilled") {
-            const payload = resFilterPag1.value.data;
-            const rows1 = Array.isArray(payload?.data) ? payload.data : [];
-            rows1.forEach(registrarItem);
-          }
-        }
-
-        setDetallesLineaApi3((prev) => ({
-          ...prev,
-          [lineaSeleccionada]: mapaLinea,
-        }));
-
-        // Determinar si los productos de esta línea en el almacén tienen sección
-        const clavesAlmacen = productosEnAlmacen.filter(
-          (p) => p.linea === lineaSeleccionada
-        );
-        const tieneSeccion = clavesAlmacen.some((p) => {
-          const cve = String(p.clave || "").trim().toUpperCase();
-          const sec = mapaLinea[cve]?.seccion || p.seccion || "";
-          return String(sec).trim() !== "";
+        const universoLinea = await consultarProductosEtiquetasCaja({
+          linea: lineaSeleccionada,
         });
-        setIncluirSeccion(tieneSeccion);
+        if (cancelado || universoLinea.length === 0) return;
 
-        if (familiaDetectada) {
-          setFamiliaTexto(familiaDetectada.toUpperCase());
-        } else {
-          // Respaldo a /compras/getfamilia-producto si no vino en el lote
-          const primeraClave = clavesAlmacen[0]?.clave;
-          if (primeraClave) {
-            const resFam = await Axios.get(`${URL_API1}/compras/getfamilia-producto`, {
-              params: { clave: primeraClave },
-            });
-            if (!cancelado) {
-              const fam = String(resFam.data?.familia || "").trim();
-              setFamiliaTexto((fam || lineaSeleccionada).toUpperCase());
-            }
-          } else {
-            setFamiliaTexto(lineaSeleccionada);
-          }
-        }
+        setCatalogoProductosApi3((prev) => {
+          const mapaPrev = new Map();
+          prev.forEach((item) => {
+            const c = String(item.CVE_ART ?? item.clave ?? "").trim().toUpperCase();
+            if (c) mapaPrev.set(c, item);
+          });
+          universoLinea.forEach((item) => {
+            const c = String(item.CVE_ART ?? item.clave ?? "").trim().toUpperCase();
+            if (c) mapaPrev.set(c, { ...(mapaPrev.get(c) || {}), ...item });
+          });
+          return Array.from(mapaPrev.values());
+        });
       } catch (err) {
-        console.warn("Error al consultar detalles de línea en API3:", err);
-        if (!cancelado) setFamiliaTexto(lineaSeleccionada);
+        console.warn(
+          "Aviso al consultar universo de la línea en /inventario/productos-etiquetas-caja:",
+          err.message
+        );
       } finally {
         if (!cancelado) setCargandoFamilia(false);
       }
     };
 
-    cargarDetalleLineaDesdeApi3();
+    cargarUniversoDeLinea();
 
     return () => {
       cancelado = true;
@@ -1411,7 +1398,7 @@ const EtiquetasCajaTab = () => {
                               </div>
                             </div>
 
-                            {/* CUERPO: LISTA DE PRODUCTOS DE LA CAJA (TAMAÑO FIJO, APROVECHA ESPACIO VERTICAL HASTA 8 PRODS) */}
+                            {/* CUERPO: LISTA DE PRODUCTOS DE LA CAJA */}
                             <div className="ec-label-body">
                               {caja.productos.map((prod) => (
                                 <div
