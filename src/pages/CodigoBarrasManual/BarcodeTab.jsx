@@ -47,7 +47,6 @@ const BarcodeTab = ({
                 key={item.CLAVE}
                 className="dropdown-row"
                 onClick={() => {
-                  onValueChange({ target: { value: item.CLAVE } });
                   setDescripcion(item.DESCRIPCION || "");
                   onSearch(item.CLAVE);
                 }}

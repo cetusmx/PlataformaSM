@@ -44,7 +44,7 @@ const useCodigoBarras = () => {
   };
 
   const handleChange = async (e) => {
-    const texto = e.target.value;
+    const texto = typeof e === "string" ? e : (e?.target?.value ?? "");
     setValue(texto);
 
     if (texto.length > 4) {
@@ -63,6 +63,8 @@ const useCodigoBarras = () => {
   };
 
   const onSearch = (searchTerm) => {
+    setValue(searchTerm);
+    setSugerencias([]);
     if (preciosList.length > 0) {
       const filtrado = preciosList.find((item) =>
         item.clave.toUpperCase().includes(searchTerm.toUpperCase())

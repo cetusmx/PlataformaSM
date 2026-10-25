@@ -6,7 +6,6 @@ const SoloTextoTab = ({
   onSearch, onAgregar, onLimpiar
 }) => {
   const handleSelectSugerencia = (item) => {
-    onValueChange(item.CLAVE);
     onDescripcionChange(item.DESCRIPCION || "");
     onSearch(item.CLAVE);
   };
