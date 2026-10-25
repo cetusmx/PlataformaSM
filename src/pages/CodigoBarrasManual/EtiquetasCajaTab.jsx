@@ -225,6 +225,14 @@ const EtiquetasCajaTab = () => {
           resProdsFirebird.status === "fulfilled" &&
           Array.isArray(resProdsFirebird.value.data)
         ) {
+          console.log(
+            "[DEBUG /productos-detallado] Total registros:",
+            resProdsFirebird.value.data.length,
+            "Muestra (primeros 5):",
+            resProdsFirebird.value.data.slice(0, 5),
+            "Datos completos:",
+            resProdsFirebird.value.data
+          );
           setCatalogoProductosApi3(resProdsFirebird.value.data);
         } else {
           console.warn(
