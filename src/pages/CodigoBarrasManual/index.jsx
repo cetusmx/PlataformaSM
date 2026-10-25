@@ -44,13 +44,8 @@ const CodigoBarrasManual = () => {
           </p>
         </div>
 
-        <div className={activeTab === "cajas" ? "captura-full-width" : "captura"}>
-          <div
-            className={`btn-group-custom mb-3 ${
-              activeTab === "cajas" ? "btn-group-custom-wide" : ""
-            }`}
-            role="group"
-          >
+        <div className="navegacion-tabs-cb">
+          <div className="btn-group-custom mb-3" role="group">
             <button
               type="button"
               className={`btn ${activeTab === "barcode" ? "btn-primary" : "btn-outline-primary"}`}
@@ -80,6 +75,9 @@ const CodigoBarrasManual = () => {
               Etiquetas de Caja
             </button>
           </div>
+        </div>
+
+        <div className={activeTab === "cajas" ? "captura-full-width" : "captura"}>
 
           {activeTab === "cajas" ? (
             <EtiquetasCajaTab />

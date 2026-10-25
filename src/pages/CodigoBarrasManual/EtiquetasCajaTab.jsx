@@ -826,8 +826,18 @@ const EtiquetasCajaTab = () => {
 
               {/* Buscador + Select de Línea */}
               <div>
-                <label className="form-label ec-field-label mb-1">
-                  Línea a imprimir
+                <label className="form-label ec-field-label mb-1 d-flex align-items-center justify-content-between">
+                  <span>Línea a imprimir</span>
+                  {(cargandoInicial || cargandoStocks) && almacenSeleccionado && (
+                    <span className="ec-inline-loader text-primary">
+                      <span
+                        className="spinner-border spinner-border-sm me-1"
+                        role="status"
+                        aria-hidden="true"
+                      />
+                      Cargando líneas...
+                    </span>
+                  )}
                 </label>
                 <div className="input-group input-group-sm">
                   <input
@@ -837,17 +847,26 @@ const EtiquetasCajaTab = () => {
                     value={busquedaLinea}
                     onChange={(e) => setBusquedaLinea(e.target.value)}
                     style={{ maxWidth: "105px" }}
-                    disabled={!almacenSeleccionado || cargandoStocks}
+                    disabled={!almacenSeleccionado || cargandoInicial || cargandoStocks}
                   />
+                  {almacenSeleccionado && (cargandoInicial || cargandoStocks) && (
+                    <span className="input-group-text bg-white text-primary px-2">
+                      <span
+                        className="spinner-border spinner-border-sm"
+                        role="status"
+                        aria-hidden="true"
+                      />
+                    </span>
+                  )}
                   <select
                     className="form-select ec-control-sm"
                     value={lineaSeleccionada}
                     onChange={(e) => setLineaSeleccionada(e.target.value)}
-                    disabled={!almacenSeleccionado || cargandoStocks}
+                    disabled={!almacenSeleccionado || cargandoInicial || cargandoStocks}
                   >
                     <option value="">
-                      {cargandoStocks
-                        ? "Cargando líneas..."
+                      {cargandoInicial || cargandoStocks
+                        ? "Obteniendo líneas del almacén..."
                         : "-- Elegir Línea --"}
                     </option>
                     {lineasFiltradasSelector.map((item) => (
@@ -894,12 +913,24 @@ const EtiquetasCajaTab = () => {
                 {lineaSeleccionada && (
                   <span
                     className={`ec-sec-status ${
-                      infoSeccionLinea.tieneSeccion
+                      cargandoFamilia
+                        ? "ec-sec-empty"
+                        : infoSeccionLinea.tieneSeccion
                         ? "ec-sec-detected"
                         : "ec-sec-empty"
                     }`}
                   >
-                    {infoSeccionLinea.tieneSeccion ? (
+                    {cargandoFamilia ? (
+                      <>
+                        <span
+                          className="spinner-border spinner-border-sm me-1"
+                          style={{ width: "10px", height: "10px", borderWidth: "1.5px" }}
+                          role="status"
+                          aria-hidden="true"
+                        />
+                        Verificando medidas...
+                      </>
+                    ) : infoSeccionLinea.tieneSeccion ? (
                       <>
                         <BiCheckCircle className="me-1" />
                         {infoSeccionLinea.cantidadConSeccion} productos con sección
@@ -1218,24 +1249,90 @@ const EtiquetasCajaTab = () => {
                 <span className="ec-card-title">
                   Vista Previa Tamaño Carta (4 etiquetas por hoja)
                 </span>
-                <span className="text-muted ec-helper-text">
-                  Mostrando {cajasParaImprimir.length} cajas en {hojasCarta.length}{" "}
-                  {hojasCarta.length === 1 ? "hoja" : "hojas"}
-                </span>
+                {cargandoFamilia ? (
+                  <span className="ec-loading-pill">
+                    <span
+                      className="spinner-border spinner-border-sm me-1"
+                      style={{ width: "11px", height: "11px", borderWidth: "1.5px" }}
+                      role="status"
+                      aria-hidden="true"
+                    />
+                    Cargando medidas, familia y existencias de {lineaSeleccionada}...
+                  </span>
+                ) : (
+                  <span className="text-muted ec-helper-text">
+                    Mostrando {cajasParaImprimir.length} cajas en {hojasCarta.length}{" "}
+                    {hojasCarta.length === 1 ? "hoja" : "hojas"}
+                  </span>
+                )}
               </div>
               <button
                 type="button"
                 className="btn btn-sm btn-primary ec-control-sm d-flex align-items-center gap-1"
                 onClick={handlePrint}
-                disabled={cajasParaImprimir.length === 0}
+                disabled={cargandoFamilia || cajasParaImprimir.length === 0}
               >
                 <BiPrinter /> Imprimir ahora
               </button>
             </div>
 
             <div className="ec-sheets-scroll">
-              {/* CONTENEDOR IMPRIMIBLE */}
-              <div ref={printRef} className="ec-print-root">
+              {cargandoFamilia ? (
+                /* SKELETON DE HOJA CARTA 2x2 MIENTRAS RESPONDE /inventario/productos-etiquetas-caja */
+                <div className="ec-letter-sheet ec-skeleton-sheet">
+                  <div className="ec-skeleton-banner">
+                    <span
+                      className="spinner-border spinner-border-sm text-primary me-2"
+                      role="status"
+                      aria-hidden="true"
+                    />
+                    <span>
+                      Preparando etiquetas de la línea <strong>{lineaSeleccionada}</strong> (obteniendo medidas, familia, perfil y existencias)...
+                    </span>
+                  </div>
+                  <div className="ec-sheet-grid-2x2">
+                    {[1, 2, 3, 4].map((numSkeleton) => (
+                      <div key={`skel-box-${numSkeleton}`} className="ec-box-label ec-skeleton-card">
+                        {/* Header Skeleton */}
+                        <div className="ec-label-header">
+                          <div className="d-flex justify-content-between align-items-center mb-2">
+                            <div className="ec-skel-line ec-skel-w45 ec-skel-h18" />
+                            <div className="ec-skel-line ec-skel-w30 ec-skel-h14" />
+                          </div>
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div className="ec-skel-line ec-skel-w60 ec-skel-h12" />
+                            <div className="ec-skel-badge" />
+                          </div>
+                        </div>
+
+                        {/* Body Skeleton (4 filas de productos simuladas) */}
+                        <div className="ec-label-body">
+                          {[1, 2, 3, 4].map((rowIdx) => (
+                            <div key={`skel-row-${rowIdx}`} className="ec-product-row">
+                              <div className="ec-skel-barcode" />
+                              <div className="ec-info-col">
+                                <div className="ec-skel-line ec-skel-w85 ec-skel-h14 mb-1" />
+                                <div className="ec-skel-line ec-skel-w60 ec-skel-h12" />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Footer Skeleton */}
+                        <div className="ec-label-footer">
+                          <div className="ec-skel-logo" />
+                          <div className="flex-grow-1">
+                            <div className="ec-skel-line ec-skel-w70 ec-skel-h10 mb-1" />
+                            <div className="ec-skel-line ec-skel-w50 ec-skel-h10" />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                /* CONTENEDOR IMPRIMIBLE REAL */
+                <div ref={printRef} className="ec-print-root">
                 {hojasCarta.map((cajasEnHoja, hojaIdx) => (
                   <div key={`hoja-${hojaIdx}`} className="ec-letter-sheet">
                     {/* Indicador de número de hoja (solo en pantalla) */}
@@ -1397,7 +1494,8 @@ const EtiquetasCajaTab = () => {
                     </div>
                   </div>
                 ))}
-              </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

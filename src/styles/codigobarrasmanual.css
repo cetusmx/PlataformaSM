@@ -380,14 +380,38 @@
    PESTAÑA: ETIQUETAS DE CAJA (FLUJO POR PASOS + IMPRESIÓN HOJA CARTA 2x2)
    ========================================================================== */
 
-.btn-group-custom {
-  width: 82%;
-  max-width: 640px;
+.navegacion-tabs-cb {
+  width: 100%;
+  float: left;
+  clear: both;
 }
 
+.captura {
+  clear: left;
+}
+
+.codigosBarras {
+  margin-top: 0;
+}
+
+.logistica-preview {
+  margin-top: -65px !important;
+}
+
+.btn-group-custom,
 .btn-group-custom-wide {
+  display: flex;
   width: 100%;
   max-width: 680px;
+}
+
+.btn-group-custom .btn {
+  flex: 1;
+  font-size: 0.85rem;
+  font-weight: 400;
+  line-height: 1.4;
+  padding: 5px 10px;
+  white-space: nowrap;
 }
 
 .captura-full-width {
@@ -1151,6 +1175,131 @@
 .ec-footer-line span {
   font-weight: 700;
   color: #000000;
+}
+
+/* ==========================================================================
+   ESTADOS DE CARGA Y SKELETON DE VISTA PREVIA (UX)
+   ========================================================================== */
+.ec-inline-loader {
+  font-size: 0.72rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+}
+
+.ec-loading-pill {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #0d6efd;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  padding: 2px 10px;
+  display: inline-flex;
+  align-items: center;
+}
+
+@keyframes ecShimmer {
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+}
+
+.ec-skeleton-banner {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+  font-size: 0.78rem;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.ec-skeleton-card {
+  border-color: #cbd5e1 !important;
+  pointer-events: none;
+}
+
+.ec-skeleton-card .ec-label-header {
+  border-bottom-color: #e2e8f0;
+}
+
+.ec-skeleton-card .ec-label-footer {
+  border-top-color: #e2e8f0;
+}
+
+.ec-skel-line,
+.ec-skel-barcode,
+.ec-skel-badge,
+.ec-skel-logo {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 800px 100%;
+  animation: ecShimmer 1.5s infinite linear;
+  border-radius: 4px;
+}
+
+.ec-skel-h10 {
+  height: 10px;
+}
+
+.ec-skel-h12 {
+  height: 12px;
+}
+
+.ec-skel-h14 {
+  height: 14px;
+}
+
+.ec-skel-h18 {
+  height: 18px;
+}
+
+.ec-skel-w30 {
+  width: 30%;
+}
+
+.ec-skel-w45 {
+  width: 45%;
+}
+
+.ec-skel-w50 {
+  width: 50%;
+}
+
+.ec-skel-w60 {
+  width: 60%;
+}
+
+.ec-skel-w70 {
+  width: 70%;
+}
+
+.ec-skel-w85 {
+  width: 85%;
+}
+
+.ec-skel-badge {
+  width: 62px;
+  height: 22px;
+  border-radius: 5px;
+}
+
+.ec-skel-barcode {
+  width: 48%;
+  height: 34px;
+  border-radius: 3px;
+}
+
+.ec-skel-logo {
+  width: 45px;
+  height: 26px;
+  border-radius: 4px;
+  flex-shrink: 0;
 }
 
 /* ==========================================================================
