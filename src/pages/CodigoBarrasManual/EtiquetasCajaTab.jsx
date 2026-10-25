@@ -105,36 +105,20 @@ const obtenerExistenciaEnAlmacen = (existenciaObj, almacenId, mapaNombres) => {
 
 /**
  * Consulta el endpoint POST /inventario/productos-etiquetas-caja
- * enviando exclusivamente { linea: "..." }
+ * enviando { linea: ["..."] } como arreglo no vacío
  */
 const consultarProductosEtiquetasCajaPorLinea = async (linea) => {
   const lineaLimpia = String(linea || "").trim().toUpperCase();
   if (!lineaLimpia) return [];
 
-  const payload = { linea: lineaLimpia };
+  const payload = { linea: [lineaLimpia] };
 
-  try {
-    const res = await Axios.post(
-      `${URL_API1}/inventario/productos-etiquetas-caja`,
-      payload,
-      { headers: { "Content-Type": "application/json" } }
-    );
-    return Array.isArray(res.data) ? res.data : res.data?.data || res.data?.body || [];
-  } catch (errApi1) {
-    const resFallback = await Axios.post(
-      `${URL_API3}/inventario/productos-etiquetas-caja`,
-      payload,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          ...API3_HEADERS,
-        },
-      }
-    );
-    return Array.isArray(resFallback.data)
-      ? resFallback.data
-      : resFallback.data?.data || resFallback.data?.body || [];
-  }
+  const res = await Axios.post(
+    `${URL_API1}/inventario/productos-etiquetas-caja`,
+    payload,
+    { headers: { "Content-Type": "application/json" } }
+  );
+  return Array.isArray(res.data) ? res.data : res.data?.data || res.data?.body || [];
 };
 
 /**
