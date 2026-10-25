@@ -849,15 +849,6 @@ const EtiquetasCajaTab = () => {
                     style={{ maxWidth: "105px" }}
                     disabled={!almacenSeleccionado || cargandoInicial || cargandoStocks}
                   />
-                  {almacenSeleccionado && (cargandoInicial || cargandoStocks) && (
-                    <span className="input-group-text bg-white text-primary px-2">
-                      <span
-                        className="spinner-border spinner-border-sm"
-                        role="status"
-                        aria-hidden="true"
-                      />
-                    </span>
-                  )}
                   <select
                     className="form-select ec-control-sm"
                     value={lineaSeleccionada}
@@ -910,27 +901,13 @@ const EtiquetasCajaTab = () => {
                     Incluir Sección como 1er criterio
                   </label>
                 </div>
-                {lineaSeleccionada && (
+                {lineaSeleccionada && !cargandoFamilia && (
                   <span
                     className={`ec-sec-status ${
-                      cargandoFamilia
-                        ? "ec-sec-empty"
-                        : infoSeccionLinea.tieneSeccion
-                        ? "ec-sec-detected"
-                        : "ec-sec-empty"
+                      infoSeccionLinea.tieneSeccion ? "ec-sec-detected" : "ec-sec-empty"
                     }`}
                   >
-                    {cargandoFamilia ? (
-                      <>
-                        <span
-                          className="spinner-border spinner-border-sm me-1"
-                          style={{ width: "10px", height: "10px", borderWidth: "1.5px" }}
-                          role="status"
-                          aria-hidden="true"
-                        />
-                        Verificando medidas...
-                      </>
-                    ) : infoSeccionLinea.tieneSeccion ? (
+                    {infoSeccionLinea.tieneSeccion ? (
                       <>
                         <BiCheckCircle className="me-1" />
                         {infoSeccionLinea.cantidadConSeccion} productos con sección
@@ -1249,17 +1226,7 @@ const EtiquetasCajaTab = () => {
                 <span className="ec-card-title">
                   Vista Previa Tamaño Carta (4 etiquetas por hoja)
                 </span>
-                {cargandoFamilia ? (
-                  <span className="ec-loading-pill">
-                    <span
-                      className="spinner-border spinner-border-sm me-1"
-                      style={{ width: "11px", height: "11px", borderWidth: "1.5px" }}
-                      role="status"
-                      aria-hidden="true"
-                    />
-                    Cargando medidas, familia y existencias de {lineaSeleccionada}...
-                  </span>
-                ) : (
+                {!cargandoFamilia && (
                   <span className="text-muted ec-helper-text">
                     Mostrando {cajasParaImprimir.length} cajas en {hojasCarta.length}{" "}
                     {hojasCarta.length === 1 ? "hoja" : "hojas"}
