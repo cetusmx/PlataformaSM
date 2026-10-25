@@ -105,32 +105,13 @@ const obtenerExistenciaEnAlmacen = (existenciaObj, almacenId, mapaNombres) => {
 
 /**
  * Consulta el endpoint POST /inventario/productos-etiquetas-caja
- * Acepta un arreglo de claves o un objeto { productos, linea }
+ * enviando exclusivamente { linea: "..." }
  */
-const consultarProductosEtiquetasCaja = async (param = []) => {
-  let payload = {};
+const consultarProductosEtiquetasCajaPorLinea = async (linea) => {
+  const lineaLimpia = String(linea || "").trim().toUpperCase();
+  if (!lineaLimpia) return [];
 
-  if (Array.isArray(param)) {
-    const limpias = Array.from(
-      new Set(
-        param
-          .map((c) => String(c ?? "").trim())
-          .filter(Boolean)
-      )
-    );
-    if (limpias.length === 0) return [];
-    payload = { productos: limpias };
-  } else if (param && typeof param === "object") {
-    if (param.linea) {
-      payload = { linea: String(param.linea).trim().toUpperCase() };
-    } else if (Array.isArray(param.productos)) {
-      payload = { productos: param.productos };
-    } else {
-      return [];
-    }
-  } else {
-    return [];
-  }
+  const payload = { linea: lineaLimpia };
 
   try {
     const res = await Axios.post(
@@ -283,18 +264,34 @@ const EtiquetasCajaTab = () => {
     documentTitle: `Etiquetas_Caja_${lineaSeleccionada || "Linea"}_Alm${almacenSeleccionado}`,
   });
 
-  // 1. Carga inicial: Almacenes registrados en stocks_almacenes y catálogo de nombres de almacenes
+  // 1. Carga inicial: Catálogo ligero para mapear clave -> línea en el selector de Paso 1,
+  // almacenes registrados en stocks_almacenes y catálogo de nombres de almacenes
   useEffect(() => {
     let cancelado = false;
     const cargarBase = async () => {
       setCargandoInicial(true);
       try {
-        const [resStocksAll, resAlmCat] = await Promise.allSettled([
-          Axios.get(`${URL_API2}/stocks-almacenes`),
-          Axios.get(`${URL_API1}/compras/getalmacenes`),
-        ]);
+        const [resProdsFirebird, resStocksAll, resAlmCat] =
+          await Promise.allSettled([
+            Axios.get(`${URL_API1}/compras/getcatalogo-firebird`).catch(() =>
+              Axios.get(`${URL_API3}/productos-detallado`, {
+                headers: API3_HEADERS,
+              })
+            ),
+            Axios.get(`${URL_API2}/stocks-almacenes`),
+            Axios.get(`${URL_API1}/compras/getalmacenes`),
+          ]);
 
         if (cancelado) return;
+
+        if (
+          resProdsFirebird.status === "fulfilled" &&
+          Array.isArray(resProdsFirebird.value.data)
+        ) {
+          setCatalogoProductosApi3(resProdsFirebird.value.data);
+        } else {
+          show_alerta("No se pudo cargar el catálogo de líneas desde SAE.", "error");
+        }
 
         if (resAlmCat.status === "fulfilled" && Array.isArray(resAlmCat.value.data)) {
           const mapa = { ...ALMACENES_FALLBACK };
@@ -335,8 +332,7 @@ const EtiquetasCajaTab = () => {
     };
   }, []);
 
-  // 2. Cuando cambia el almacén seleccionado, consultamos sus stocks (max > 0)
-  // y enriquecemos sus claves mediante POST /inventario/productos-etiquetas-caja
+  // 2. Cuando cambia el almacén seleccionado, consultamos únicamente sus stocks (max > 0)
   useEffect(() => {
     if (!almacenSeleccionado) {
       setStocksAlmacen([]);
@@ -358,38 +354,9 @@ const EtiquetasCajaTab = () => {
           return !Number.isNaN(maxNum) && maxNum > 0;
         });
         setStocksAlmacen(conPresencia);
-
-        const clavesAlmacen = conPresencia
-          .map((r) => String(r.clave ?? "").trim())
-          .filter(Boolean);
-
-        if (clavesAlmacen.length > 0) {
-          const datosEtiquetas = await consultarProductosEtiquetasCaja(clavesAlmacen);
-          if (cancelado) return;
-
-          console.log(
-            "[DEBUG /inventario/productos-etiquetas-caja] Total recibidos:",
-            datosEtiquetas.length,
-            "Muestra (primeros 5):",
-            datosEtiquetas.slice(0, 5)
-          );
-
-          setCatalogoProductosApi3((prev) => {
-            const mapaPrev = new Map();
-            prev.forEach((item) => {
-              const c = String(item.CVE_ART ?? item.clave ?? "").trim().toUpperCase();
-              if (c) mapaPrev.set(c, item);
-            });
-            datosEtiquetas.forEach((item) => {
-              const c = String(item.CVE_ART ?? item.clave ?? "").trim().toUpperCase();
-              if (c) mapaPrev.set(c, { ...(mapaPrev.get(c) || {}), ...item });
-            });
-            return Array.from(mapaPrev.values());
-          });
-        }
       } catch (err) {
         if (!cancelado) {
-          console.error("Error al consultar stocks o detalles del almacén:", err);
+          console.error("Error al consultar stocks del almacén:", err);
           show_alerta("Error al cargar los productos del almacén seleccionado.", "error");
         }
       } finally {
@@ -537,8 +504,8 @@ const EtiquetasCajaTab = () => {
   }, [productosLineaCrudos]);
 
   // Al cambiar de línea:
-  // 1) Reiniciar reglas de capacidad a 4 por caja y tomar de inmediato FAMILIA y SECCIÓN desde los datos ya cargados por /inventario/productos-etiquetas-caja
-  // 2) Buscar si existen claves adicionales en esa línea fuera de stocks_almacenes y consultarlas en /inventario/productos-etiquetas-caja para incluir las que tengan existencia > 0
+  // Consultar en POST /inventario/productos-etiquetas-caja enviando exclusivamente { linea: lineaSeleccionada }
+  // para recibir el universo completo de productos de esa línea (con medidas, familia, perfil, marca y existencias por almacén)
   useEffect(() => {
     if (!lineaSeleccionada) {
       setFamiliaTexto("");
@@ -549,32 +516,26 @@ const EtiquetasCajaTab = () => {
     setReglasCapacidad([{ id: "base-1", desdeCaja: 1, productosPorCaja: 4 }]);
     setCajaEditandoInline(null);
 
-    // Con la mejora en /inventario/productos-etiquetas-caja, ya tenemos FAMILIA y SECCION en memoria de inmediato
-    const prodsBaseLinea = productosEnAlmacen.filter(
-      (p) => p.linea === lineaSeleccionada
-    );
-    const tieneSec = prodsBaseLinea.some(
-      (p) => String(p.seccion || "").trim() !== ""
-    );
-    setIncluirSeccion(tieneSec);
-
-    const famDirecta =
-      prodsBaseLinea.find((p) => String(p.familia || "").trim() !== "")?.familia ||
-      lineaSeleccionada;
-    setFamiliaTexto(famDirecta.toUpperCase());
-
     let cancelado = false;
 
-    // Paso 3: Consultar en POST /inventario/productos-etiquetas-caja enviando { linea: lineaSeleccionada }
-    // para recibir el universo completo de productos de esa línea y unificar en frontend:
-    // (claves en stocks_almacenes con max > 0) + (claves fuera de stocks_almacenes con EXISTENCIA > 0 en el almacén seleccionado)
     const cargarUniversoDeLinea = async () => {
       setCargandoFamilia(true);
       try {
-        const universoLinea = await consultarProductosEtiquetasCaja({
-          linea: lineaSeleccionada,
-        });
+        const universoLinea = await consultarProductosEtiquetasCajaPorLinea(
+          lineaSeleccionada
+        );
         if (cancelado || universoLinea.length === 0) return;
+
+        const tieneSec = universoLinea.some(
+          (item) => String(item.SECCION ?? item.Seccion ?? item.seccion ?? "").trim() !== ""
+        );
+        setIncluirSeccion(tieneSec);
+
+        const famDetectada =
+          universoLinea.find(
+            (item) => String(item.FAMILIA ?? item.Familia ?? item.familia ?? "").trim() !== ""
+          )?.FAMILIA || lineaSeleccionada;
+        setFamiliaTexto(String(famDetectada).trim().toUpperCase());
 
         setCatalogoProductosApi3((prev) => {
           const mapaPrev = new Map();
