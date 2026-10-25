@@ -5,7 +5,7 @@ const PreviewPanel = ({ partidasPrint, componentRef, partidas, onPrint }) => {
   return (
     <div className="codigosBarras">
       <div className="codesHeader">
-        <h6>Vista previa</h6>
+        <h6 className="ec-card-title mb-1">Vista previa</h6>
       </div>
       <div className="contenedorEtiquetas2">
         <div className="codebars" ref={componentRef}>
@@ -17,7 +17,7 @@ const PreviewPanel = ({ partidasPrint, componentRef, partidas, onPrint }) => {
           <button
             id="boton-print"
             type="button"
-            className="btn btn-outline-secondary"
+            className="btn btn-sm btn-outline-secondary ec-control-sm"
             onClick={onPrint}
           >
             Imprimir códigos

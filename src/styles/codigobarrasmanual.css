@@ -402,16 +402,30 @@
 .btn-group-custom-wide {
   display: flex;
   width: 100%;
-  max-width: 680px;
+  max-width: 620px;
 }
 
 .btn-group-custom .btn {
   flex: 1;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 400;
-  line-height: 1.4;
+  line-height: 1.35;
   padding: 5px 10px;
   white-space: nowrap;
+}
+
+.btn-group-custom .btn.btn-primary {
+  font-weight: 500;
+}
+
+.tablaProds {
+  font-size: 0.78rem;
+}
+
+.tablaProds th {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #475569;
 }
 
 .captura-full-width {

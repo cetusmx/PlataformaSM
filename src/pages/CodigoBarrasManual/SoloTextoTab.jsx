@@ -14,26 +14,27 @@ const SoloTextoTab = ({
   return (
     <div className="formulario">
       <div className="cantidad" style={{ marginRight: "10px" }}>
-        <label style={{ fontSize: "1rem" }}># Etiq.</label>
+        <label className="form-label ec-field-label mb-1"># Etiq.</label>
         <input
           value={qty}
           onChange={(e) => onQtyChange(e.target.value)}
           type="text"
-          className="form-control"
-          style={{ width: "60px" }}
+          className="form-control form-control-sm ec-control-sm"
+          style={{ width: "65px" }}
         />
       </div>
       <div className="claveProd" style={{ marginRight: "10px" }}>
-        <label style={{ fontSize: "1rem" }}>Clave</label>
+        <label className="form-label ec-field-label mb-1">Clave</label>
         <input
           value={value}
           onChange={onValueChange}
           type="text"
-          className="form-control"
-          style={{ width: "170px" }}
+          className="form-control form-control-sm ec-control-sm"
+          placeholder="Ingrese clave"
+          style={{ width: "155px" }}
         />
         {sugerencias.length > 0 && (
-          <div className="dropdown" style={{ width: "400px" }}>
+          <div className="dropdown" style={{ width: "360px" }}>
             {sugerencias.map((item) => (
               <div
                 key={item.CLAVE}
@@ -48,25 +49,31 @@ const SoloTextoTab = ({
         )}
       </div>
       <div className="descripcion" style={{ marginRight: "10px" }}>
-        <label style={{ fontSize: "0.8rem" }}>Descripción</label>
+        <label className="form-label ec-field-label mb-1">Descripción</label>
         <input
           value={descripcion}
           onChange={(e) => onDescripcionChange(e.target.value)}
           type="text"
-          className="form-control"
-          style={{ width: "220px" }}
+          className="form-control form-control-sm ec-control-sm"
+          placeholder="Descripción"
+          style={{ width: "200px" }}
         />
       </div>
       <div className="div-boton">
         <button
-          style={{ marginRight: "10px" }}
+          style={{ width: "90px", marginRight: "8px" }}
           type="button"
-          className="btn btn-primary"
+          className="btn btn-sm btn-primary ec-control-sm"
           onClick={onAgregar}
         >
           Agregar
         </button>
-        <button type="button" className="btn btn-danger" onClick={onLimpiar}>
+        <button
+          style={{ width: "90px" }}
+          type="button"
+          className="btn btn-sm btn-danger ec-control-sm"
+          onClick={onLimpiar}
+        >
           Limpiar
         </button>
       </div>

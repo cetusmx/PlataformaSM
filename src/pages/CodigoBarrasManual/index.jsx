@@ -128,7 +128,7 @@ const CodigoBarrasManual = () => {
                         <button
                           id="boton-nueva-importacion"
                           type="button"
-                          className="btn btn-outline-secondary"
+                          className="btn btn-sm btn-outline-secondary ec-control-sm"
                           onClick={limpiarTodo}
                         >
                           Nueva importación
@@ -142,7 +142,7 @@ const CodigoBarrasManual = () => {
                         <button
                           id="boton-print"
                           type="button"
-                          className="btn btn-outline-secondary"
+                          className="btn btn-sm btn-outline-secondary ec-control-sm"
                           data-bs-toggle="modal"
                           data-bs-target="#myModal"
                           disabled={activeTab !== "barcode"}

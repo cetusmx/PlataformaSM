@@ -14,26 +14,31 @@ const BarcodeTab = ({
   return (
     <div className="formulario">
       <div className="cantidad">
-        <label for="exampleFormControlInput1">Cantidad etiquetas</label>
+        <label className="form-label ec-field-label mb-1" htmlFor="inputCantidadBarcode">
+          Cantidad etiquetas
+        </label>
         <input
           value={qty}
           onChange={(event) => onQtyChange(event.target.value)}
           type="text"
-          className="form-control"
-          id="exampleFormControlInput1"
+          className="form-control form-control-sm ec-control-sm"
+          id="inputCantidadBarcode"
           placeholder="Ingrese cantidad"
-          style={{ width: "160px" }}
-        ></input>
+          style={{ width: "135px" }}
+        />
       </div>
       <div className="claveProd">
-        <label for="exampleFormControlInput1">Clave producto</label>
+        <label className="form-label ec-field-label mb-1" htmlFor="inputClaveBarcode">
+          Clave producto
+        </label>
         <input
           value={value}
           onChange={onValueChange}
           type="text"
-          className="form-control"
-          id="exampleFormControlInput1"
+          className="form-control form-control-sm ec-control-sm"
+          id="inputClaveBarcode"
           placeholder="Ingrese clave producto"
+          style={{ width: "185px" }}
         />
         {sugerencias.length > 0 && (
           <div className="dropdown">
@@ -56,17 +61,17 @@ const BarcodeTab = ({
       </div>
       <div className="div-boton">
         <button
-          style={{ width: "130px", marginRight: "10px" }}
+          style={{ width: "95px", marginRight: "8px" }}
           type="button"
-          className="btn btn-primary"
+          className="btn btn-sm btn-primary ec-control-sm"
           onClick={onAgregar}
         >
           Agregar
         </button>
         <button
-          style={{ width: "130px" }}
+          style={{ width: "95px" }}
           type="button"
-          className="btn btn-danger"
+          className="btn btn-sm btn-danger ec-control-sm"
           onClick={onLimpiar}
         >
           Limpiar
