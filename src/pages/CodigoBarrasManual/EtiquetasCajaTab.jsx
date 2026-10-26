@@ -246,6 +246,9 @@ const EtiquetasCajaTab = () => {
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
     documentTitle: `Etiquetas_Caja_${lineaSeleccionada || "Linea"}_Alm${almacenSeleccionado}`,
+    /* La orientación/márgenes de la hoja carta viven aquí (pageStyle) y no en el CSS
+       compartido, para no forzar vertical a los demás tabs al imprimir */
+    pageStyle: "@page { size: letter portrait; margin: 4.8mm 6.5mm 4mm 6.5mm; }",
   });
 
   // 1. Carga inicial: Catálogo ligero para mapear clave -> línea en el selector de Paso 1,

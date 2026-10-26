@@ -4,7 +4,7 @@ import Logo from "../assets/Logo20.jpeg"
 
 const CodeBarPrint = (props) => {
   return (
-    <div style={{ width: "100%" }}>
+    <div style={{ width: "100%", paddingLeft: "4px" }}>
       {props.partidas.map((val, key) => {
         // Rediseño Etiqueta Logística Compleja
         if (val.isLogistica) {
