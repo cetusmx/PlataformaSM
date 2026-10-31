@@ -109,6 +109,7 @@ const COUNTED_LINE_PRODUCT_COLUMNS = [
 const ALL_COUNTED_PRODUCTS_COLUMNS = [
   { header: 'Clave', accessor: 'Clave' },
   { header: 'Descripción', accessor: 'Descripcion' },
+  { header: 'Línea', accessor: 'Linea' },
   { header: 'Existencia', accessor: 'qtyConteo' }, // Corrected accessor
   { header: 'Caja', accessor: 'Caja' },
   { header: 'Unidad', accessor: 'Unidad' },
@@ -302,15 +303,21 @@ const InventarioDetails = ({ inventario, onBack }) => {
     setLoading(true);
     setError(null);
     try {
-      //Obtiene todo el universo de productos contados de un inventario
+      // Obtiene todo el universo de productos contados de un inventario
       const response = await fetch(
-        `${process.env.REACT_APP_URL_API1}/getproductoscontadosporauditoreinv?InventarioID=${inventario.InventarioID}&auditor=${inventario.Auditor}`
+        `${process.env.REACT_APP_URL_API2}/api/v1/productoscontados/inventario/${inventario.InventarioID}/auditor/${encodeURIComponent(inventario.Auditor)}`
       );
+      if (response.status === 404) {
+        setProducts([]);
+        return;
+      }
       if (!response.ok) throw new Error('Error al cargar productos');
-      const data = await response.json();
+      const payload = await response.json();
+      const data = payload.body || payload;
       const mappedProducts = Array.isArray(data) ? data.map(p => ({
         Clave: p.Clave,
         Descripcion: p.Descripcion,
+        Linea: p.Linea,
         qtyConteo: p.Existencia, // Mapeado a Existencia
         Caja: p.Caja,
         Unidad: p.Unidad,
